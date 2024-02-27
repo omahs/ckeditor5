@@ -72,7 +72,7 @@ export default class ImageInlineEditing extends Plugin {
 			if ( context.endsWith( 'caption' ) && childDefinition.name === 'imageInline' ) {
 				return false;
 			}
-		} );
+		}, 'imageInline' );
 
 		this._setupConversion();
 

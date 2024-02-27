@@ -153,7 +153,7 @@ export default class CodeBlockEditing extends Plugin {
 			if ( context.endsWith( 'codeBlock' ) && childDefinition.isObject ) {
 				return false;
 			}
-		} );
+		}, 'codeBlock' );
 
 		// Conversion.
 		editor.editing.downcastDispatcher.on<DowncastInsertEvent>(

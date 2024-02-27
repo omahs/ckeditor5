@@ -42,9 +42,11 @@ export default class Schema extends ObservableMixin() {
 	 * A dictionary containing attribute properties.
 	 */
 	private readonly _attributeProperties: Record<string, AttributeProperties> = {};
-	private _compiledDefinitions?: Record<string, SchemaCompiledItemDefinition> | null;
 
-	private _customChildChecks: Map<string, any> = new Map();
+	private readonly _genericCheckSymbol = Symbol( '$generic' );
+	private readonly _customChildChecks: Map<string | symbol, Array<any>> = new Map();
+
+	private _compiledDefinitions?: Record<string, SchemaCompiledItemDefinition> | null;
 
 	/**
 	 * Creates a schema instance.
@@ -63,6 +65,33 @@ export default class Schema extends ObservableMixin() {
 			args[ 0 ] = new SchemaContext( args[ 0 ] );
 			args[ 1 ] = this.getDefinition( args[ 1 ] );
 		}, { priority: 'highest' } );
+
+		this.on<SchemaCheckChildEvent>( 'checkChild', ( evt, [ ctx, childDef ] ) => {
+			// checkChild() was called with a non-registered child.
+			// In 99% cases such check should return false, so not to overcomplicate all callbacks
+			// don't even execute them.
+			if ( !childDef ) {
+				return;
+			}
+
+			const checksForChild = this._customChildChecks.get( childDef.name ) || [];
+			const checksForContext = this._customChildChecks.get( ctx.last.name ) || [];
+
+			// Right now, it will check all custom check callbacks that match either children or context name.
+			// It will stop processing callbacks if any would return `false`.
+			let retValue;
+			for ( const nextCheck of [ ...checksForChild, ...checksForContext ] ) {
+				retValue = nextCheck( ctx, childDef );
+				if ( retValue === false ) {
+					break;
+				}
+			}
+
+			if ( typeof retValue == 'boolean' ) {
+				evt.stop();
+				evt.return = retValue;
+			}
+		}, { priority: 'high' } );
 	}
 
 	/**
@@ -518,28 +547,12 @@ export default class Schema extends ObservableMixin() {
 	 * The callback may return `true/false` to override `checkChild()`'s return value. If it does not return
 	 * a boolean value, the default algorithm (or other callbacks) will define `checkChild()`'s return value.
 	 */
-	public addChildCheck( callback: SchemaChildCheckCallback, forNode: string = '__nodeless' ): void {
-		const checksForNode = this._customChildChecks.get( forNode ) || [];
+	public addChildCheck( callback: SchemaChildCheckCallback, forNode?: string ): void {
+		const nodeKey = forNode ?? this._genericCheckSymbol;
+
+		const checksForNode = this._customChildChecks.get( nodeKey ) || [];
 		checksForNode.push( callback );
-		this._customChildChecks.set( forNode, checksForNode );
-
-		// move this to an init phase to have a one-time do-it-all routine.
-		this.on<SchemaCheckChildEvent>( 'checkChild', ( evt, [ ctx, childDef ] ) => {
-			// checkChild() was called with a non-registered child.
-			// In 99% cases such check should return false, so not to overcomplicate all callbacks
-			// don't even execute them.
-
-			if ( !childDef ) {
-				return;
-			}
-
-			const retValue = callback( ctx, childDef );
-
-			if ( typeof retValue == 'boolean' ) {
-				evt.stop();
-				evt.return = retValue;
-			}
-		}, { priority: 'high' } );
+		this._customChildChecks.set( nodeKey, checksForNode );
 	}
 
 	/**
