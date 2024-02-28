@@ -45,6 +45,7 @@ export default class Schema extends ObservableMixin() {
 
 	private readonly _genericCheckSymbol = Symbol( '$generic' );
 	private readonly _customChildChecks: Map<string | symbol, Array<any>> = new Map();
+	private readonly _customAttributeChecks: Map<string | symbol, Array<any>> = new Map();
 
 	private _compiledDefinitions?: Record<string, SchemaCompiledItemDefinition> | null;
 
@@ -74,14 +75,35 @@ export default class Schema extends ObservableMixin() {
 				return;
 			}
 
+			const generalChecks = this._customChildChecks.get( this._genericCheckSymbol ) || [];
 			const checksForChild = this._customChildChecks.get( childDef.name ) || [];
 			const checksForContext = this._customChildChecks.get( ctx.last.name ) || [];
+			// console.log( 'child checks:', generalChecks, checksForChild, checksForContext );
 
 			// Right now, it will check all custom check callbacks that match either children or context name.
 			// It will stop processing callbacks if any would return `false`.
 			let retValue;
-			for ( const nextCheck of [ ...checksForChild, ...checksForContext ] ) {
+			for ( const nextCheck of [ ...generalChecks, ...checksForChild, ...checksForContext ] ) {
 				retValue = nextCheck( ctx, childDef );
+				if ( retValue === false ) {
+					break;
+				}
+			}
+
+			if ( typeof retValue == 'boolean' ) {
+				evt.stop();
+				evt.return = retValue;
+			}
+		}, { priority: 'high' } );
+
+		this.on<SchemaCheckAttributeEvent>( 'checkAttribute', ( evt, [ ctx, attributeName ] ) => {
+			const generalChecks = this._customAttributeChecks.get( this._genericCheckSymbol ) || [];
+			const customChecksForContext = this._customAttributeChecks.get( ctx.last.name ) || [];
+
+			let retValue;
+
+			for ( const nextCheck of [ ...generalChecks, ...customChecksForContext ] ) {
+				retValue = nextCheck( ctx, attributeName );
 				if ( retValue === false ) {
 					break;
 				}
@@ -598,15 +620,12 @@ export default class Schema extends ObservableMixin() {
 	 * The callback may return `true/false` to override `checkAttribute()`'s return value. If it does not return
 	 * a boolean value, the default algorithm (or other callbacks) will define `checkAttribute()`'s return value.
 	 */
-	public addAttributeCheck( callback: SchemaAttributeCheckCallback ): void {
-		this.on<SchemaCheckAttributeEvent>( 'checkAttribute', ( evt, [ ctx, attributeName ] ) => {
-			const retValue = callback( ctx, attributeName );
+	public addAttributeCheck( callback: SchemaAttributeCheckCallback, forNode: string ): void {
+		const nodeKey = forNode ?? this._genericCheckSymbol;
 
-			if ( typeof retValue == 'boolean' ) {
-				evt.stop();
-				evt.return = retValue;
-			}
-		}, { priority: 'high' } );
+		const attributeChecksForNode = this._customAttributeChecks.get( nodeKey ) || [];
+		attributeChecksForNode.push( callback );
+		this._customAttributeChecks.set( nodeKey, attributeChecksForNode );
 	}
 
 	/**
