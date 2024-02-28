@@ -620,7 +620,7 @@ export default class Schema extends ObservableMixin() {
 	 * The callback may return `true/false` to override `checkAttribute()`'s return value. If it does not return
 	 * a boolean value, the default algorithm (or other callbacks) will define `checkAttribute()`'s return value.
 	 */
-	public addAttributeCheck( callback: SchemaAttributeCheckCallback, forNode: string ): void {
+	public addAttributeCheck( callback: SchemaAttributeCheckCallback, forNode?: string ): void {
 		const nodeKey = forNode ?? this._genericCheckSymbol;
 
 		const attributeChecksForNode = this._customAttributeChecks.get( nodeKey ) || [];
