@@ -78,7 +78,6 @@ export default class Schema extends ObservableMixin() {
 			const generalChecks = this._customChildChecks.get( this._genericCheckSymbol ) || [];
 			const checksForChild = this._customChildChecks.get( childDef.name ) || [];
 			const checksForContext = this._customChildChecks.get( ctx.last.name ) || [];
-			// console.log( 'child checks:', generalChecks, checksForChild, checksForContext );
 
 			// Right now, it will check all custom check callbacks that match either children or context name.
 			// It will stop processing callbacks if any would return `false`.
@@ -568,6 +567,8 @@ export default class Schema extends ObservableMixin() {
 	 * {@link module:engine/model/schema~SchemaCompiledItemDefinition} (child-to-check definition).
 	 * The callback may return `true/false` to override `checkChild()`'s return value. If it does not return
 	 * a boolean value, the default algorithm (or other callbacks) will define `checkChild()`'s return value.
+	 * @param forNode Optional name of the node to run the callback for.
+	 * 	If no node is specified, the callback will run for each `checkChild` call.
 	 */
 	public addChildCheck( callback: SchemaChildCheckCallback, forNode?: string ): void {
 		const nodeKey = forNode ?? this._genericCheckSymbol;
@@ -619,6 +620,8 @@ export default class Schema extends ObservableMixin() {
 	 * {@link module:engine/model/schema~SchemaContext} (context) instance and attribute name.
 	 * The callback may return `true/false` to override `checkAttribute()`'s return value. If it does not return
 	 * a boolean value, the default algorithm (or other callbacks) will define `checkAttribute()`'s return value.
+	 * @param forNode Optional name of the node to run the callback for.
+	 * 	If no node is specified, the callback will run for each `checkAttribute` call.
 	 */
 	public addAttributeCheck( callback: SchemaAttributeCheckCallback, forNode?: string ): void {
 		const nodeKey = forNode ?? this._genericCheckSymbol;

@@ -631,6 +631,20 @@ schema.addChildCheck( ( context, childDefinition ) => {
 	}
 } );
 ```
+
+The above will trigger on every `checkChild()` call, though. You can also define more specific listeners that will trigger a check only when a context or a child definition parameter points to a given element (in a check call). Look at this example:
+
+```js
+schema.addChildCheck( ( context, childDefinition ) => {
+			// In this example, don't allow for imageInline inside a codeBlock node.
+			if ( context.endsWith( 'codeBlock' ) && childDefinition.name === 'imageInline' ) {
+				return false;
+			}
+		}, 'imageInline' );
+```
+
+Notice that the second parameter has been used to run only when `imageInline` is either a context or a child to check.
+
 <!--
 ## Defining attributes
 
