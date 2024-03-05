@@ -83,13 +83,17 @@ export default class Schema extends ObservableMixin() {
 			// It will stop processing callbacks if any would return `false`.
 			let retValue;
 			for ( const nextCheck of [ ...generalChecks, ...checksForChild, ...checksForContext ] ) {
-				retValue = nextCheck( ctx, childDef );
+				const checkResult = nextCheck( ctx, childDef );
+
+				// Only apply newer return value if it's boolean.
+				retValue = typeof checkResult === 'boolean' ? checkResult : retValue;
+
 				if ( retValue === false ) {
 					break;
 				}
 			}
 
-			if ( typeof retValue == 'boolean' ) {
+			if ( typeof retValue === 'boolean' ) {
 				evt.stop();
 				evt.return = retValue;
 			}
@@ -102,13 +106,17 @@ export default class Schema extends ObservableMixin() {
 			let retValue;
 
 			for ( const nextCheck of [ ...generalChecks, ...customChecksForContext ] ) {
-				retValue = nextCheck( ctx, attributeName );
+				const checkResult = nextCheck( ctx, attributeName );
+
+				// Only apply newer return value if it's boolean.
+				retValue = typeof checkResult === 'boolean' ? checkResult : retValue;
+
 				if ( retValue === false ) {
 					break;
 				}
 			}
 
-			if ( typeof retValue == 'boolean' ) {
+			if ( typeof retValue === 'boolean' ) {
 				evt.stop();
 				evt.return = retValue;
 			}
