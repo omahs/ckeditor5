@@ -141,7 +141,7 @@ export default class CodeBlockEditing extends Plugin {
 			) {
 				return true;
 			}
-		}, 'codeBlock' );
+		} );
 
 		// Disallow all attributes on $text inside `codeBlock`.
 		schema.addAttributeCheck( context => {
