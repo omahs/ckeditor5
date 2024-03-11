@@ -112,6 +112,7 @@ export default class Schema extends ObservableMixin() {
 				retValue = typeof checkResult === 'boolean' ? checkResult : retValue;
 
 				if ( retValue === false ) {
+					// Break out of loop if any check returns false (forbidding is prioritized).
 					break;
 				}
 			}
