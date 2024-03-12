@@ -66,30 +66,6 @@ export default class Schema extends ObservableMixin() {
 			args[ 0 ] = new SchemaContext( args[ 0 ] );
 			args[ 1 ] = this.getDefinition( args[ 1 ] );
 		}, { priority: 'highest' } );
-
-		this.on<SchemaCheckAttributeEvent>( 'checkAttribute', ( evt, [ ctx, attributeName ] ) => {
-			const generalChecks = this._customAttributeChecks.get( this._genericCheckSymbol ) || [];
-			const customChecksForContext = this._customAttributeChecks.get( ctx.last.name ) || [];
-
-			let retValue;
-
-			for ( const nextCheck of [ ...generalChecks, ...customChecksForContext ] ) {
-				const checkResult = nextCheck( ctx, attributeName );
-
-				// Only apply newer return value if it's boolean.
-				retValue = typeof checkResult === 'boolean' ? checkResult : retValue;
-
-				if ( retValue === false ) {
-					// Break out of loop if any check returns false (forbidding is prioritized).
-					break;
-				}
-			}
-
-			if ( typeof retValue === 'boolean' ) {
-				evt.stop();
-				evt.return = retValue;
-			}
-		}, { priority: 'high' } );
 	}
 
 	/**
@@ -467,6 +443,27 @@ export default class Schema extends ObservableMixin() {
 
 		if ( !def ) {
 			return false;
+		}
+
+		const generalChecks = this._customAttributeChecks.get( this._genericCheckSymbol ) || [];
+		const customChecksForContext = this._customAttributeChecks.get( ( context as SchemaContext ).last.name ) || [];
+
+		let retValue;
+
+		for ( const nextCheck of [ ...generalChecks, ...customChecksForContext ] ) {
+			const checkResult = nextCheck( context as SchemaContext, attributeName );
+
+			// Only apply newer return value if it's boolean.
+			retValue = typeof checkResult === 'boolean' ? checkResult : retValue;
+
+			if ( retValue === false ) {
+				// Break out of loop if any check returns false (forbidding is prioritized).
+				break;
+			}
+		}
+
+		if ( typeof retValue === 'boolean' ) {
+			return retValue;
 		}
 
 		return def.allowAttributes.includes( attributeName );

@@ -755,7 +755,7 @@ describe( 'Schema', () => {
 			} );
 
 			schema.on( 'checkChild', () => {
-				order.push( 'checkChild:high-after' );
+				order.push( 'checkChild:high' );
 			}, { priority: 'high' } );
 
 			sinon.stub( schema, '_checkContextMatch' ).callsFake( () => {
@@ -764,12 +764,12 @@ describe( 'Schema', () => {
 
 			schema.checkChild( root1, r1p1 );
 
-			expect( order.join() ).to.equal( 'checkChild:high-after,addChildCheck,declarativeCheck' );
+			expect( order.join() ).to.equal( 'checkChild:high,addChildCheck,declarativeCheck' );
 
 			sinon.restore();
 		} );
 
-		it( 'stops the event and overrides the return value when callback returned true', () => {
+		it( 'overrides the return value when callback returned true', () => {
 			schema.register( '$text' );
 
 			expect( schema.checkChild( root1, '$text' ) ).to.be.false;
@@ -781,7 +781,7 @@ describe( 'Schema', () => {
 			expect( schema.checkChild( root1, '$text' ) ).to.be.true;
 		} );
 
-		it( 'stops the event and overrides the return value when callback returned false', () => {
+		it( 'overrides the return value when callback returned false', () => {
 			expect( schema.checkChild( root1, r1p1 ) ).to.be.true;
 
 			schema.addChildCheck( () => {
@@ -853,7 +853,7 @@ describe( 'Schema', () => {
 			} );
 		} );
 
-		it( 'adds a high-priority listener', () => {
+		it( 'adds a callback that runs after listeners', () => {
 			const order = [];
 
 			schema.addAttributeCheck( () => {
@@ -861,38 +861,30 @@ describe( 'Schema', () => {
 			} );
 
 			schema.on( 'checkAttribute', () => {
-				order.push( 'checkAttribute:high-after' );
+				order.push( 'checkAttribute:high' );
 			}, { priority: 'high' } );
 
 			schema.checkAttribute( r1p1, 'foo' );
 
-			expect( order.join() ).to.equal( 'addAttributeCheck,checkAttribute:high-after' );
+			expect( order.join() ).to.equal( 'checkAttribute:high,addAttributeCheck' );
 		} );
 
-		it( 'stops the event and overrides the return value when callback returned true', () => {
+		it( 'overrides the return value when callback returned true', () => {
 			expect( schema.checkAttribute( r1p1, 'bar' ) ).to.be.false;
 
 			schema.addAttributeCheck( () => {
 				return true;
 			} );
 
-			schema.on( 'checkAttribute', () => {
-				throw new Error( 'the event should be stopped' );
-			}, { priority: 'high' } );
-
 			expect( schema.checkAttribute( r1p1, 'bar' ) ).to.be.true;
 		} );
 
-		it( 'stops the event and overrides the return value when callback returned false', () => {
+		it( 'overrides the return value when callback returned false', () => {
 			expect( schema.checkAttribute( r1p1, 'foo' ) ).to.be.true;
 
 			schema.addAttributeCheck( () => {
 				return false;
 			} );
-
-			schema.on( 'checkAttribute', () => {
-				throw new Error( 'the event should be stopped' );
-			}, { priority: 'high' } );
 
 			expect( schema.checkAttribute( r1p1, 'foo' ) ).to.be.false;
 		} );
