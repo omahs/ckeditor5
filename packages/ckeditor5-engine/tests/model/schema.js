@@ -747,7 +747,7 @@ describe( 'Schema', () => {
 			} );
 		} );
 
-		it( 'adds a high-priority listener', () => {
+		it( 'adds a callback that runs before declarative checks', () => {
 			const order = [];
 
 			schema.addChildCheck( () => {
@@ -758,9 +758,15 @@ describe( 'Schema', () => {
 				order.push( 'checkChild:high-after' );
 			}, { priority: 'high' } );
 
+			sinon.stub( schema, '_checkContextMatch' ).callsFake( () => {
+				order.push( 'declarativeCheck' );
+			} );
+
 			schema.checkChild( root1, r1p1 );
 
-			expect( order.join() ).to.equal( 'addChildCheck,checkChild:high-after' );
+			expect( order.join() ).to.equal( 'checkChild:high-after,addChildCheck,declarativeCheck' );
+
+			sinon.restore();
 		} );
 
 		it( 'stops the event and overrides the return value when callback returned true', () => {
@@ -772,10 +778,6 @@ describe( 'Schema', () => {
 				return true;
 			} );
 
-			schema.on( 'checkChild', () => {
-				throw new Error( 'the event should be stopped' );
-			}, { priority: 'high' } );
-
 			expect( schema.checkChild( root1, '$text' ) ).to.be.true;
 		} );
 
@@ -785,10 +787,6 @@ describe( 'Schema', () => {
 			schema.addChildCheck( () => {
 				return false;
 			} );
-
-			schema.on( 'checkChild', () => {
-				throw new Error( 'the event should be stopped' );
-			}, { priority: 'high' } );
 
 			expect( schema.checkChild( root1, r1p1 ) ).to.be.false;
 		} );
