@@ -94,6 +94,7 @@ export default class SourceEditing extends Plugin {
 				label: t( 'Source' ),
 				icon: sourceEditingIcon,
 				tooltip: true,
+				isToggleable: true,
 				class: 'ck-source-editing-button'
 			} );
 

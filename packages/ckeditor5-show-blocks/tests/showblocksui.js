@@ -73,6 +73,7 @@ describe( 'ShowBlocksUI', () => {
 
 		it( 'should create UI component with correct attribute values', () => {
 			expect( button.isOn ).to.be.false;
+			expect( button.isToggleable ).to.be.true;
 			expect( button.label ).to.equal( label );
 		} );
 
