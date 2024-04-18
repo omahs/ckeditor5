@@ -110,6 +110,7 @@ export default interface Button {
 
 	/**
 	 * Controls whether the button view is a checkbox button (two–state) for assistive technologies.
+	 * It will be ignored if {@link module:ui/button/button~Button#isToggleable isToggleable}.is set to `false`.
 	 *
 	 * @observable
 	 * @default false
