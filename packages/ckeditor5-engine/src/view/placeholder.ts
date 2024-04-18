@@ -317,8 +317,8 @@ function updateContentEditableAriaPlaceholders( doc: Document ) {
 /**
  * Tries to find the nearest ancestor of a given element that has the `contenteditable` attribute.
  *
- * The function will check up to a maximum of 5 levels of ancestors.
- * If no `contenteditable` ancestor is found within these levels, the function will return `null`.
+ * 	* It will check up to a maximum of 5 levels of ancestors.
+ * 	* If no `contenteditable` ancestor is found within these levels, the function will return `null`.
  *
  * @param The element for which to find the nearest `contenteditable` ancestor.
  * @returns The nearest `contenteditable` ancestor if found, otherwise `null`.
