@@ -43,15 +43,6 @@ describe( 'CodeUI', () => {
 		} );
 
 		testButton();
-
-		it( 'should bind `isOn` to code command', () => {
-			const command = editor.commands.get( 'code' );
-
-			expect( codeView.isOn ).to.be.false;
-
-			command.value = true;
-			expect( codeView.isOn ).to.be.true;
-		} );
 	} );
 
 	describe( 'menu bar button', () => {
@@ -60,6 +51,22 @@ describe( 'CodeUI', () => {
 		} );
 
 		testButton();
+
+		it( 'should create button with `menuitemcheckbox` role', () => {
+			expect( codeView.role ).to.equal( 'menuitemcheckbox' );
+		} );
+
+		it( 'should create button with `isCheckbox` flag', () => {
+			expect( codeView.isCheckbox ).to.be.true;
+		} );
+
+		it( 'should bind `isOn` to `ariaChecked`', () => {
+			codeView.isOn = true;
+			expect( codeView.ariaChecked ).to.be.true;
+
+			codeView.isOn = false;
+			expect( codeView.ariaChecked ).to.be.false;
+		} );
 	} );
 
 	function testButton() {
@@ -86,6 +93,18 @@ describe( 'CodeUI', () => {
 
 			command.isEnabled = false;
 			expect( codeView.isEnabled ).to.be.false;
+		} );
+
+		it( 'should bind `isOn` to `command`.`value`', () => {
+			const command = editor.commands.get( 'code' );
+
+			command.value = true;
+
+			expect( codeView.isOn ).to.be.true;
+
+			command.value = false;
+
+			expect( codeView.isOn ).to.be.false;
 		} );
 	}
 } );

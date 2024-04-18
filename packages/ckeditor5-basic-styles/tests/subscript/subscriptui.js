@@ -43,15 +43,6 @@ describe( 'SubscriptUI', () => {
 		} );
 
 		testButton();
-
-		it( 'should bind `isOn` to subscript command', () => {
-			const command = editor.commands.get( 'subscript' );
-
-			expect( subView.isOn ).to.be.false;
-
-			command.value = true;
-			expect( subView.isOn ).to.be.true;
-		} );
 	} );
 
 	describe( 'menu bar button', () => {
@@ -60,6 +51,22 @@ describe( 'SubscriptUI', () => {
 		} );
 
 		testButton();
+
+		it( 'should create button with `menuitemcheckbox` role', () => {
+			expect( subView.role ).to.equal( 'menuitemcheckbox' );
+		} );
+
+		it( 'should create button with `isCheckbox` flag', () => {
+			expect( subView.isCheckbox ).to.be.true;
+		} );
+
+		it( 'should bind `isOn` to `ariaChecked`', () => {
+			subView.isOn = true;
+			expect( subView.ariaChecked ).to.be.true;
+
+			subView.isOn = false;
+			expect( subView.ariaChecked ).to.be.false;
+		} );
 	} );
 
 	function testButton() {
@@ -87,6 +94,18 @@ describe( 'SubscriptUI', () => {
 
 			command.isEnabled = false;
 			expect( subView.isEnabled ).to.be.false;
+		} );
+
+		it( 'should bind `isOn` to `command`.`value`', () => {
+			const command = editor.commands.get( 'subscript' );
+
+			command.value = true;
+
+			expect( subView.isOn ).to.be.true;
+
+			command.value = false;
+
+			expect( subView.isOn ).to.be.false;
 		} );
 	}
 } );

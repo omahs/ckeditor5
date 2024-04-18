@@ -43,15 +43,6 @@ describe( 'SuperscriptUI', () => {
 		} );
 
 		testButton();
-
-		it( 'should bind `isOn` to superscript command', () => {
-			const command = editor.commands.get( 'superscript' );
-
-			expect( superView.isOn ).to.be.false;
-
-			command.value = true;
-			expect( superView.isOn ).to.be.true;
-		} );
 	} );
 
 	describe( 'menu bar button', () => {
@@ -60,6 +51,22 @@ describe( 'SuperscriptUI', () => {
 		} );
 
 		testButton();
+
+		it( 'should create button with `menuitemcheckbox` role', () => {
+			expect( superView.role ).to.equal( 'menuitemcheckbox' );
+		} );
+
+		it( 'should create button with `isCheckbox` flag', () => {
+			expect( superView.isCheckbox ).to.be.true;
+		} );
+
+		it( 'should bind `isOn` to `ariaChecked`', () => {
+			superView.isOn = true;
+			expect( superView.ariaChecked ).to.be.true;
+
+			superView.isOn = false;
+			expect( superView.ariaChecked ).to.be.false;
+		} );
 	} );
 
 	function testButton() {
@@ -87,6 +94,18 @@ describe( 'SuperscriptUI', () => {
 
 			command.isEnabled = false;
 			expect( superView.isEnabled ).to.be.false;
+		} );
+
+		it( 'should bind `isOn` to `command`.`value`', () => {
+			const command = editor.commands.get( 'superscript' );
+
+			command.value = true;
+
+			expect( superView.isOn ).to.be.true;
+
+			command.value = false;
+
+			expect( superView.isOn ).to.be.false;
 		} );
 	}
 } );

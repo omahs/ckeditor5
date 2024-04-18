@@ -43,15 +43,6 @@ describe( 'BoldUI', () => {
 		} );
 
 		testButton();
-
-		it( 'should bind `isOn` to bold command', () => {
-			const command = editor.commands.get( 'bold' );
-
-			expect( boldView.isOn ).to.be.false;
-
-			command.value = true;
-			expect( boldView.isOn ).to.be.true;
-		} );
 	} );
 
 	describe( 'menu bar button', () => {
@@ -60,6 +51,22 @@ describe( 'BoldUI', () => {
 		} );
 
 		testButton();
+
+		it( 'should create button with `menuitemcheckbox` role', () => {
+			expect( boldView.role ).to.equal( 'menuitemcheckbox' );
+		} );
+
+		it( 'should create button with `isCheckbox` flag', () => {
+			expect( boldView.isCheckbox ).to.be.true;
+		} );
+
+		it( 'should bind `isOn` to `ariaChecked`', () => {
+			boldView.isOn = true;
+			expect( boldView.ariaChecked ).to.be.true;
+
+			boldView.isOn = false;
+			expect( boldView.ariaChecked ).to.be.false;
+		} );
 	} );
 
 	function testButton() {
@@ -92,6 +99,18 @@ describe( 'BoldUI', () => {
 
 		it( 'should set keystroke in the model', () => {
 			expect( boldView.keystroke ).to.equal( 'CTRL+B' );
+		} );
+
+		it( 'should bind `isOn` to `command`.`value`', () => {
+			const command = editor.commands.get( 'bold' );
+
+			command.value = true;
+
+			expect( boldView.isOn ).to.be.true;
+
+			command.value = false;
+
+			expect( boldView.isOn ).to.be.false;
 		} );
 	}
 } );
