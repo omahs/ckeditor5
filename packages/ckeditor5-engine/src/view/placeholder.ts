@@ -302,7 +302,7 @@ function updateContentEditableAriaPlaceholders( doc: Document ) {
 
 	for ( const [ contentEditable, placeholders ] of contentEditablePlaceholders ) {
 		const joinedPlaceholders = placeholders
-			.map( placeholder => placeholder.text.replace( /[.]+$/g, '' ).trim() )
+			.map( placeholder => placeholder.text.replace( /[.]+/g, '' ).trim() )
 			.join( ', ' );
 
 		if ( contentEditable.getAttribute( 'aria-placeholder' ) !== joinedPlaceholders ) {
@@ -328,7 +328,7 @@ function tryLookupForNearestContentEditable( element: Element ): Element | null 
 	let checkedElement = element!;
 
 	for ( let currentLevel = 0; currentLevel < ANCESTOR_LEVEL_LIMIT; ++currentLevel ) {
-		if ( checkedElement.getAttribute( 'contenteditable' ) ) {
+		if ( checkedElement.getAttribute( 'contenteditable' ) === 'true' ) {
 			return checkedElement;
 		}
 
