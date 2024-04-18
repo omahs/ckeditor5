@@ -94,7 +94,6 @@ export default class SourceEditing extends Plugin {
 				label: t( 'Source' ),
 				icon: sourceEditingIcon,
 				tooltip: true,
-				isToggleable: true,
 				class: 'ck-source-editing-button'
 			} );
 
@@ -105,7 +104,9 @@ export default class SourceEditing extends Plugin {
 			const buttonView = this._createButton( MenuBarMenuListItemButtonView );
 
 			buttonView.set( {
-				label: t( 'Show source' )
+				label: t( 'Show source' ),
+				role: 'menuitemcheckbox',
+				isCheckbox: true
 			} );
 
 			return buttonView;
@@ -398,7 +399,8 @@ export default class SourceEditing extends Plugin {
 		const buttonView = new ButtonClass( editor.locale ) as InstanceType<T>;
 
 		buttonView.set( {
-			withText: true
+			withText: true,
+			isToggleable: true
 		} );
 
 		buttonView.bind( 'isOn' ).to( this, 'isSourceEditingMode' );
