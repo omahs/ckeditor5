@@ -56,7 +56,17 @@ export default class ItalicUI extends Plugin {
 		} );
 
 		editor.ui.componentFactory.add( 'menuBar:' + ITALIC, () => {
-			return createButton( MenuBarMenuListItemButtonView );
+			const buttonView = createButton( MenuBarMenuListItemButtonView );
+
+			buttonView.set( {
+				role: 'menuitemcheckbox',
+				isCheckbox: true
+			} );
+
+			buttonView.bind( 'isOn' ).to( command, 'value' );
+			buttonView.bind( 'ariaChecked' ).to( buttonView, 'isOn' );
+
+			return buttonView;
 		} );
 	}
 }

@@ -109,6 +109,14 @@ export default interface Button {
 	isToggleable: boolean;
 
 	/**
+	 * Controls whether the button view is a checkbox button (two–state) for assistive technologies.
+	 *
+	 * @observable
+	 * @default false
+	 */
+	isCheckbox: boolean;
+
+	/**
 	 * (Optional) Controls whether the label of the button is hidden (e.g. an icon–only button).
 	 *
 	 * @observable

@@ -110,6 +110,11 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 	/**
 	 * @inheritDoc
 	 */
+	declare public isCheckbox: boolean;
+
+	/**
+	 * @inheritDoc
+	 */
 	declare public keystroke: string | undefined;
 
 	/**
@@ -196,6 +201,7 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		const ariaLabelUid = uid();
 
 		// Implement the Button interface.
+		this.set( 'ariaChecked', undefined );
 		this.set( 'ariaLabel', undefined );
 		this.set( 'ariaLabelledBy', `ck-editor__aria-label_${ ariaLabelUid }` );
 		this.set( 'class', undefined );
@@ -205,6 +211,7 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		this.set( 'isOn', false );
 		this.set( 'isVisible', true );
 		this.set( 'isToggleable', false );
+		this.set( 'isCheckbox', false );
 		this.set( 'keystroke', undefined );
 		this.set( 'label', undefined );
 		this.set( 'role', undefined );
@@ -251,11 +258,11 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 				role: bind.to( 'role' ),
 				type: bind.to( 'type', value => value ? value : 'button' ),
 				tabindex: bind.to( 'tabindex' ),
-				'aria-checked': bind.to( 'ariaChecked' ),
+				'aria-checked': bind.to( 'isOn', value => this.isToggleable && this.isCheckbox ? String( !!value ) : false ),
+				'aria-pressed': bind.to( 'isOn', value => this.isToggleable && !this.isCheckbox ? String( !!value ) : false ),
 				'aria-label': bind.to( 'ariaLabel' ),
 				'aria-labelledby': bind.to( 'ariaLabelledBy' ),
 				'aria-disabled': bind.if( 'isEnabled', true, value => !value ),
-				'aria-pressed': bind.to( 'isOn', value => this.isToggleable ? String( !!value ) : false ),
 				'data-cke-tooltip-text': bind.to( '_tooltipString' ),
 				'data-cke-tooltip-position': bind.to( 'tooltipPosition' )
 			},
