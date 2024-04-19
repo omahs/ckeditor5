@@ -287,6 +287,7 @@ export default class HighlightUI extends Plugin {
 				buttonView.set( {
 					label: option.title,
 					icon: getIconForType( option.type ),
+					role: 'menuitemradio',
 					isToggleable: true,
 					isCheckbox: true
 				} );
