@@ -60,12 +60,14 @@ describe( 'SuperscriptUI', () => {
 			expect( superView.isCheckbox ).to.be.true;
 		} );
 
-		it( 'should bind `isOn` to `ariaChecked`', () => {
+		it( 'should bind `isOn` to `aria-checked` attribute', () => {
+			superView.render();
+
 			superView.isOn = true;
-			expect( superView.ariaChecked ).to.be.true;
+			expect( superView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
 
 			superView.isOn = false;
-			expect( superView.ariaChecked ).to.be.false;
+			expect( superView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'false' );
 		} );
 	} );
 

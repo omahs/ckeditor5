@@ -62,12 +62,14 @@ describe( 'StrikethroughUI', () => {
 			expect( strikeView.isCheckbox ).to.be.true;
 		} );
 
-		it( 'should bind `isOn` to `ariaChecked`', () => {
+		it( 'should bind `isOn` to `aria-checked` attribute', () => {
+			strikeView.render();
+
 			strikeView.isOn = true;
-			expect( strikeView.ariaChecked ).to.be.true;
+			expect( strikeView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
 
 			strikeView.isOn = false;
-			expect( strikeView.ariaChecked ).to.be.false;
+			expect( strikeView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'false' );
 		} );
 	} );
 

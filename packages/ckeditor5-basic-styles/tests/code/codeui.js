@@ -60,12 +60,14 @@ describe( 'CodeUI', () => {
 			expect( codeView.isCheckbox ).to.be.true;
 		} );
 
-		it( 'should bind `isOn` to `ariaChecked`', () => {
+		it( 'should bind `isOn` to `aria-checked` attribute', () => {
+			codeView.render();
+
 			codeView.isOn = true;
-			expect( codeView.ariaChecked ).to.be.true;
+			expect( codeView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
 
 			codeView.isOn = false;
-			expect( codeView.ariaChecked ).to.be.false;
+			expect( codeView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'false' );
 		} );
 	} );
 

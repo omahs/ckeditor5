@@ -62,12 +62,14 @@ describe( 'ItalicUI', () => {
 			expect( italicView.isCheckbox ).to.be.true;
 		} );
 
-		it( 'should bind `isOn` to `ariaChecked`', () => {
+		it( 'should bind `isOn` to `aria-checked` attribute', () => {
+			italicView.render();
+
 			italicView.isOn = true;
-			expect( italicView.ariaChecked ).to.be.true;
+			expect( italicView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
 
 			italicView.isOn = false;
-			expect( italicView.ariaChecked ).to.be.false;
+			expect( italicView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'false' );
 		} );
 	} );
 

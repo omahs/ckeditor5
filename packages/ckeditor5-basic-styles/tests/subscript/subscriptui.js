@@ -60,12 +60,14 @@ describe( 'SubscriptUI', () => {
 			expect( subView.isCheckbox ).to.be.true;
 		} );
 
-		it( 'should bind `isOn` to `ariaChecked`', () => {
+		it( 'should bind `isOn` to `aria-checked` attribute', () => {
+			subView.render();
+
 			subView.isOn = true;
-			expect( subView.ariaChecked ).to.be.true;
+			expect( subView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
 
 			subView.isOn = false;
-			expect( subView.ariaChecked ).to.be.false;
+			expect( subView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'false' );
 		} );
 	} );
 

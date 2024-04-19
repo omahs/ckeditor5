@@ -60,12 +60,14 @@ describe( 'BoldUI', () => {
 			expect( boldView.isCheckbox ).to.be.true;
 		} );
 
-		it( 'should bind `isOn` to `ariaChecked`', () => {
+		it( 'should bind `isOn` to `aria-checked` attribute', () => {
+			boldView.render();
+
 			boldView.isOn = true;
-			expect( boldView.ariaChecked ).to.be.true;
+			expect( boldView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
 
 			boldView.isOn = false;
-			expect( boldView.ariaChecked ).to.be.false;
+			expect( boldView.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'false' );
 		} );
 	} );
 
