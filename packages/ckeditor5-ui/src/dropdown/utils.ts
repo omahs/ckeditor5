@@ -561,8 +561,7 @@ function bindViewCollectionItemsToDefinitions(
 			if ( def.type === 'button' ) {
 				buttonView = new ButtonView( locale );
 				buttonView.set( {
-					isToggleable: true,
-					isCheckbox: true
+					isToggleable: true
 				} );
 			} else {
 				buttonView = new SwitchButtonView( locale );

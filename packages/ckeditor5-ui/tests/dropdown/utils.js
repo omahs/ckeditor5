@@ -921,10 +921,16 @@ describe( 'utils', () => {
 
 					button.isToggleable = true;
 					button.isOn = true;
+
 					expect( button.element.getAttribute( 'aria-pressed' ) ).to.be.equal( 'true' );
 
 					button.isOn = false;
 					expect( button.element.getAttribute( 'aria-pressed' ) ).to.be.equal( 'false' );
+
+					button.isOn = true;
+					button.isCheckbox = true;
+					expect( button.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
+					expect( button.element.getAttribute( 'aria-pressed' ) ).to.be.null;
 
 					def.model.baz = 'foo?';
 					expect( button.baz ).to.equal( 'foo?' );
