@@ -495,6 +495,70 @@ describe( 'placeholder', () => {
 
 				expect( parent.getAttribute( 'aria-placeholder' ) ).to.be.equal( 'Hello World!, Helloooo!!' );
 			} );
+
+			it( '`contenteditable=true` is checked up to 5 elements (including current element)', () => {
+				setData(
+					view,
+					'<div contenteditable="true">' +
+						'<div>' +
+							'<div contenteditable="false">' +
+								'<div>' +
+									'<div>Child</div>' +
+								'</div>' +
+							'</div>' +
+						'</div>' +
+					'</div>'
+				);
+
+				const parent = viewRoot.getChild( 0 );
+				const child = getViewNodeByPath( [ 0, 0, 0, 0, 0 ] );
+
+				child.placeholder = 'foo bar';
+				enablePlaceholder( {
+					view,
+					element: child
+				} );
+
+				expect( parent.getAttribute( 'aria-placeholder' ) ).to.be.equal( 'foo bar' );
+			} );
+
+			it( '`contenteditable=true` on 6th ancestor is ignored (including current element)', () => {
+				setData(
+					view,
+					'<div contenteditable="true">' +
+						'<div>' +
+							'<div contenteditable="false">' +
+								'<div>' +
+									'<div>' +
+										'<div>ABC</div>' +
+									'</div>' +
+								'</div>' +
+							'</div>' +
+						'</div>' +
+					'</div>'
+				);
+
+				const parent = viewRoot.getChild( 0 );
+				const child = getViewNodeByPath( [ 0, 0, 0, 0, 0, 0 ] );
+
+				child.placeholder = 'foo bar';
+				enablePlaceholder( {
+					view,
+					element: child
+				} );
+
+				expect( parent.getAttribute( 'aria-placeholder' ) ).to.be.undefined;
+			} );
+
+			function getViewNodeByPath( relativePath ) {
+				let node = viewRoot;
+
+				for ( const index of relativePath ) {
+					node = node.getChild( index );
+				}
+
+				return node;
+			}
 		} );
 	} );
 
