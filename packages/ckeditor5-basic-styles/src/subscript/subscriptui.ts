@@ -65,7 +65,6 @@ export default class SubscriptUI extends Plugin {
 			} );
 
 			buttonView.bind( 'isOn' ).to( command, 'value' );
-			buttonView.bind( 'ariaChecked' ).to( buttonView, 'isOn' );
 
 			return buttonView;
 		} );

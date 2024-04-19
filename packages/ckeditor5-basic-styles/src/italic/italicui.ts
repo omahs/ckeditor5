@@ -64,7 +64,6 @@ export default class ItalicUI extends Plugin {
 			} );
 
 			buttonView.bind( 'isOn' ).to( command, 'value' );
-			buttonView.bind( 'ariaChecked' ).to( buttonView, 'isOn' );
 
 			return buttonView;
 		} );

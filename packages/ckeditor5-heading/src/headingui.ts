@@ -181,12 +181,13 @@ export default class HeadingUI extends Plugin {
 				listView.items.add( listItemView );
 
 				buttonView.set( {
+					isToggleable: true,
+					isCheckbox: true,
 					label: option.title,
 					role: 'menuitemradio',
 					class: option.class
 				} );
 
-				buttonView.bind( 'ariaChecked' ).to( buttonView, 'isOn' );
 				buttonView.delegate( 'execute' ).to( menuView );
 
 				buttonView.on<ButtonExecuteEvent>( 'execute', () => {

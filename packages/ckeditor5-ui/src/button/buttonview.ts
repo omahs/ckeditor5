@@ -160,17 +160,26 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 	/**
 	 * @inheritDoc
 	 */
-	declare public ariaChecked: boolean | undefined;
-
-	/**
-	 * @inheritDoc
-	 */
 	declare public ariaLabel?: string | undefined;
 
 	/**
 	 * @inheritDoc
 	 */
 	declare public ariaLabelledBy: string | undefined;
+
+	/**
+	 * Aria-pressed attribute of element. It is calculated based on {@link #isToggleable isToggleable} and {@link #isCheckbox} flags.
+	 *
+	 * @internal
+	 */
+	declare public _ariaPressed: string | false;
+
+	/**
+	 * Aria-checked attribute of element. It is calculated based on {@link #isToggleable isToggleable} and {@link #isCheckbox} flags.
+	 *
+	 * @internal
+	 */
+	declare public _ariaChecked: string | false;
 
 	/**
 	 * Tooltip of the button bound to the template.
@@ -201,7 +210,8 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		const ariaLabelUid = uid();
 
 		// Implement the Button interface.
-		this.set( 'ariaChecked', undefined );
+		this.set( '_ariaPressed', false );
+		this.set( '_ariaChecked', false );
 		this.set( 'ariaLabel', undefined );
 		this.set( 'ariaLabelledBy', `ck-editor__aria-label_${ ariaLabelUid }` );
 		this.set( 'class', undefined );
@@ -258,8 +268,8 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 				role: bind.to( 'role' ),
 				type: bind.to( 'type', value => value ? value : 'button' ),
 				tabindex: bind.to( 'tabindex' ),
-				'aria-checked': bind.to( 'isOn', value => this.isToggleable && this.isCheckbox ? String( !!value ) : false ),
-				'aria-pressed': bind.to( 'isOn', value => this.isToggleable && !this.isCheckbox ? String( !!value ) : false ),
+				'aria-checked': bind.to( '_ariaChecked' ),
+				'aria-pressed': bind.to( '_ariaPressed' ),
 				'aria-label': bind.to( 'ariaLabel' ),
 				'aria-labelledby': bind.to( 'ariaLabelledBy' ),
 				'aria-disabled': bind.if( 'isEnabled', true, value => !value ),
@@ -283,6 +293,28 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 				} )
 			}
 		};
+
+		this.bind( '_ariaPressed' ).to(
+			this, 'isOn', this, 'isToggleable', this, 'isCheckbox',
+			( isOn, isToggleable, isCheckbox ) => {
+				if ( !isToggleable || isCheckbox ) {
+					return false;
+				}
+
+				return String( !!isOn );
+			}
+		);
+
+		this.bind( '_ariaChecked' ).to(
+			this, 'isOn', this, 'isToggleable', this, 'isCheckbox',
+			( isOn, isToggleable, isCheckbox ) => {
+				if ( !isToggleable || !isCheckbox ) {
+					return false;
+				}
+
+				return String( !!isOn );
+			}
+		);
 
 		// On Safari we have to force the focus on a button on click as it's the only browser
 		// that doesn't do that automatically. See #12115.
