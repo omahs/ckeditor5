@@ -60,8 +60,7 @@ export default class StrikethroughUI extends Plugin {
 			const buttonView = createButton( MenuBarMenuListItemButtonView );
 
 			buttonView.set( {
-				role: 'menuitemcheckbox',
-				isCheckbox: true
+				role: 'menuitemcheckbox'
 			} );
 
 			buttonView.bind( 'isOn' ).to( command, 'value' );

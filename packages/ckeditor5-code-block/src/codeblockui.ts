@@ -98,10 +98,10 @@ export default class CodeBlockUI extends Plugin {
 			const menuView = new MenuBarMenuView( locale );
 
 			menuView.buttonView.set( {
+				role: 'menuitemcheckbox',
 				label: t( 'Code block' ),
 				icon: icons.codeBlock,
-				isToggleable: true,
-				isCheckbox: true
+				isToggleable: true
 			} );
 
 			menuView.bind( 'isEnabled' ).to( command );

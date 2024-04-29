@@ -121,11 +121,6 @@ export default class SplitButtonView extends View<HTMLDivElement> implements Dro
 	/**
 	 * @inheritDoc
 	 */
-	declare public isCheckbox: boolean;
-
-	/**
-	 * @inheritDoc
-	 */
 	declare public withText: boolean;
 
 	/**
@@ -279,7 +274,6 @@ export default class SplitButtonView extends View<HTMLDivElement> implements Dro
 				'isEnabled',
 				'isOn',
 				'isToggleable',
-				'isCheckbox',
 				'keystroke',
 				'label',
 				'tabindex',

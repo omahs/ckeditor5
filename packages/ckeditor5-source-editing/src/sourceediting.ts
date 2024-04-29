@@ -105,8 +105,7 @@ export default class SourceEditing extends Plugin {
 
 			buttonView.set( {
 				label: t( 'Show source' ),
-				role: 'menuitemcheckbox',
-				isCheckbox: true
+				role: 'menuitemcheckbox'
 			} );
 
 			return buttonView;

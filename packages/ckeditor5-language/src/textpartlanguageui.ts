@@ -128,8 +128,8 @@ export default class TextPartLanguageUI extends Plugin {
 				const buttonView = new MenuBarMenuListItemButtonView( locale );
 
 				buttonView.set( {
-					isToggleable: true,
-					isCheckbox: true
+					role: 'menuitemradio',
+					isToggleable: true
 				} );
 
 				buttonView.bind( ...Object.keys( definition.model ) as Array<keyof MenuBarMenuListItemButtonView> ).to( definition.model );

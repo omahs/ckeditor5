@@ -110,11 +110,6 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 	/**
 	 * @inheritDoc
 	 */
-	declare public isCheckbox: boolean;
-
-	/**
-	 * @inheritDoc
-	 */
 	declare public keystroke: string | undefined;
 
 	/**
@@ -168,14 +163,14 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 	declare public ariaLabelledBy: string | undefined;
 
 	/**
-	 * Aria-pressed attribute of element. It is calculated based on {@link #isToggleable isToggleable} and {@link #isCheckbox} flags.
+	 * Aria-pressed attribute of element. It is calculated based on {@link #isToggleable isToggleable} and {@link #role}.
 	 *
 	 * @internal
 	 */
 	declare public _ariaPressed: string | false;
 
 	/**
-	 * Aria-checked attribute of element. It is calculated based on {@link #isToggleable isToggleable} and {@link #isCheckbox} flags.
+	 * Aria-checked attribute of element. It is calculated based on {@link #isToggleable isToggleable} and {@link #role}.
 	 *
 	 * @internal
 	 */
@@ -221,7 +216,6 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		this.set( 'isOn', false );
 		this.set( 'isVisible', true );
 		this.set( 'isToggleable', false );
-		this.set( 'isCheckbox', false );
 		this.set( 'keystroke', undefined );
 		this.set( 'label', undefined );
 		this.set( 'role', undefined );
@@ -295,9 +289,9 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		};
 
 		this.bind( '_ariaPressed' ).to(
-			this, 'isOn', this, 'isToggleable', this, 'isCheckbox',
-			( isOn, isToggleable, isCheckbox ) => {
-				if ( !isToggleable || isCheckbox ) {
+			this, 'isOn', this, 'isToggleable', this, 'role',
+			( isOn, isToggleable, role ) => {
+				if ( !isToggleable || !isCheckableRole( role ) ) {
 					return false;
 				}
 
@@ -306,9 +300,9 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		);
 
 		this.bind( '_ariaChecked' ).to(
-			this, 'isOn', this, 'isToggleable', this, 'isCheckbox',
-			( isOn, isToggleable, isCheckbox ) => {
-				if ( !isToggleable || !isCheckbox ) {
+			this, 'isOn', this, 'isToggleable', this, 'role',
+			( isOn, isToggleable, role ) => {
+				if ( !isToggleable || !!isCheckableRole( role ) ) {
 					return false;
 				}
 
@@ -439,5 +433,23 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		}
 
 		return '';
+	}
+}
+
+/**
+ * Checks if `aria-checkbox` can be used with specified role.
+ */
+function isCheckableRole( role: string | undefined ) {
+	switch ( role ) {
+		case 'radio':
+		case 'checkbox':
+		case 'option':
+		case 'switch':
+		case 'menuitemcheckbox':
+		case 'menuitemradio':
+			return true;
+
+		default:
+			return false;
 	}
 }

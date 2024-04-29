@@ -288,8 +288,7 @@ export default class HighlightUI extends Plugin {
 					label: option.title,
 					icon: getIconForType( option.type ),
 					role: 'menuitemradio',
-					isToggleable: true,
-					isCheckbox: true
+					isToggleable: true
 				} );
 
 				buttonView.delegate( 'execute' ).to( menuView );

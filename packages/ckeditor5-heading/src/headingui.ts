@@ -182,7 +182,6 @@ export default class HeadingUI extends Plugin {
 
 				buttonView.set( {
 					isToggleable: true,
-					isCheckbox: true,
 					label: option.title,
 					role: 'menuitemradio',
 					class: option.class
