@@ -928,7 +928,7 @@ describe( 'utils', () => {
 					expect( button.element.getAttribute( 'aria-pressed' ) ).to.be.equal( 'false' );
 
 					button.isOn = true;
-					button.isCheckbox = true;
+					button.role = 'checkbox';
 					expect( button.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
 					expect( button.element.getAttribute( 'aria-pressed' ) ).to.be.null;
 

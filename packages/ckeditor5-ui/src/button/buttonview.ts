@@ -291,7 +291,7 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		this.bind( '_ariaPressed' ).to(
 			this, 'isOn', this, 'isToggleable', this, 'role',
 			( isOn, isToggleable, role ) => {
-				if ( !isToggleable || !isCheckableRole( role ) ) {
+				if ( !isToggleable || isCheckableRole( role ) ) {
 					return false;
 				}
 
@@ -302,7 +302,7 @@ export default class ButtonView extends View<HTMLButtonElement> implements Butto
 		this.bind( '_ariaChecked' ).to(
 			this, 'isOn', this, 'isToggleable', this, 'role',
 			( isOn, isToggleable, role ) => {
-				if ( !isToggleable || !!isCheckableRole( role ) ) {
+				if ( !isToggleable || !isCheckableRole( role ) ) {
 					return false;
 				}
 

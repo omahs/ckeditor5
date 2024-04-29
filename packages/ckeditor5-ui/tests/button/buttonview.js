@@ -343,10 +343,14 @@ describe( 'ButtonView', () => {
 			it( '-pressed reacts to #isOn', () => {
 				view.isToggleable = true;
 				view.isOn = true;
+
 				expect( view.element.attributes[ 'aria-pressed' ].value ).to.equal( 'true' );
+				expect( view.element.hasAttribute( 'aria-checked' ) ).to.be.false;
 
 				view.isOn = false;
+
 				expect( view.element.attributes[ 'aria-pressed' ].value ).to.equal( 'false' );
+				expect( view.element.hasAttribute( 'aria-checked' ) ).to.be.false;
 			} );
 
 			it( '-pressed is not present for non–toggleable button', () => {
@@ -361,43 +365,21 @@ describe( 'ButtonView', () => {
 				expect( view.element.hasAttribute( 'aria-checked' ) ).to.be.false;
 			} );
 
-			it( '-checked reacts to #isOn and #isCheckbox for toggleable button', () => {
-				view.isToggleable = true;
-				view.isCheckbox = true;
-				view.isOn = true;
+			for ( const role of [ 'radio', 'checkbox', 'option', 'switch', 'menuitemcheckbox', 'menuitemradio' ] ) {
+				it( `-checked reacts to #isOn and "${ role }" button role`, () => {
+					view.role = role;
+					view.isToggleable = true;
+					view.isOn = true;
 
-				expect( view.element.attributes[ 'aria-checked' ].value ).to.equal( 'true' );
-				expect( view.element.hasAttribute( 'aria-pressed' ) ).to.be.false;
+					expect( view.element.attributes[ 'aria-checked' ].value ).to.equal( 'true' );
+					expect( view.element.hasAttribute( 'aria-pressed' ) ).to.be.false;
 
-				view.isOn = false;
+					view.isOn = false;
 
-				expect( view.element.attributes[ 'aria-checked' ].value ).to.equal( 'false' );
-				expect( view.element.hasAttribute( 'aria-pressed' ) ).to.be.false;
-			} );
-
-			it( '-checked reacts to #isOn and #isCheckbox for non-toggleable button', () => {
-				view.isToggleable = false;
-				view.isCheckbox = true;
-				view.isOn = true;
-
-				expect( view.element.hasAttribute( 'aria-checked' ) ).to.be.false;
-
-				view.isOn = false;
-
-				expect( view.element.hasAttribute( 'aria-checked' ) ).to.be.false;
-			} );
-
-			it( '-checked reacts to #isOn and #isCheckbox for non-checkbox button', () => {
-				view.isToggleable = false;
-				view.isCheckbox = false;
-				view.isOn = true;
-
-				expect( view.element.hasAttribute( 'aria-checked' ) ).to.be.false;
-
-				view.isOn = false;
-
-				expect( view.element.hasAttribute( 'aria-checked' ) ).to.be.false;
-			} );
+					expect( view.element.attributes[ 'aria-checked' ].value ).to.equal( 'false' );
+					expect( view.element.hasAttribute( 'aria-pressed' ) ).to.be.false;
+				} );
+			}
 
 			it( '-label reacts on #ariaLabel', () => {
 				view.ariaLabel = undefined;

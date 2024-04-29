@@ -58,10 +58,6 @@ describe( 'ItalicUI', () => {
 			expect( italicView.role ).to.equal( 'menuitemcheckbox' );
 		} );
 
-		it( 'should create button with `isCheckbox` flag', () => {
-			expect( italicView.isCheckbox ).to.be.true;
-		} );
-
 		it( 'should bind `isOn` to `aria-checked` attribute', () => {
 			italicView.render();
 

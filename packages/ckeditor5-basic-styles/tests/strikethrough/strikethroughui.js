@@ -58,10 +58,6 @@ describe( 'StrikethroughUI', () => {
 			expect( strikeView.role ).to.equal( 'menuitemcheckbox' );
 		} );
 
-		it( 'should create button with `isCheckbox` flag', () => {
-			expect( strikeView.isCheckbox ).to.be.true;
-		} );
-
 		it( 'should bind `isOn` to `aria-checked` attribute', () => {
 			strikeView.render();
 

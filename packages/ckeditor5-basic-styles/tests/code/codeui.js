@@ -56,10 +56,6 @@ describe( 'CodeUI', () => {
 			expect( codeView.role ).to.equal( 'menuitemcheckbox' );
 		} );
 
-		it( 'should create button with `isCheckbox` flag', () => {
-			expect( codeView.isCheckbox ).to.be.true;
-		} );
-
 		it( 'should bind `isOn` to `aria-checked` attribute', () => {
 			codeView.render();
 

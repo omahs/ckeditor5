@@ -56,10 +56,6 @@ describe( 'SubscriptUI', () => {
 			expect( subView.role ).to.equal( 'menuitemcheckbox' );
 		} );
 
-		it( 'should create button with `isCheckbox` flag', () => {
-			expect( subView.isCheckbox ).to.be.true;
-		} );
-
 		it( 'should bind `isOn` to `aria-checked` attribute', () => {
 			subView.render();
 

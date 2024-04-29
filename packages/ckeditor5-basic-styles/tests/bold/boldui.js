@@ -56,10 +56,6 @@ describe( 'BoldUI', () => {
 			expect( boldView.role ).to.equal( 'menuitemcheckbox' );
 		} );
 
-		it( 'should create button with `isCheckbox` flag', () => {
-			expect( boldView.isCheckbox ).to.be.true;
-		} );
-
 		it( 'should bind `isOn` to `aria-checked` attribute', () => {
 			boldView.render();
 
