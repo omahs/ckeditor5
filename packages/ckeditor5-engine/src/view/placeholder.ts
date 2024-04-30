@@ -317,29 +317,19 @@ function updateContentEditableAriaPlaceholders( doc: Document ) {
 /**
  * Tries to find the nearest ancestor of a given element that has the `contenteditable` attribute.
  *
- * 	* It will check up to a maximum of 5 levels of ancestors.
- * 	* If no `contenteditable` ancestor is found within these levels, the function will return `null`.
+ * 	* If no `contenteditable` ancestor is found, the function will return `null`.
  *
  * @param element The element for which to find the nearest `contenteditable` ancestor.
  * @returns The nearest `contenteditable` ancestor if found, otherwise `null`.
  */
 function tryLookupForNearestContentEditable( element: Element ): Element | null {
-	const ANCESTOR_LEVEL_LIMIT = 5;
-	let checkedElement = element!;
+	const hasContentEditable = ( element: Element ) => element.getAttribute( 'contenteditable' ) === 'true';
 
-	for ( let currentLevel = 0; currentLevel < ANCESTOR_LEVEL_LIMIT; ++currentLevel ) {
-		if ( checkedElement.getAttribute( 'contenteditable' ) === 'true' ) {
-			return checkedElement;
-		}
-
-		if ( !checkedElement.parent || !checkedElement.parent.is( 'element' ) ) {
-			break;
-		}
-
-		checkedElement = checkedElement.parent!;
+	if ( hasContentEditable( element ) ) {
+		return element;
 	}
 
-	return null;
+	return element.findAncestor( hasContentEditable );
 }
 
 /**
