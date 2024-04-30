@@ -127,6 +127,10 @@ describe( 'CodeBlockUI', () => {
 			languagesListView = subMenu.panelView.children.first;
 		} );
 
+		it( 'has proper menu item role on button', () => {
+			expect( subMenu.buttonView.role ).to.be.equal( 'menuitem' );
+		} );
+
 		it( 'has isEnabled bound to command\'s isEnabled', () => {
 			command.isEnabled = true;
 			expect( subMenu ).to.have.property( 'isEnabled', true );
