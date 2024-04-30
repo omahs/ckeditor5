@@ -323,13 +323,13 @@ function updateContentEditableAriaPlaceholders( doc: Document ) {
  * @returns The nearest `contenteditable` ancestor if found, otherwise `null`.
  */
 function tryLookupForNearestContentEditable( element: Element ): Element | null {
-	const hasContentEditable = ( element: Element ) => element.getAttribute( 'contenteditable' ) === 'true';
+	const isEditableElement = ( element: Element ) => element.is( 'editableElement' );
 
-	if ( hasContentEditable( element ) ) {
+	if ( isEditableElement( element ) ) {
 		return element;
 	}
 
-	return element.findAncestor( hasContentEditable );
+	return element.findAncestor( isEditableElement );
 }
 
 /**
