@@ -117,6 +117,7 @@ export default class CodeBlockUI extends Plugin {
 				const buttonView = new MenuBarMenuListItemButtonView( locale );
 
 				buttonView.bind( ...Object.keys( definition.model ) as Array<keyof MenuBarMenuListItemButtonView> ).to( definition.model );
+				buttonView.set( 'isToggleable', true );
 				buttonView.delegate( 'execute' ).to( menuView );
 
 				buttonView.on( 'execute', () => {
