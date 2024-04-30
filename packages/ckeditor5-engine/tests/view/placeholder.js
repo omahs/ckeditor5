@@ -496,7 +496,26 @@ describe( 'placeholder', () => {
 				expect( parent.getAttribute( 'aria-placeholder' ) ).to.be.equal( 'Hello World!, Helloooo!!' );
 			} );
 
-			it( '`contenteditable=true` is checked in multiple parent elements (including current element)', () => {
+			it( '`contenteditable=true` is checked in multiple parent elements in current element', () => {
+				setData(
+					view,
+					'<div contenteditable="true">' +
+						'Child' +
+					'</div>'
+				);
+
+				const element = viewRoot.getChild( 0 );
+
+				element.placeholder = 'foo bar';
+				enablePlaceholder( {
+					view,
+					element
+				} );
+
+				expect( element.getAttribute( 'aria-placeholder' ) ).to.be.equal( 'foo bar' );
+			} );
+
+			it( '`contenteditable=true` is checked in multiple parent elements', () => {
 				setData(
 					view,
 					'<div contenteditable="true">' +
