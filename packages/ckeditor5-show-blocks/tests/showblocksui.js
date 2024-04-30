@@ -64,6 +64,20 @@ describe( 'ShowBlocksUI', () => {
 		} );
 
 		testButton( 'showBlocks', 'Show blocks', MenuBarMenuListItemButtonView );
+
+		it( 'should create button with `menuitemcheckbox` role', () => {
+			expect( button.role ).to.equal( 'menuitemcheckbox' );
+		} );
+
+		it( 'should bind `isOn` to `aria-checked` attribute', () => {
+			button.render();
+
+			button.isOn = true;
+			expect( button.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'true' );
+
+			button.isOn = false;
+			expect( button.element.getAttribute( 'aria-checked' ) ).to.be.equal( 'false' );
+		} );
 	} );
 
 	function testButton( featureName, label, Component ) {

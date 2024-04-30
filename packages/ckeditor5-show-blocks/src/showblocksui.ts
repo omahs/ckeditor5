@@ -61,7 +61,8 @@ export default class ShowBlocksUI extends Plugin {
 
 		view.set( {
 			label: t( 'Show blocks' ),
-			isToggleable: true
+			isToggleable: true,
+			role: 'menuitemcheckbox'
 		} );
 
 		view.bind( 'isEnabled' ).to( command );
