@@ -3,8 +3,8 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-.ck.ck-menu-bar__menu  {
-	& > .ck-menu-bar__menu__button > .ck-menu-bar__menu__button__arrow {
+.ck.ck-dropdown-menu-bar__menu  {
+	& > .ck-dropdown-menu-bar__menu__button > .ck-dropdown-menu-bar__menu__button__arrow {
 		pointer-events: none;
 		z-index: var(--ck-z-default);
 	}

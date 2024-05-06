@@ -122,10 +122,10 @@ export class DropdownMenuView extends View implements FocusableView {
 			attributes: {
 				class: [
 					'ck',
-					'ck-menu-bar__menu',
+					'ck-dropdown-menu-bar__menu',
 					bind.to( 'class' ),
 					bind.if( 'isEnabled', 'ck-disabled', value => !value ),
-					bind.if( 'parentMenuView', 'ck-menu-bar__menu_top-level', value => !value )
+					bind.if( 'parentMenuView', 'ck-dropdown-menu-bar__menu_top-level', value => !value )
 				]
 			},
 

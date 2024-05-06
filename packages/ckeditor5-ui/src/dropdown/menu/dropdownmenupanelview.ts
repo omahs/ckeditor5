@@ -63,8 +63,8 @@ export class DropdownMenuPanelView extends View implements FocusableView {
 				class: [
 					'ck',
 					'ck-reset',
-					'ck-menu-bar__menu__panel',
-					bind.to( 'position', value => `ck-menu-bar__menu__panel_position_${ value }` ),
+					'ck-dropdown-menu-bar__menu__panel',
+					bind.to( 'position', value => `ck-dropdown-menu-bar__menu__panel_position_${ value }` ),
 					bind.if( 'isVisible', 'ck-hidden', value => !value )
 				],
 				tabindex: '-1'
