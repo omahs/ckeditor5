@@ -13,7 +13,7 @@ import type { Locale } from '@ckeditor/ckeditor5-utils';
 
 import dropdownArrowIcon from '../../theme/icons/dropdown-arrow.svg';
 
-import '../../theme/components/menubar/DropdownMenubutton.css';
+import '../../theme/components/dropdown/menu/dropdownmenubutton.css';
 
 /**
  * TODO

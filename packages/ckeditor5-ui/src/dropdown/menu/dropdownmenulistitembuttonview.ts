@@ -10,7 +10,7 @@
 import type { Locale } from '@ckeditor/ckeditor5-utils';
 import ButtonView from '../../button/buttonview.js';
 
-import '../../theme/components/menubar/DropdownMenulistitembutton.css';
+import '../../theme/components/dropdown/menu/dropdownmenulistitembutton.css';
 
 /**
  * TODO

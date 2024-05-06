@@ -12,7 +12,7 @@ import type { FocusableView } from '../../focuscycler.js';
 import type ViewCollection from '../../viewcollection.js';
 import View from '../../view.js';
 
-import '../../theme/components/menubar/dropdownmenupanel.css';
+import '../../theme/components/dropdown/menu/dropdownmenupanel.css';
 
 /**
  * TODO
