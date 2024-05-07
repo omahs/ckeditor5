@@ -25,7 +25,7 @@ import {
 	type DropdownMenuPanelPosition
 } from './dropdownmenupanelview.js';
 
-import '../../theme/components/dropdown/menu/dropdownmenu.css';
+import '../../../theme/components/dropdown/menu/dropdownmenu.css';
 
 /**
  * TODO

@@ -11,9 +11,9 @@ import IconView from '../../icon/iconview.js';
 import ButtonView from '../../button/buttonview.js';
 import type { Locale } from '@ckeditor/ckeditor5-utils';
 
-import dropdownArrowIcon from '../../theme/icons/dropdown-arrow.svg';
+import dropdownArrowIcon from '../../../theme/icons/dropdown-arrow.svg';
 
-import '../../theme/components/dropdown/menu/dropdownmenubutton.css';
+import '../../../theme/components/dropdown/menu/dropdownmenubutton.css';
 
 /**
  * TODO

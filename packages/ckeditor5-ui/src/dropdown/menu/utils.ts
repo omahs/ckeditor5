@@ -42,7 +42,7 @@ type DeepReadonly<T> = Readonly<{
 /**
  * Behaviors of the {@link module:ui/menubar/menubarview~MenuBarView} component.
  */
-export const MenuBarBehaviors = {
+export const DropdownRootMenuBehaviors = {
 	/**
 	 * When the bar is already open:
 	 * * Opens the menu when the user hovers over its button.
@@ -379,7 +379,7 @@ export const DropdownMenuViewPanelPositioningFunctions: Record<string, Positioni
  * * Purged empty menus,
  * * Localized top-level menu labels.
  */
-export function processMenuBarConfig( {
+export function processDropdownMenuConfig( {
 	normalizedConfig,
 	componentFactory
 }: {
