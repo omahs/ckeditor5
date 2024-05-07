@@ -7,14 +7,11 @@
  * @module ui/dropdown/menu/dropdownmenurootlistview
  */
 
-import { logWarning, type Locale, type ObservableChangeEvent } from '@ckeditor/ckeditor5-utils';
-
-import { isObject } from 'lodash-es';
+import type { Locale, ObservableChangeEvent } from '@ckeditor/ckeditor5-utils';
 
 import DropdownMenuListView from './dropdownmenulistview.js';
-import type ComponentFactory from '../../componentfactory.js';
-import type { DropdownMenuDefinition, NormalizedDropdownMenuConfigObject } from './typings.js';
-import { DropdownMenuListItemButtonView } from './dropdownmenulistitembuttonview.js';
+import type { DropdownComponentCreator, DropdownMenuDefinition, NormalizedDropdownMenuConfigObject } from './typings.js';
+import type { DropdownMenuListItemButtonView } from './dropdownmenulistitembuttonview.js';
 import { DropdownMenuView } from './dropdownmenuview.js';
 
 import { processDropdownMenuConfig } from './utils.js';
@@ -48,16 +45,14 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	 * TODO
 	 */
 	public static ofConfig(
-		{ locale, config, componentFactory }: DropdownMenuRootListFactoryAttrs
+		{ locale, config }: DropdownMenuRootListFactoryAttrs
 	): DropdownMenuRootListView {
 		const rootList = new DropdownMenuRootListView( locale );
 		const processedConfig = processDropdownMenuConfig( {
 			normalizedConfig: config,
-			componentFactory
 		} );
 
 		const topLevelCategoryMenuViews = processedConfig.items.map( menuDefinition => rootList._createMenu( {
-			componentFactory,
 			menuDefinition
 		} ) );
 
@@ -68,8 +63,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	private _createMenu( { componentFactory, menuDefinition, parentMenuView }: {
-		componentFactory: ComponentFactory;
+	private _createMenu( { menuDefinition, parentMenuView }: {
 		menuDefinition: DropdownMenuDefinition;
 		parentMenuView?: DropdownMenuView;
 	} ) {
@@ -89,15 +83,14 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			listView.ariaLabel = menuDefinition.label;
 			menuView.panelView.children.add( listView );
 
-			listView.items.addMany( this._createMenuItems( { menuDefinition, parentMenuView: menuView, componentFactory } ) );
+			listView.items.addMany( this._createMenuItems( { menuDefinition, parentMenuView: menuView } ) );
 		} );
 
 		return menuView;
 	}
 
-	private _createMenuItems( { menuDefinition, parentMenuView, componentFactory }: {
+	private _createMenuItems( { menuDefinition, parentMenuView }: {
 		menuDefinition: DropdownMenuDefinition;
-		componentFactory: ComponentFactory;
 		parentMenuView: DropdownMenuView;
 	} ): Array<DropdownMenuListItemView | ListSeparatorView> {
 		const locale = this.locale!;
@@ -107,16 +100,9 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			for ( const itemDefinition of menuGroupDefinition.items ) {
 				const menuItemView = new DropdownMenuListItemView( locale, parentMenuView );
 
-				if ( isObject( itemDefinition ) ) {
-					menuItemView.children.add( this._createMenu( {
-						componentFactory,
-						menuDefinition: itemDefinition,
-						parentMenuView
-					} ) );
-				} else {
-					const componentView = this._createMenuItemContentFromFactory( {
-						componentName: itemDefinition,
-						componentFactory,
+				if ( typeof itemDefinition === 'function' ) {
+					const componentView = this._createMenuItemContentFromCreator( {
+						componentCreator: itemDefinition,
 						parentMenuView
 					} );
 
@@ -125,6 +111,11 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 					}
 
 					menuItemView.children.add( componentView );
+				} else {
+					menuItemView.children.add( this._createMenu( {
+						menuDefinition: itemDefinition,
+						parentMenuView
+					} ) );
 				}
 
 				items.push( menuItemView );
@@ -142,34 +133,11 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	private _createMenuItemContentFromFactory( { componentName, parentMenuView, componentFactory }: {
-		componentName: string;
-		componentFactory: ComponentFactory;
+	private _createMenuItemContentFromCreator( { componentCreator, parentMenuView }: {
+		componentCreator: DropdownComponentCreator;
 		parentMenuView: DropdownMenuView;
 	} ): DropdownMenuView | DropdownMenuListItemButtonView | null {
-		const componentView = componentFactory.create( componentName );
-
-		if ( !(
-			componentView instanceof DropdownMenuView ||
-			componentView instanceof DropdownMenuListItemButtonView
-		) ) {
-			/**
-			 * Adding unsupported components to the {@link module:ui/menubar/menubarview~MenuBarView} is not possible.
-			 *
-			 * A component should be either a {@link module:ui/menubar/menubarmenuview~DropdownMenuView} (sub-menu) or a
-			 * {@link module:ui/menubar/menubarmenulistitembuttonview~DropdownMenuListItemButtonView} (button).
-			 *
-			 * @error menu-bar-component-unsupported
-			 * @param componentName A name of the unsupported component used in the configuration.
-			 * @param componentView An unsupported component view.
-			 */
-			logWarning( 'dropdown-menu-bar-component-unsupported', {
-				componentName,
-				componentView
-			} );
-
-			return null;
-		}
+		const componentView = componentCreator();
 
 		this._registerMenuTree( componentView, parentMenuView );
 
@@ -232,5 +200,4 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 type DropdownMenuRootListFactoryAttrs = {
 	locale: Locale;
 	config: NormalizedDropdownMenuConfigObject;
-	componentFactory: ComponentFactory;
 };

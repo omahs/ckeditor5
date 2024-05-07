@@ -27,7 +27,6 @@ import {
 } from '@ckeditor/ckeditor5-utils';
 
 import type { ButtonExecuteEvent } from '../../button/button.js';
-import type ComponentFactory from '../../componentfactory.js';
 import type DropdownMenuRootListView from './dropdownmenurootlistview.js';
 
 const NESTED_PANEL_HORIZONTAL_OFFSET = 5;
@@ -380,67 +379,15 @@ export const DropdownMenuViewPanelPositioningFunctions: Record<string, Positioni
  * * Localized top-level menu labels.
  */
 export function processDropdownMenuConfig( {
-	normalizedConfig,
-	componentFactory
+	normalizedConfig
 }: {
 	normalizedConfig: NormalizedDropdownMenuConfigObject;
-	componentFactory: ComponentFactory;
 } ): NormalizedDropdownMenuConfigObject {
 	const configClone = cloneDeep( normalizedConfig ) as NormalizedDropdownMenuConfigObject;
 
-	purgeUnavailableComponents( normalizedConfig, configClone, componentFactory );
 	purgeEmptyMenus( normalizedConfig, configClone );
 
 	return configClone;
-}
-
-/**
- * Removes components from the menu bar configuration that are not available in the factory and would
- * not be instantiated. Warns about missing components if the menu bar configuration was specified by the user.
- */
-function purgeUnavailableComponents(
-	originalConfig: DeepReadonly<NormalizedDropdownMenuConfigObject>,
-	config: NormalizedDropdownMenuConfigObject,
-	componentFactory: ComponentFactory
-) {
-	walkConfigMenus( config.items, menuDefinition => {
-		for ( const groupDefinition of menuDefinition.groups ) {
-			groupDefinition.items = groupDefinition.items.filter( item => {
-				const isItemUnavailable = typeof item === 'string' && !componentFactory.has( item );
-
-				// The default configuration contains all possible editor features. But integrators' editors rarely load
-				// every possible feature. This is why we do not want to log warnings about unavailable items for the default config
-				// because they would show up in almost every integration. If the configuration has been provided by
-				// the integrator, on the other hand, then these warnings bring value.
-				if ( isItemUnavailable && !config.isUsingDefaultConfig ) {
-					/**
-					 * There was a problem processing the configuration of the menu bar. The item with the given
-					 * name does not exist so it was omitted when rendering the menu bar.
-					 *
-					 * This warning usually shows up when the {@link module:core/plugin~Plugin} which is supposed
-					 * to provide a menu bar item has not been loaded or there is a typo in the
-					 * {@link module:core/editor/editorconfig~EditorConfig#menuBar menu bar configuration}.
-					 *
-					 * Make sure the plugin responsible for this menu bar item is loaded and the menu bar configuration
-					 * is correct, e.g. {@link module:basic-styles/bold/boldui~BoldUI} is loaded for the `'menuBar:bold'`
-					 * menu bar item.
-					 *
-					 * @error menu-bar-item-unavailable
-					 * @param menuBarConfig The full configuration of the menu bar.
-					 * @param parentMenuConfig The config of the menu the unavailable component was defined in.
-					 * @param componentName The name of the unavailable component.
-					 */
-					logWarning( 'menu-bar-item-unavailable', {
-						menuBarConfig: originalConfig,
-						parentMenuConfig: cloneDeep( menuDefinition ),
-						componentName: item
-					} );
-				}
-
-				return !isItemUnavailable;
-			} );
-		}
-	} );
 }
 
 /**
