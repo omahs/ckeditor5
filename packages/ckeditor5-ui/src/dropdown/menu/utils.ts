@@ -13,30 +13,16 @@ import type {
 	DropdownMenuMouseEnterEvent,
 	DropdownMenuChangeIsOpenEvent,
 	DropdownMenuArrowRightEvent,
-	DropdownMenuArrowLeftEvent,
-	DropdownMenuDefinition,
-	NormalizedDropdownMenuConfigObject
+	DropdownMenuArrowLeftEvent
 } from './typings.js';
 
-import { cloneDeep } from 'lodash-es';
 import type { FocusableView } from '../../focuscycler.js';
-import {
-	logWarning,
-	type ObservableChangeEvent,
-	type PositioningFunction
-} from '@ckeditor/ckeditor5-utils';
+import type { ObservableChangeEvent, PositioningFunction } from '@ckeditor/ckeditor5-utils';
 
 import type { ButtonExecuteEvent } from '../../button/button.js';
 import type DropdownMenuRootListView from './dropdownmenurootlistview.js';
 
 const NESTED_PANEL_HORIZONTAL_OFFSET = 5;
-
-type DeepReadonly<T> = Readonly<{
-	[K in keyof T]:
-		T[K] extends string ? Readonly<T[K]>
-			: T[K] extends Array<infer A> ? Readonly<Array<DeepReadonly<A>>>
-				: DeepReadonly<T[K]>;
-}>;
 
 /**
  * Behaviors of the {@link module:ui/menubar/menubarview~MenuBarView} component.
@@ -369,147 +355,3 @@ export const DropdownMenuViewPanelPositioningFunctions: Record<string, Positioni
 		};
 	}
 } as const;
-
-/**
- * Processes a normalized menu bar config and returns a config clone with the following modifications:
- *
- * * Removed components that are not available in the component factory,
- * * Removed obsolete separators,
- * * Purged empty menus,
- * * Localized top-level menu labels.
- */
-export function processDropdownMenuConfig( {
-	normalizedConfig
-}: {
-	normalizedConfig: NormalizedDropdownMenuConfigObject;
-} ): NormalizedDropdownMenuConfigObject {
-	const configClone = cloneDeep( normalizedConfig ) as NormalizedDropdownMenuConfigObject;
-
-	purgeEmptyMenus( normalizedConfig, configClone );
-
-	return configClone;
-}
-
-/**
- * Removes empty menus from the menu bar configuration to improve the visual UX. Such menus can occur
- * when some plugins responsible for providing menu bar items have not been loaded and some part of
- * the configuration populated menus using these components exclusively.
- */
-function purgeEmptyMenus(
-	originalConfig: NormalizedDropdownMenuConfigObject,
-	config: NormalizedDropdownMenuConfigObject
-) {
-	const isUsingDefaultConfig = config.isUsingDefaultConfig;
-	let wasSubMenuPurged = false;
-
-	// Purge top-level menus.
-	config.items = config.items.filter( menuDefinition => {
-		if ( !menuDefinition.groups.length ) {
-			warnAboutEmptyMenu( originalConfig, menuDefinition, isUsingDefaultConfig );
-
-			return false;
-		}
-
-		return true;
-	} );
-
-	// Warn if there were no top-level menus left in the menu bar after purging.
-	if ( !config.items.length ) {
-		warnAboutEmptyMenu( originalConfig, originalConfig, isUsingDefaultConfig );
-
-		return;
-	}
-
-	// Purge sub-menus and groups.
-	walkConfigMenus( config.items, menuDefinition => {
-		// Get rid of empty groups.
-		menuDefinition.groups = menuDefinition.groups.filter( groupDefinition => {
-			if ( !groupDefinition.items.length ) {
-				wasSubMenuPurged = true;
-				return false;
-			}
-
-			return true;
-		} );
-
-		// Get rid of empty sub-menus.
-		for ( const groupDefinition of menuDefinition.groups ) {
-			groupDefinition.items = groupDefinition.items.filter( item => {
-				// If no groups were left after removing empty ones.
-				if ( isMenuDefinition( item ) && !item.groups.length ) {
-					warnAboutEmptyMenu( originalConfig, item, isUsingDefaultConfig );
-					wasSubMenuPurged = true;
-					return false;
-				}
-
-				return true;
-			} );
-		}
-	} );
-
-	if ( wasSubMenuPurged ) {
-		// The config is walked from the root to the leaves so if anything gets removed, we need to re-run the
-		// whole process because it could've affected parents.
-		purgeEmptyMenus( originalConfig, config );
-	}
-}
-
-function warnAboutEmptyMenu(
-	originalConfig: NormalizedDropdownMenuConfigObject,
-	emptyMenuConfig: DropdownMenuDefinition | DeepReadonly<NormalizedDropdownMenuConfigObject>,
-	isUsingDefaultConfig: boolean
-) {
-	if ( isUsingDefaultConfig ) {
-		return;
-	}
-
-	/**
-	 * There was a problem processing the configuration of the menu bar. One of the menus
-	 * is empty so it was omitted when rendering the menu bar.
-	 *
-	 * This warning usually shows up when some {@link module:core/plugin~Plugin plugins} responsible for
-	 * providing menu bar items have not been loaded and the
-	 * {@link module:core/editor/editorconfig~EditorConfig#menuBar menu bar configuration} was not updated.
-	 *
-	 * Make sure all necessary editor plugins are loaded and/or update the menu bar configuration
-	 * to account for the missing menu items.
-	 *
-	 * @error menu-bar-menu-empty
-	 * @param menuBarConfig The full configuration of the menu bar.
-	 * @param emptyMenuConfig The definition of the menu that has no child items.
-	 */
-	logWarning( 'menu-bar-menu-empty', {
-		menuBarConfig: originalConfig,
-		emptyMenuConfig
-	} );
-}
-
-/**
- * Recursively visits all menu definitions in the config and calls the callback for each of them.
- */
-function walkConfigMenus(
-	definition: NormalizedDropdownMenuConfigObject[ 'items' ] | DropdownMenuDefinition,
-	callback: ( definition: DropdownMenuDefinition ) => void
-) {
-	if ( Array.isArray( definition ) ) {
-		for ( const topLevelMenuDefinition of definition ) {
-			walk( topLevelMenuDefinition );
-		}
-	}
-
-	function walk( menuDefinition: DropdownMenuDefinition ) {
-		callback( menuDefinition );
-
-		for ( const groupDefinition of menuDefinition.groups ) {
-			for ( const groupItem of groupDefinition.items ) {
-				if ( isMenuDefinition( groupItem ) ) {
-					walk( groupItem );
-				}
-			}
-		}
-	}
-}
-
-function isMenuDefinition( definition: any ): definition is DropdownMenuDefinition {
-	return typeof definition === 'object' && 'menuId' in definition;
-}

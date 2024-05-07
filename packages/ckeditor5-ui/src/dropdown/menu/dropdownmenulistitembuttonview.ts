@@ -15,15 +15,16 @@ import '../../../theme/components/dropdown/menu/dropdownmenulistitembutton.css';
 /**
  * TODO
  */
-export class DropdownMenuListItemButtonView extends ButtonView {
-	constructor( locale: Locale ) {
+export default class DropdownMenuListItemButtonView extends ButtonView {
+	constructor( locale: Locale, label?: string ) {
 		super( locale );
 
 		this.set( {
 			withText: true,
 			withKeystroke: true,
 			tooltip: false,
-			role: 'menuitem'
+			role: 'menuitem',
+			label
 		} );
 
 		this.extendTemplate( {

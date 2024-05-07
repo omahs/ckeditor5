@@ -56,6 +56,7 @@ export * from './dropdown/utils.js';
 
 export { default as DropdownMenuListView } from './dropdown/menu/dropdownmenulistview.js';
 export { default as DropdownMenuRootListView } from './dropdown/menu/dropdownmenurootlistview.js';
+export { default as DropdownMenuListItemButtonView } from './dropdown/menu/dropdownmenulistitembuttonview.js';
 
 export { default as EditorUI, type EditorUIReadyEvent, type EditorUIUpdateEvent } from './editorui/editorui.js';
 export { default as EditorUIView } from './editorui/editoruiview.js';

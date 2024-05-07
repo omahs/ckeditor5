@@ -28,11 +28,11 @@ export default class DropdownMenuListView extends ListView implements FilteredVi
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number; } {
-		console.info( regExp );
+		console.info( regExp, [ ...this.items ] );
 
 		return {
-			resultsCount: 0,
-			totalItemsCount: 0
+			resultsCount: this.items.length,
+			totalItemsCount: this.items.length
 		};
 	}
 }

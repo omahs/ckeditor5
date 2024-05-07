@@ -117,7 +117,7 @@ export class DropdownMenuView extends View implements FocusableView {
 		this.set( 'parentMenuView', null );
 
 		this.setTemplate( {
-			tag: 'div',
+			tag: 'li',
 
 			attributes: {
 				class: [

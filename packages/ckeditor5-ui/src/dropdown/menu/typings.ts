@@ -5,35 +5,28 @@
 
 import type { BaseEvent } from '@ckeditor/ckeditor5-utils';
 import type { DropdownMenuView } from './dropdownmenuview.js';
-import type { DropdownMenuListItemButtonView } from './dropdownmenulistitembuttonview.js';
+import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 
 /**
  * @module ui/dropdown/menu/typings
  */
 
-export type DropdownMenuConfigObject = {
-	items?: Array<DropdownMenuDefinition>;
-	isVisible?: boolean;
-};
-
-export type DropdownComponentCreator = () => DropdownMenuView | DropdownMenuListItemButtonView;
+export type DropdownMenuViewComponent = DropdownMenuView | DropdownMenuListItemButtonView;
 
 export type DropdownMenuDefinition = {
-	menuId: string;
 	label: string;
 	groups: Array<DropdownMenuGroupDefinition>;
 };
 
 export type DropdownMenuGroupDefinition = {
-	groupId: string;
-	items: Array<DropdownMenuDefinition | DropdownComponentCreator>;
+	items: Array<DropdownMenuDefinition | { view: DropdownMenuViewComponent }>;
 };
 
-export type NormalizedDropdownMenuConfigObject = Required<DropdownMenuConfigObject> & {
-	isUsingDefaultConfig: boolean;
+export type DropdownMenuConfig = {
+	groups: Array<DropdownMenuGroupDefinition>;
 };
 
-export type DropdownMenuConfig = DropdownMenuConfigObject;
+export type NormalizedDropdownMenuConfigObject = Required<DropdownMenuConfig>;
 
 /**
  * TODO
