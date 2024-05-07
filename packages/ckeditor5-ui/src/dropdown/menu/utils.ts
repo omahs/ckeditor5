@@ -7,31 +7,28 @@
  * @module ui/dropdown/menu/utils
  */
 
-import clickOutsideHandler from '../../bindings/clickoutsidehandler.js';
 import { DropdownMenuListItemView } from './dropdownmenulistitemview.js';
 import type { DropdownMenuView } from './dropdownmenuview.js';
 import type {
-	default as MenuBarView,
 	DropdownMenuMouseEnterEvent,
 	DropdownMenuChangeIsOpenEvent,
 	DropdownMenuArrowRightEvent,
 	DropdownMenuArrowLeftEvent,
 	DropdownMenuDefinition,
-	MenuBarConfigAddedGroup,
-	MenuBarConfigAddedMenu,
-	MenuBarConfigAddedPosition,
-	NormalizedMenuBarConfigObject
-} from './menubarview.js';
+	NormalizedDropdownMenuConfigObject
+} from './typings.js';
+
 import { cloneDeep } from 'lodash-es';
 import type { FocusableView } from '../../focuscycler.js';
 import {
 	logWarning,
-	type Locale,
 	type ObservableChangeEvent,
 	type PositioningFunction
 } from '@ckeditor/ckeditor5-utils';
+
 import type { ButtonExecuteEvent } from '../../button/button.js';
 import type ComponentFactory from '../../componentfactory.js';
+import type DropdownMenuRootListView from './dropdownmenurootlistview.js';
 
 const NESTED_PANEL_HORIZONTAL_OFFSET = 5;
 
@@ -51,14 +48,9 @@ export const MenuBarBehaviors = {
 	 * * Opens the menu when the user hovers over its button.
 	 * * Closes open menu when another menu's button gets hovered.
 	 */
-	toggleMenusAndFocusItemsOnHover( menuBarView: MenuBarView ): void {
+	toggleMenusAndFocusItemsOnHover( menuBarView: DropdownMenuRootListView ): void {
 		menuBarView.on<DropdownMenuMouseEnterEvent>( 'menu:mouseenter', evt => {
-			// This works only when the menu bar has already been open and the user hover over the menu bar.
-			if ( !menuBarView.isOpen ) {
-				return;
-			}
-
-			for ( const menuView of menuBarView.menus ) {
+			for ( const menuView of menuBarView.items as unknown as Array<DropdownMenuView> ) {
 				// @if CK_DEBUG_MENU_BAR // const wasOpen = menuView.isOpen;
 
 				const pathLeaf = evt.path[ 0 ];
@@ -83,7 +75,7 @@ export const MenuBarBehaviors = {
 	 * If the menubar has already been open, the arrow keys move focus between top-level menu buttons and open them.
 	 * If the menubar is closed, the arrow keys only move focus between top-level menu buttons.
 	 */
-	focusCycleMenusOnArrows( menuBarView: MenuBarView ): void {
+	focusCycleMenusOnArrows( menuBarView: DropdownMenuRootListView ): void {
 		const isContentRTL = menuBarView.locale!.uiLanguageDirection === 'rtl';
 
 		menuBarView.on<DropdownMenuArrowRightEvent>( 'menu:arrowright', evt => {
@@ -95,10 +87,10 @@ export const MenuBarBehaviors = {
 		} );
 
 		function cycleTopLevelMenus( currentMenuView: DropdownMenuView, step: number ) {
-			const currentIndex = menuBarView.children.getIndex( currentMenuView );
+			const currentIndex = menuBarView.items.getIndex( currentMenuView );
 			const isCurrentMenuViewOpen = currentMenuView.isOpen;
-			const menusCount = menuBarView.children.length;
-			const menuViewToOpen = menuBarView.children.get( ( currentIndex + menusCount + step ) % menusCount )!;
+			const menusCount = menuBarView.items.length;
+			const menuViewToOpen = menuBarView.items.get( ( currentIndex + menusCount + step ) % menusCount )! as DropdownMenuView;
 
 			currentMenuView.isOpen = false;
 
@@ -111,54 +103,26 @@ export const MenuBarBehaviors = {
 	},
 
 	/**
-	 * Closes the entire sub-menu structure when the bar is closed. This prevents sub-menus from being open if the user
-	 * closes the entire bar, and then re-opens some top-level menu.
-	 */
-	closeMenusWhenTheBarCloses( menuBarView: MenuBarView ): void {
-		menuBarView.on<ObservableChangeEvent<boolean>>( 'change:isOpen', () => {
-			if ( !menuBarView.isOpen ) {
-				menuBarView.menus.forEach( menuView => {
-					menuView.isOpen = false;
-
-					// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] closeMenusWhenTheBarCloses(): Closing', logMenu( menuView ) );
-				} );
-			}
-		} );
-	},
-
-	/**
 	 * Handles the following case:
 	 * 1. Hover to open a sub-menu (A). The button has focus.
 	 * 2. Press arrow up/down to move focus to another sub-menu (B) button.
 	 * 3. Press arrow right to open the sub-menu (B).
 	 * 4. The sub-menu (A) should close as it would with `toggleMenusAndFocusItemsOnHover()`.
 	 */
-	closeMenuWhenAnotherOnTheSameLevelOpens( menuBarView: MenuBarView ): void {
+	closeMenuWhenAnotherOnTheSameLevelOpens( menuBarView: DropdownMenuRootListView ): void {
 		menuBarView.on<DropdownMenuChangeIsOpenEvent>( 'menu:change:isOpen', ( evt, name, isOpen ) => {
 			if ( isOpen ) {
-				menuBarView.menus
-					.filter( menuView => {
+				menuBarView.items
+					.filter( ( menuView: any ) => {
 						return ( evt.source as any ).parentMenuView === menuView.parentMenuView &&
 							evt.source !== menuView &&
 							menuView.isOpen;
-					} ).forEach( menuView => {
+					} ).forEach( ( menuView: any ) => {
 						menuView.isOpen = false;
 
 						// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] closeMenuWhenAnotherOpens(): Closing', logMenu( menuView ) );
 					} );
 			}
-		} );
-	},
-
-	/**
-	 * Closes the bar when the user clicked outside of it (page body, editor root, etc.).
-	 */
-	closeOnClickOutside( menuBarView: MenuBarView ): void {
-		clickOutsideHandler( {
-			emitter: menuBarView,
-			activator: () => menuBarView.isOpen,
-			callback: () => menuBarView.close(),
-			contextElements: () => menuBarView.children.map( child => child.element! )
 		} );
 	}
 };
@@ -417,258 +381,17 @@ export const DropdownMenuViewPanelPositioningFunctions: Record<string, Positioni
  */
 export function processMenuBarConfig( {
 	normalizedConfig,
-	locale,
 	componentFactory
 }: {
-	normalizedConfig: NormalizedMenuBarConfigObject;
-	locale: Locale;
+	normalizedConfig: NormalizedDropdownMenuConfigObject;
 	componentFactory: ComponentFactory;
-} ): NormalizedMenuBarConfigObject {
-	const configClone = cloneDeep( normalizedConfig ) as NormalizedMenuBarConfigObject;
+} ): NormalizedDropdownMenuConfigObject {
+	const configClone = cloneDeep( normalizedConfig ) as NormalizedDropdownMenuConfigObject;
 
-	handleRemovals( normalizedConfig, configClone );
-	handleAdditions( normalizedConfig, configClone );
 	purgeUnavailableComponents( normalizedConfig, configClone, componentFactory );
 	purgeEmptyMenus( normalizedConfig, configClone );
-	localizeMenuLabels( configClone, locale );
 
 	return configClone;
-}
-
-/**
- * Removes items from the menu bar config based on user `removeItems` configuration. Users can remove
- * individual items, groups, or entire menus. For each removed item, a warning is logged if the item
- * was not found in the configuration.
- */
-function handleRemovals(
-	originalConfig: NormalizedMenuBarConfigObject,
-	config: NormalizedMenuBarConfigObject
-) {
-	const itemsToBeRemoved = config.removeItems;
-	const successfullyRemovedItems: Array<string> = [];
-
-	// Remove top-level menus.
-	config.items = config.items.filter( ( { menuId } ) => {
-		if ( itemsToBeRemoved.includes( menuId ) ) {
-			successfullyRemovedItems.push( menuId );
-			return false;
-		}
-
-		return true;
-	} );
-
-	walkConfigMenus( config.items, menuDefinition => {
-		// Remove groups from menus.
-		menuDefinition.groups = menuDefinition.groups.filter( ( { groupId } ) => {
-			if ( itemsToBeRemoved.includes( groupId ) ) {
-				successfullyRemovedItems.push( groupId );
-				return false;
-			}
-
-			return true;
-		} );
-
-		// Remove sub-menus and items from groups.
-		for ( const groupDefinition of menuDefinition.groups ) {
-			groupDefinition.items = groupDefinition.items.filter( item => {
-				const itemId = getIdFromGroupItem( item );
-
-				if ( itemsToBeRemoved.includes( itemId ) ) {
-					successfullyRemovedItems.push( itemId );
-					return false;
-				}
-
-				return true;
-			} );
-		}
-	} );
-
-	for ( const itemName of itemsToBeRemoved ) {
-		if ( !successfullyRemovedItems.includes( itemName ) ) {
-			/**
-			 * There was a problem processing the configuration of the menu bar. The item with the given
-			 * name does could not be removed from the menu bar configuration.
-			 *
-			 * This warning usually shows up when the {@link module:core/plugin~Plugin} which is supposed
-			 * to provide a menu bar item has not been loaded or there is a typo in the
-			 * {@link module:core/editor/editorconfig~EditorConfig#menuBar menu bar configuration}.
-			 *
-			 * @error menu-bar-item-could-not-be-removed
-			 * @param menuBarConfig The full configuration of the menu bar.
-			 * @param itemName The name of the item that was not removed from the menu bar.
-			 */
-			logWarning( 'menu-bar-item-could-not-be-removed', {
-				menuBarConfig: originalConfig,
-				itemName
-			} );
-		}
-	}
-}
-
-/**
- * Handles the `config.menuBar.addItems` configuration. It allows for adding menus, groups, and items at arbitrary
- * positions in the menu bar. If the position does not exist, a warning is logged.
- */
-function handleAdditions(
-	originalConfig: NormalizedMenuBarConfigObject,
-	config: NormalizedMenuBarConfigObject
-) {
-	const itemsToBeAdded = config.addItems;
-	const successFullyAddedItems: typeof itemsToBeAdded = [];
-
-	for ( const itemToAdd of itemsToBeAdded ) {
-		const relation = getRelationFromPosition( itemToAdd.position );
-		const relativeId = getRelativeIdFromPosition( itemToAdd.position );
-
-		// Adding a menu.
-		if ( isDropdownMenuAddition( itemToAdd ) ) {
-			if ( !relativeId ) {
-				// Adding a top-level menu at the beginning of the menu bar.
-				if ( relation === 'start' ) {
-					config.items.unshift( itemToAdd.menu );
-					successFullyAddedItems.push( itemToAdd );
-				}
-				// Adding a top-level menu at the end of the menu bar.
-				else if ( relation === 'end' ) {
-					config.items.push( itemToAdd.menu );
-					successFullyAddedItems.push( itemToAdd );
-				}
-			} else {
-				const topLevelMenuDefinitionIndex = config.items.findIndex( menuDefinition => menuDefinition.menuId === relativeId );
-
-				// Adding a top-level menu somewhere between existing menu bar menus.
-				if ( topLevelMenuDefinitionIndex != -1 ) {
-					if ( relation === 'before' ) {
-						config.items.splice( topLevelMenuDefinitionIndex, 0, itemToAdd.menu );
-						successFullyAddedItems.push( itemToAdd );
-					} else if ( relation === 'after' ) {
-						config.items.splice( topLevelMenuDefinitionIndex + 1, 0, itemToAdd.menu );
-						successFullyAddedItems.push( itemToAdd );
-					}
-				}
-				// Adding a sub-menu to an existing items group.
-				else {
-					const wasAdded = addMenuOrItemToGroup( config, itemToAdd.menu, relativeId, relation );
-
-					if ( wasAdded ) {
-						successFullyAddedItems.push( itemToAdd );
-					}
-				}
-			}
-		}
-		// Adding a group.
-		else if ( isDropdownMenuGroupAddition( itemToAdd ) ) {
-			walkConfigMenus( config.items, menuDefinition => {
-				if ( menuDefinition.menuId === relativeId ) {
-					// Add a group at the start of a menu.
-					if ( relation === 'start' ) {
-						menuDefinition.groups.unshift( itemToAdd.group );
-						successFullyAddedItems.push( itemToAdd );
-					}
-					// Add a group at the end of a menu.
-					else if ( relation === 'end' ) {
-						menuDefinition.groups.push( itemToAdd.group );
-						successFullyAddedItems.push( itemToAdd );
-					}
-				} else {
-					const relativeGroupIndex = menuDefinition.groups.findIndex( group => group.groupId === relativeId );
-
-					if ( relativeGroupIndex !== -1 ) {
-						// Add a group before an existing group in a menu.
-						if ( relation === 'before' ) {
-							menuDefinition.groups.splice( relativeGroupIndex, 0, itemToAdd.group );
-							successFullyAddedItems.push( itemToAdd );
-						}
-						// Add a group after an existing group in a menu.
-						else if ( relation === 'after' ) {
-							menuDefinition.groups.splice( relativeGroupIndex + 1, 0, itemToAdd.group );
-							successFullyAddedItems.push( itemToAdd );
-						}
-					}
-				}
-			} );
-		}
-		// Adding an item to an existing items group.
-		else {
-			const wasAdded = addMenuOrItemToGroup( config, itemToAdd.item, relativeId, relation );
-
-			if ( wasAdded ) {
-				successFullyAddedItems.push( itemToAdd );
-			}
-		}
-	}
-
-	for ( const addedItemConfig of itemsToBeAdded ) {
-		if ( !successFullyAddedItems.includes( addedItemConfig ) ) {
-			/**
-			 * There was a problem processing the configuration of the menu bar. The configured item could not be added
-			 * because the position it was supposed to be added to does not exist.
-			 *
-			 * This warning usually shows up when the {@link module:core/plugin~Plugin} which is supposed
-			 * to provide a menu bar item has not been loaded or there is a typo in the
-			 * {@link module:core/editor/editorconfig~EditorConfig#menuBar menu bar configuration}.
-			 *
-			 * @error menu-bar-item-could-not-be-removed
-			 * @param menuBarConfig The full configuration of the menu bar.
-			 * @param itemName The name of the item that was not removed from the menu bar.
-			 */
-			logWarning( 'menu-bar-item-could-not-be-added', {
-				menuBarConfig: originalConfig,
-				addedItemConfig
-			} );
-		}
-	}
-}
-
-/**
- * Handles adding a sub-menu or an item into a group. The logic is the same for both cases.
- */
-function addMenuOrItemToGroup(
-	config: NormalizedMenuBarConfigObject,
-	itemOrMenuToAdd: string | DropdownMenuDefinition,
-	relativeId: string | null,
-	relation: 'start' | 'end' | 'before' | 'after'
-): boolean {
-	let wasAdded = false;
-
-	walkConfigMenus( config.items, menuDefinition => {
-		for ( const { groupId, items: groupItems } of menuDefinition.groups ) {
-			// Avoid infinite loops.
-			if ( wasAdded ) {
-				return;
-			}
-
-			if ( groupId === relativeId ) {
-				// Adding an item/menu at the beginning of a group.
-				if ( relation === 'start' ) {
-					groupItems.unshift( itemOrMenuToAdd );
-					wasAdded = true;
-				}
-				// Adding an item/menu at the end of a group.
-				else if ( relation === 'end' ) {
-					groupItems.push( itemOrMenuToAdd );
-					wasAdded = true;
-				}
-			} else {
-				// Adding an item/menu relative to an existing item/menu.
-				const relativeItemIndex = groupItems.findIndex( groupItem => {
-					return getIdFromGroupItem( groupItem ) === relativeId;
-				} );
-
-				if ( relativeItemIndex !== -1 ) {
-					if ( relation === 'before' ) {
-						groupItems.splice( relativeItemIndex, 0, itemOrMenuToAdd );
-						wasAdded = true;
-					} else if ( relation === 'after' ) {
-						groupItems.splice( relativeItemIndex + 1, 0, itemOrMenuToAdd );
-						wasAdded = true;
-					}
-				}
-			}
-		}
-	} );
-
-	return wasAdded;
 }
 
 /**
@@ -676,8 +399,8 @@ function addMenuOrItemToGroup(
  * not be instantiated. Warns about missing components if the menu bar configuration was specified by the user.
  */
 function purgeUnavailableComponents(
-	originalConfig: DeepReadonly<NormalizedMenuBarConfigObject>,
-	config: NormalizedMenuBarConfigObject,
+	originalConfig: DeepReadonly<NormalizedDropdownMenuConfigObject>,
+	config: NormalizedDropdownMenuConfigObject,
 	componentFactory: ComponentFactory
 ) {
 	walkConfigMenus( config.items, menuDefinition => {
@@ -726,8 +449,8 @@ function purgeUnavailableComponents(
  * the configuration populated menus using these components exclusively.
  */
 function purgeEmptyMenus(
-	originalConfig: NormalizedMenuBarConfigObject,
-	config: NormalizedMenuBarConfigObject
+	originalConfig: NormalizedDropdownMenuConfigObject,
+	config: NormalizedDropdownMenuConfigObject
 ) {
 	const isUsingDefaultConfig = config.isUsingDefaultConfig;
 	let wasSubMenuPurged = false;
@@ -785,8 +508,8 @@ function purgeEmptyMenus(
 }
 
 function warnAboutEmptyMenu(
-	originalConfig: NormalizedMenuBarConfigObject,
-	emptyMenuConfig: DropdownMenuDefinition | DeepReadonly<NormalizedMenuBarConfigObject>,
+	originalConfig: NormalizedDropdownMenuConfigObject,
+	emptyMenuConfig: DropdownMenuDefinition | DeepReadonly<NormalizedDropdownMenuConfigObject>,
 	isUsingDefaultConfig: boolean
 ) {
 	if ( isUsingDefaultConfig ) {
@@ -815,64 +538,10 @@ function warnAboutEmptyMenu(
 }
 
 /**
- * Localizes the user-config using pre-defined localized category labels.
- */
-function localizeMenuLabels( config: NormalizedMenuBarConfigObject, locale: Locale ) {
-	const t = locale.t;
-	const localizedCategoryLabels: Record<string, string> = {
-		// Top-level categories.
-		'File': t( {
-			string: 'File',
-			id: 'MENU_BAR_MENU_FILE'
-		} ),
-		'Edit': t( {
-			string: 'Edit',
-			id: 'MENU_BAR_MENU_EDIT'
-		} ),
-		'View': t( {
-			string: 'View',
-			id: 'MENU_BAR_MENU_VIEW'
-		} ),
-		'Insert': t( {
-			string: 'Insert',
-			id: 'MENU_BAR_MENU_INSERT'
-		} ),
-		'Format': t( {
-			string: 'Format',
-			id: 'MENU_BAR_MENU_FORMAT'
-		} ),
-		'Tools': t( {
-			string: 'Tools',
-			id: 'MENU_BAR_MENU_TOOLS'
-		} ),
-		'Help': t( {
-			string: 'Help',
-			id: 'MENU_BAR_MENU_HELP'
-		} ),
-
-		// Sub-menus.
-		'Text': t( {
-			string: 'Text',
-			id: 'MENU_BAR_MENU_TEXT'
-		} ),
-		'Font': t( {
-			string: 'Font',
-			id: 'MENU_BAR_MENU_FONT'
-		} )
-	};
-
-	walkConfigMenus( config.items, definition => {
-		if ( definition.label in localizedCategoryLabels ) {
-			definition.label = localizedCategoryLabels[ definition.label ];
-		}
-	} );
-}
-
-/**
  * Recursively visits all menu definitions in the config and calls the callback for each of them.
  */
 function walkConfigMenus(
-	definition: NormalizedMenuBarConfigObject[ 'items' ] | DropdownMenuDefinition,
+	definition: NormalizedDropdownMenuConfigObject[ 'items' ] | DropdownMenuDefinition,
 	callback: ( definition: DropdownMenuDefinition ) => void
 ) {
 	if ( Array.isArray( definition ) ) {
@@ -892,40 +561,6 @@ function walkConfigMenus(
 			}
 		}
 	}
-}
-
-function isDropdownMenuAddition( definition: any ): definition is MenuBarConfigAddedMenu {
-	return typeof definition === 'object' && 'menu' in definition;
-}
-
-function isDropdownMenuGroupAddition( definition: any ): definition is MenuBarConfigAddedGroup {
-	return typeof definition === 'object' && 'group' in definition;
-}
-
-function getRelationFromPosition( position: MenuBarConfigAddedPosition ): 'start' | 'end' | 'before' | 'after' {
-	if ( position.startsWith( 'start' ) ) {
-		return 'start';
-	} else if ( position.startsWith( 'end' ) ) {
-		return 'end';
-	} else if ( position.startsWith( 'after' ) ) {
-		return 'after';
-	} else {
-		return 'before';
-	}
-}
-
-function getRelativeIdFromPosition( position: MenuBarConfigAddedPosition ): string | null {
-	const match = position.match( /^[^:]+:(.+)/ );
-
-	if ( match ) {
-		return match[ 1 ];
-	}
-
-	return null;
-}
-
-function getIdFromGroupItem( item: string | DropdownMenuDefinition ): string {
-	return typeof item === 'string' ? item : item.menuId;
 }
 
 function isMenuDefinition( definition: any ): definition is DropdownMenuDefinition {

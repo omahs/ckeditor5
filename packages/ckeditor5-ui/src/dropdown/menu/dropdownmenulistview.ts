@@ -8,12 +8,14 @@
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
+import type FilteredView from '../../search/filteredview.js';
+
 import ListView from '../../list/listview.js';
 
 /**
  * TODO
  */
-export class DropdownMenuListView extends ListView {
+export default class DropdownMenuListView extends ListView implements FilteredView {
 	/**
 	 * Creates an instance of the list view.
 	 *
@@ -23,5 +25,14 @@ export class DropdownMenuListView extends ListView {
 		super( locale );
 
 		this.role = 'menu';
+	}
+
+	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number; } {
+		console.info( regExp );
+
+		return {
+			resultsCount: 0,
+			totalItemsCount: 0
+		};
 	}
 }
