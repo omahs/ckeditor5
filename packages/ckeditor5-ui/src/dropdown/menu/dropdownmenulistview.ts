@@ -31,6 +31,8 @@ export default class DropdownMenuListView extends ListView {
 		const bind = this.bindTemplate;
 
 		this.role = 'menu';
+		this.set( 'isVisible', true );
+
 		this.extendTemplate( {
 			attributes: {
 				class: [

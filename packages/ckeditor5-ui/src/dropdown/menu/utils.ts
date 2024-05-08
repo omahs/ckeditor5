@@ -14,7 +14,6 @@ import type {
 	DropdownMenuChangeIsOpenEvent
 } from './typings.js';
 
-import type { FocusableView } from '../../focuscycler.js';
 import type { ObservableChangeEvent, PositioningFunction } from '@ckeditor/ckeditor5-utils';
 
 import type { ButtonExecuteEvent } from '../../button/button.js';
@@ -60,7 +59,8 @@ export const DropdownRootMenuBehaviors = {
 				// @if CK_DEBUG_MENU_BAR // }
 			}
 
-			( evt.source as FocusableView ).focus();
+			// TODO: Should we focus on hover? Counterintuitive when used with search phrase input.
+			// ( evt.source as FocusableView ).focus();
 		} );
 	},
 

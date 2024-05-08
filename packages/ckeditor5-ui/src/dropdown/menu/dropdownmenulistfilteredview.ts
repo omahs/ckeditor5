@@ -4,7 +4,7 @@
  */
 
 /**
- * @module ui/dropdown/menu/dropdownmenufilteredlistview
+ * @module ui/dropdown/menu/dropdownmenulistfilteredview
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
@@ -17,7 +17,7 @@ import DropdownMenuRootListView, { type DropdownMenuRootDefinition } from './dro
 /**
  * TODO
  */
-export default class DropdownMenuFilteredListView extends View implements FilteredView {
+export default class DropdownMenuListFilteredView extends View implements FilteredView {
 	/**
 	 * TODO
 	 */
@@ -49,7 +49,7 @@ export default class DropdownMenuFilteredListView extends View implements Filter
 		} );
 	}
 
-	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number; } {
+	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
 		return {
 			resultsCount: 5,
 			totalItemsCount: 5
