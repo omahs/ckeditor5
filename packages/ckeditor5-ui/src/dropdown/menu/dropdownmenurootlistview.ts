@@ -9,7 +9,6 @@
 
 import type { Locale, ObservableChangeEvent } from '@ckeditor/ckeditor5-utils';
 
-import DropdownMenuListView from './dropdownmenulistview.js';
 import { isDropdownMenuViewComponent, type DropdownMenuViewComponent, type DropdownMenuDefinition } from './typings.js';
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 import { DropdownMenuView } from './dropdownmenuview.js';
@@ -17,6 +16,8 @@ import { DropdownMenuView } from './dropdownmenuview.js';
 import { DropdownMenuListItemView } from './dropdownmenulistitemview.js';
 import ListSeparatorView from '../../list/listseparatorview.js';
 import ListItemView from '../../list/listitemview.js';
+import { DropdownRootMenuBehaviors } from './utils.js';
+import DropdownMenuListView from './dropdownmenulistview.js';
 
 const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:isOpen' ] as const;
 
@@ -38,6 +39,17 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		for ( const topLevelCategoryMenuView of this.items as unknown as Array<DropdownMenuView> ) {
 			topLevelCategoryMenuView.isOpen = false;
 		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public override render(): void {
+		super.render();
+
+		DropdownRootMenuBehaviors.toggleMenusAndFocusItemsOnHover( this );
+		DropdownRootMenuBehaviors.closeMenuWhenAnotherOnTheSameLevelOpens( this );
+		DropdownRootMenuBehaviors.focusCycleMenusOnArrows( this );
 	}
 
 	/**

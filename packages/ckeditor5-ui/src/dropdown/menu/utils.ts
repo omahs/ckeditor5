@@ -35,7 +35,7 @@ export const DropdownRootMenuBehaviors = {
 	 */
 	toggleMenusAndFocusItemsOnHover( menuBarView: DropdownMenuRootListView ): void {
 		menuBarView.on<DropdownMenuMouseEnterEvent>( 'menu:mouseenter', evt => {
-			for ( const menuView of menuBarView.items as unknown as Array<DropdownMenuView> ) {
+			for ( const menuView of menuBarView.menus ) {
 				// @if CK_DEBUG_MENU_BAR // const wasOpen = menuView.isOpen;
 
 				const pathLeaf = evt.path[ 0 ];
