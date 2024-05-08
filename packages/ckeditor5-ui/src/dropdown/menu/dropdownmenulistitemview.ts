@@ -22,7 +22,7 @@ export class DropdownMenuListItemView extends ListItemView {
 	 *
 	 * @param locale The localization services instance.
 	 */
-	constructor( locale: Locale, parentMenuView: DropdownMenuView ) {
+	constructor( locale: Locale, parentMenuView?: DropdownMenuView ) {
 		super( locale );
 
 		const bind = this.bindTemplate;
@@ -38,6 +38,8 @@ export class DropdownMenuListItemView extends ListItemView {
 			}
 		} );
 
-		this.delegate( 'mouseenter' ).to( parentMenuView );
+		if ( parentMenuView ) {
+			this.delegate( 'mouseenter' ).to( parentMenuView );
+		}
 	}
 }

@@ -18,6 +18,7 @@ import ListSeparatorView from '../../list/listseparatorview.js';
 import ListItemView from '../../list/listitemview.js';
 import { DropdownRootMenuBehaviors } from './utils.js';
 import DropdownMenuListView from './dropdownmenulistview.js';
+import type { MenuBarMenuChangeIsOpenEvent } from '../../menubar/menubarview.js';
 
 const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:isOpen' ] as const;
 
@@ -26,17 +27,30 @@ const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:
  */
 export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
-	 * A list of {@link module:ui/menubar/menubarmenuview~DropdownMenuView} instances registered in the menu bar.
+	 * TODO
+	 */
+	public menus: Array<DropdownMenuView> = [];
+
+	/**
+	 * Indicates whether any of top-level menus are open in the menu bar. To close
+	 * the menu bar use the {@link #close} method.
 	 *
 	 * @observable
 	 */
-	public menus: Array<DropdownMenuView> = [];
+	declare public isOpen: boolean;
+
+	constructor( locale: Locale ) {
+		super( locale );
+
+		this.set( 'isOpen', false );
+		this._setupIsOpenUpdater();
+	}
 
 	/**
 	 * Closes all menus in the bar.
 	 */
 	public close(): void {
-		for ( const topLevelCategoryMenuView of this.items as unknown as Array<DropdownMenuView> ) {
+		for ( const topLevelCategoryMenuView of this.menus ) {
 			topLevelCategoryMenuView.isOpen = false;
 		}
 	}
@@ -49,7 +63,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 
 		DropdownRootMenuBehaviors.toggleMenusAndFocusItemsOnHover( this );
 		DropdownRootMenuBehaviors.closeMenuWhenAnotherOnTheSameLevelOpens( this );
-		DropdownRootMenuBehaviors.focusCycleMenusOnArrows( this );
+		DropdownRootMenuBehaviors.closeOnClickOutside( this );
 	}
 
 	/**
@@ -59,10 +73,17 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		{ locale, items }: DropdownMenuRootListFactoryAttrs
 	): DropdownMenuRootListView {
 		const rootList = new DropdownMenuRootListView( locale );
+		const topLevelCategoryMenuViews = items.map( menuDefinition => {
+			const listItem = new DropdownMenuListItemView( locale );
 
-		const topLevelCategoryMenuViews = items.map( menuDefinition => rootList._createMenu( {
-			menuDefinition
-		} ) );
+			listItem.children.add(
+				rootList._createMenu( {
+					menuDefinition
+				} )
+			);
+
+			return listItem;
+		} );
 
 		rootList.items.addMany( topLevelCategoryMenuViews );
 		return rootList;
@@ -200,6 +221,30 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		menuView._attachBehaviors();
 
 		this.menus.push( menuView );
+	}
+
+	/**
+	 * Manages the state of the {@link #isOpen} property of the menu bar. Because the state is a sum of individual
+	 * top-level menus' states, it's necessary to listen to their changes and update the state accordingly.
+	 *
+	 * Additionally, it prevents from unnecessary changes of `isOpen` when one top-level menu opens and another closes
+	 * (regardless of in which order), maintaining a stable `isOpen === true` in that situation.
+	 */
+	private _setupIsOpenUpdater() {
+		let closeTimeout: ReturnType<typeof setTimeout>;
+
+		// TODO: This is not the prettiest approach but at least it's simple.
+		this.on<MenuBarMenuChangeIsOpenEvent>( 'menu:change:isOpen', ( evt, name, isOpen ) => {
+			clearTimeout( closeTimeout );
+
+			if ( isOpen ) {
+				this.isOpen = true;
+			} else {
+				closeTimeout = setTimeout( () => {
+					this.isOpen = Array.from( this.menus ).some( menuView => menuView.isOpen );
+				}, 0 );
+			}
+		} );
 	}
 }
 

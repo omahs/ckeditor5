@@ -117,7 +117,7 @@ export class DropdownMenuView extends View implements FocusableView {
 		this.set( 'parentMenuView', null );
 
 		this.setTemplate( {
-			tag: 'li',
+			tag: 'div',
 
 			attributes: {
 				class: [
@@ -169,21 +169,6 @@ export class DropdownMenuView extends View implements FocusableView {
 	}
 
 	/**
-	 * Fires `arrowright` and `arrowleft` events when the user pressed corresponding arrow keys.
-	 */
-	private _propagateArrowKeystrokeEvents(): void {
-		this.keystrokes.set( 'arrowright', ( data, cancel ) => {
-			this.fire( 'arrowright' );
-			cancel();
-		} );
-
-		this.keystrokes.set( 'arrowleft', ( data, cancel ) => {
-			this.fire( 'arrowleft' );
-			cancel();
-		} );
-	}
-
-	/**
 	 * Sets the position of the panel when the menu opens. The panel is positioned
 	 * so that it optimally uses the available space in the viewport.
 	 */
@@ -215,8 +200,7 @@ export class DropdownMenuView extends View implements FocusableView {
 	}
 
 	/**
-	 * Positioning functions for the {@link #panelView} . They change depending on the role of the menu (top-level vs sub-menu) in
-	 * the {@link module:ui/menubar/menubarview~MenuBarView menu bar} and the UI language direction.
+	 * TODO
 	 */
 	public get _panelPositions(): Array<PositioningFunction> {
 		const { westSouth, eastSouth, westNorth, eastNorth } = DropdownMenuViewPanelPositioningFunctions;

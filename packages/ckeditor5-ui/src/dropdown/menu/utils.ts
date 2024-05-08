@@ -11,9 +11,7 @@ import { DropdownMenuListItemView } from './dropdownmenulistitemview.js';
 import type { DropdownMenuView } from './dropdownmenuview.js';
 import type {
 	DropdownMenuMouseEnterEvent,
-	DropdownMenuChangeIsOpenEvent,
-	DropdownMenuArrowRightEvent,
-	DropdownMenuArrowLeftEvent
+	DropdownMenuChangeIsOpenEvent
 } from './typings.js';
 
 import type { FocusableView } from '../../focuscycler.js';
@@ -21,11 +19,12 @@ import type { ObservableChangeEvent, PositioningFunction } from '@ckeditor/ckedi
 
 import type { ButtonExecuteEvent } from '../../button/button.js';
 import type DropdownMenuRootListView from './dropdownmenurootlistview.js';
+import clickOutsideHandler from '../../bindings/clickoutsidehandler.js';
 
 const NESTED_PANEL_HORIZONTAL_OFFSET = 5;
 
 /**
- * Behaviors of the {@link module:ui/menubar/menubarview~MenuBarView} component.
+ * TODO
  */
 export const DropdownRootMenuBehaviors = {
 	/**
@@ -55,39 +54,6 @@ export const DropdownRootMenuBehaviors = {
 	},
 
 	/**
-	 * Moves between top-level menus using the arrow left and right keys.
-	 *
-	 * If the menubar has already been open, the arrow keys move focus between top-level menu buttons and open them.
-	 * If the menubar is closed, the arrow keys only move focus between top-level menu buttons.
-	 */
-	focusCycleMenusOnArrows( menuBarView: DropdownMenuRootListView ): void {
-		const isContentRTL = menuBarView.locale!.uiLanguageDirection === 'rtl';
-
-		menuBarView.on<DropdownMenuArrowRightEvent>( 'menu:arrowright', evt => {
-			cycleTopLevelMenus( evt.source as DropdownMenuView, isContentRTL ? -1 : 1 );
-		} );
-
-		menuBarView.on<DropdownMenuArrowLeftEvent>( 'menu:arrowleft', evt => {
-			cycleTopLevelMenus( evt.source as DropdownMenuView, isContentRTL ? 1 : -1 );
-		} );
-
-		function cycleTopLevelMenus( currentMenuView: DropdownMenuView, step: number ) {
-			const currentIndex = menuBarView.items.getIndex( currentMenuView );
-			const isCurrentMenuViewOpen = currentMenuView.isOpen;
-			const menusCount = menuBarView.items.length;
-			const menuViewToOpen = menuBarView.items.get( ( currentIndex + menusCount + step ) % menusCount )! as DropdownMenuView;
-
-			currentMenuView.isOpen = false;
-
-			if ( isCurrentMenuViewOpen ) {
-				menuViewToOpen.isOpen = true;
-			}
-
-			menuViewToOpen.buttonView.focus();
-		}
-	},
-
-	/**
 	 * Handles the following case:
 	 * 1. Hover to open a sub-menu (A). The button has focus.
 	 * 2. Press arrow up/down to move focus to another sub-menu (B) button.
@@ -96,17 +62,35 @@ export const DropdownRootMenuBehaviors = {
 	 */
 	closeMenuWhenAnotherOnTheSameLevelOpens( menuBarView: DropdownMenuRootListView ): void {
 		menuBarView.on<DropdownMenuChangeIsOpenEvent>( 'menu:change:isOpen', ( evt, name, isOpen ) => {
-			if ( isOpen ) {
-				menuBarView.items
-					.filter( ( menuView: any ) => {
-						return ( evt.source as any ).parentMenuView === menuView.parentMenuView &&
-							evt.source !== menuView &&
-							menuView.isOpen;
-					} ).forEach( ( menuView: any ) => {
-						menuView.isOpen = false;
+			if ( !isOpen ) {
+				return;
+			}
 
-						// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] closeMenuWhenAnotherOpens(): Closing', logMenu( menuView ) );
-					} );
+			menuBarView.menus
+				.filter( menuView => {
+					return ( evt.source as any ).parentMenuView === menuView.parentMenuView &&
+						evt.source !== menuView &&
+						menuView.isOpen;
+				} )
+				.forEach( ( menuView: any ) => {
+					menuView.isOpen = false;
+
+					// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] closeMenuWhenAnotherOpens(): Closing', logMenu( menuView ) );
+				} );
+		} );
+	},
+
+	/**
+	 * Closes the bar when the user clicked outside of it (page body, editor root, etc.).
+	 */
+	closeOnClickOutside( menuBarView: DropdownMenuRootListView ): void {
+		clickOutsideHandler( {
+			emitter: menuBarView,
+			activator: () => menuBarView.isOpen,
+			callback: () => menuBarView.close(),
+			contextElements: () => menuBarView.menus.map( child => child.element! ),
+			options: {
+				priority: 'high'
 			}
 		} );
 	}
@@ -116,23 +100,6 @@ export const DropdownRootMenuBehaviors = {
  * Behaviors of the {@link module:ui/menubar/DropdownMenuview~DropdownMenuView} component.
  */
 export const DropdownMenuBehaviors = {
-	/**
-	 * If the button of the menu is focused, pressing the arrow down key should open the panel and focus it.
-	 * This is analogous to the {@link module:ui/dropdown/dropdownview~DropdownView}.
-	 */
-	openAndFocusPanelOnArrowDownKey( menuView: DropdownMenuView ): void {
-		menuView.keystrokes.set( 'arrowdown', ( data, cancel ) => {
-			if ( menuView.focusTracker.focusedElement === menuView.buttonView.element ) {
-				if ( !menuView.isOpen ) {
-					menuView.isOpen = true;
-				}
-
-				menuView.panelView.focus();
-				cancel();
-			}
-		} );
-	},
-
 	/**
 	 * Open the menu on the right arrow key press. This allows for navigating to sub-menus using the keyboard.
 	 */

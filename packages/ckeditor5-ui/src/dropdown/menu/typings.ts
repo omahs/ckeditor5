@@ -49,20 +49,6 @@ export interface DropdownMenuMouseEnterEvent extends DropdownMenuEvent {
 /**
  * TODO
  */
-export interface DropdownMenuArrowLeftEvent extends DropdownMenuEvent {
-	name: 'menu:arrowleft';
-}
-
-/**
- * TODO
- */
-export interface DropdownMenuArrowRightEvent extends DropdownMenuEvent {
-	name: 'menu:arrowright';
-}
-
-/**
- * TODO
- */
 export interface DropdownMenuChangeIsOpenEvent extends DropdownMenuEvent {
 	name: 'menu:change:isOpen';
 	args: [ name: string, value: boolean, oldValue: boolean ];
