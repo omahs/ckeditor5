@@ -28,6 +28,17 @@ const NESTED_PANEL_HORIZONTAL_OFFSET = 5;
  */
 export const DropdownRootMenuBehaviors = {
 	/**
+	 * TODO
+	 */
+	closeWhenOutsideElementFocused( menuBarView: DropdownMenuRootListView ): void {
+		menuBarView.listenTo( document, 'focus', () => {
+			if ( menuBarView.element && !menuBarView.element.contains( document.activeElement ) ) {
+				menuBarView.close();
+			}
+		}, { useCapture: true } );
+	},
+
+	/**
 	 * When the bar is already open:
 	 * * Opens the menu when the user hovers over its button.
 	 * * Closes open menu when another menu's button gets hovered.

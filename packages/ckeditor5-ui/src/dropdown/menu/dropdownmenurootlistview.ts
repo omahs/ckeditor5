@@ -64,6 +64,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		DropdownRootMenuBehaviors.toggleMenusAndFocusItemsOnHover( this );
 		DropdownRootMenuBehaviors.closeMenuWhenAnotherOnTheSameLevelOpens( this );
 		DropdownRootMenuBehaviors.closeOnClickOutside( this );
+		DropdownRootMenuBehaviors.closeWhenOutsideElementFocused( this );
 	}
 
 	/**
