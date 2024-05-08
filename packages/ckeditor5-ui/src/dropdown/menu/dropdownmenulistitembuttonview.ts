@@ -16,20 +16,31 @@ import '../../../theme/components/dropdown/menu/dropdownmenulistitembutton.css';
  * TODO
  */
 export default class DropdownMenuListItemButtonView extends ButtonView {
+	/**
+	 * TODO
+	 */
+	declare public allocateSpaceForIconIfMissing: boolean;
+
 	constructor( locale: Locale, label?: string ) {
 		super( locale );
+
+		const bind = this.bindTemplate;
 
 		this.set( {
 			withText: true,
 			withKeystroke: true,
 			tooltip: false,
 			role: 'menuitem',
+			allocateSpaceForIconIfMissing: false,
 			label
 		} );
 
 		this.extendTemplate( {
 			attributes: {
-				class: [ 'ck-dropdown-menu__menu__item__button' ]
+				class: [
+					'ck-dropdown-menu__menu__item__button',
+					bind.if( 'allocateSpaceForIconIfMissing', 'ck-allocate-space-for-icon-if-missing' )
+				]
 			}
 		} );
 	}

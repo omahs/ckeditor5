@@ -36,7 +36,7 @@
 		}
 
 		/* Spacing in buttons that miss the icon. */
-		&:not(:has(.ck-button__icon)) > .ck-button__label {
+		&.ck-allocate-space-for-icon-if-missing:not(:has(.ck-button__icon)) > .ck-button__label {
 			margin-left: calc(var(--ck-icon-size) - var(--ck-spacing-small));
 		}
 
