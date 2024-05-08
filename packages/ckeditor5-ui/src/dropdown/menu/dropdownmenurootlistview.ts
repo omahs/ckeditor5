@@ -39,11 +39,12 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	 */
 	declare public isOpen: boolean;
 
-	constructor( locale: Locale ) {
+	constructor( locale: Locale, definition: DropdownMenuRootDefinition ) {
 		super( locale );
 
 		this.set( 'isOpen', false );
 		this._setupIsOpenUpdater();
+		this._createFromDefinition( definition );
 	}
 
 	/**
@@ -70,15 +71,12 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	public static ofConfig(
-		{ locale, items }: DropdownMenuRootListFactoryAttrs
-	): DropdownMenuRootListView {
-		const rootList = new DropdownMenuRootListView( locale );
+	private _createFromDefinition( { items }: DropdownMenuRootDefinition ) {
 		const topLevelCategoryMenuViews = items.map( menuDefinition => {
-			const listItem = new DropdownMenuListItemView( locale );
+			const listItem = new DropdownMenuListItemView( this.locale! );
 
 			listItem.children.add(
-				rootList._createMenu( {
+				this._createMenu( {
 					menuDefinition
 				} )
 			);
@@ -86,8 +84,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			return listItem;
 		} );
 
-		rootList.items.addMany( topLevelCategoryMenuViews );
-		return rootList;
+		this.items.addMany( topLevelCategoryMenuViews );
 	}
 
 	/**
@@ -249,7 +246,9 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	}
 }
 
-type DropdownMenuRootListFactoryAttrs = {
-	locale: Locale;
+/**
+ * TODO
+ */
+export type DropdownMenuRootDefinition = {
 	items: Array<DropdownMenuDefinition>;
 };

@@ -14,23 +14,17 @@ import View from '../../view.js';
 
 export type DropdownMenuViewComponent = DropdownMenuView | DropdownMenuListItemButtonView;
 
+export type DropdownMenuGroupDefinition = {
+	items: Array<DropdownMenuDefinition | DropdownMenuViewComponent>;
+};
+
 export type DropdownMenuDefinition = {
 	label: string;
 	groups: Array<DropdownMenuGroupDefinition>;
 };
 
-export type DropdownMenuGroupDefinition = {
-	items: Array<DropdownMenuDefinition | DropdownMenuViewComponent>;
-};
-
-export type DropdownMenuConfig = {
-	groups: Array<DropdownMenuGroupDefinition>;
-};
-
 export const isDropdownMenuViewComponent = ( obj: DropdownMenuDefinition | DropdownMenuViewComponent ): obj is DropdownMenuViewComponent =>
 	obj instanceof View;
-
-export type NormalizedDropdownMenuConfigObject = Required<DropdownMenuConfig>;
 
 /**
  * TODO
