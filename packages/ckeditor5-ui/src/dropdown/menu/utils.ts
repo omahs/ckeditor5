@@ -211,13 +211,15 @@ export const DropdownMenuBehaviors = {
 	 * Closes the menu when its parent menu also closed. This prevents from orphaned open menus when the parent menu re-opens.
 	 */
 	closeOnParentClose( menuView: DropdownMenuView ): void {
-		menuView.parentMenuView!.on<ObservableChangeEvent<boolean>>( 'change:isOpen', ( evt, name, isOpen ) => {
-			if ( !isOpen && evt.source === menuView.parentMenuView ) {
-				// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] closeOnParentClose(): Closing', logMenu( menuView ) );
+		if ( menuView.parentMenuView ) {
+			menuView.parentMenuView!.on<ObservableChangeEvent<boolean>>( 'change:isOpen', ( evt, name, isOpen ) => {
+				if ( !isOpen && evt.source === menuView.parentMenuView ) {
+					// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] closeOnParentClose(): Closing', logMenu( menuView ) );
 
-				menuView.isOpen = false;
-			}
-		} );
+					menuView.isOpen = false;
+				}
+			} );
+		}
 	}
 };
 

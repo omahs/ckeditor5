@@ -3,7 +3,7 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-.ck.ck-dropdown-menu-bar__menu {
+.ck.ck-dropdown-menu__menu {
 	display: block;
 	position: relative;
 }

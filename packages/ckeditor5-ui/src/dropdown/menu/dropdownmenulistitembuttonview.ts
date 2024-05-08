@@ -29,7 +29,7 @@ export default class DropdownMenuListItemButtonView extends ButtonView {
 
 		this.extendTemplate( {
 			attributes: {
-				class: [ 'ck-dropdown-menu-bar__menu__item__button' ]
+				class: [ 'ck-dropdown-menu__menu__item__button' ]
 			}
 		} );
 	}

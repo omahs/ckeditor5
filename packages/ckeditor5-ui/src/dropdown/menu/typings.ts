@@ -6,6 +6,7 @@
 import type { BaseEvent } from '@ckeditor/ckeditor5-utils';
 import type { DropdownMenuView } from './dropdownmenuview.js';
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
+import View from '../../view.js';
 
 /**
  * @module ui/dropdown/menu/typings
@@ -19,12 +20,15 @@ export type DropdownMenuDefinition = {
 };
 
 export type DropdownMenuGroupDefinition = {
-	items: Array<DropdownMenuDefinition | { view: DropdownMenuViewComponent }>;
+	items: Array<DropdownMenuDefinition | DropdownMenuViewComponent>;
 };
 
 export type DropdownMenuConfig = {
 	groups: Array<DropdownMenuGroupDefinition>;
 };
+
+export const isDropdownMenuViewComponent = ( obj: DropdownMenuDefinition | DropdownMenuViewComponent ): obj is DropdownMenuViewComponent =>
+	obj instanceof View;
 
 export type NormalizedDropdownMenuConfigObject = Required<DropdownMenuConfig>;
 

@@ -4,59 +4,57 @@
  */
 
 :root {
-	--ck-dropdown-menu-bar-menu-max-width: 75vw;
-	--ck-dropdown-menu-bar-nested-menu-horizontal-offset: 5px;
+	--ck-dropdown-menu-nested-menu-horizontal-offset: 5px;
 }
 
-.ck.ck-dropdown-menu-bar__menu > .ck.ck-dropdown-menu-bar__menu__panel {
+.ck.ck-dropdown-menu__menu > .ck.ck-dropdown-menu__menu__panel {
 	z-index: var(--ck-z-panel);
-	max-width: var(--ck-dropdown-menu-bar-menu-max-width);
 	position: absolute;
 
-	&.ck-dropdown-menu-bar__menu__panel_position_ne,
-	&.ck-dropdown-menu-bar__menu__panel_position_nw {
+	&.ck-dropdown-menu__menu__panel_position_ne,
+	&.ck-dropdown-menu__menu__panel_position_nw {
 		bottom: 100%;
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_se,
-	&.ck-dropdown-menu-bar__menu__panel_position_sw {
+	&.ck-dropdown-menu__menu__panel_position_se,
+	&.ck-dropdown-menu__menu__panel_position_sw {
 		top: 100%;
 		bottom: auto;
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_ne,
-	&.ck-dropdown-menu-bar__menu__panel_position_se {
+	&.ck-dropdown-menu__menu__panel_position_ne,
+	&.ck-dropdown-menu__menu__panel_position_se {
 		left: 0px;
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_nw,
-	&.ck-dropdown-menu-bar__menu__panel_position_sw {
+	&.ck-dropdown-menu__menu__panel_position_nw,
+	&.ck-dropdown-menu__menu__panel_position_sw {
 		right: 0px;
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_es,
-	&.ck-dropdown-menu-bar__menu__panel_position_en {
-		left: calc( 100% - var(--ck-dropdown-menu-bar-nested-menu-horizontal-offset) );
+	&.ck-dropdown-menu__menu__panel_position_es,
+	&.ck-dropdown-menu__menu__panel_position_en {
+		left: calc( 100% - var(--ck-dropdown-menu-nested-menu-horizontal-offset) );
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_es {
+	&.ck-dropdown-menu__menu__panel_position_es {
 		top: 0px;
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_en {
+	&.ck-dropdown-menu__menu__panel_position_en {
 		bottom: 0px;
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_ws,
-	&.ck-dropdown-menu-bar__menu__panel_position_wn {
-		right: calc( 100% - var(--ck-dropdown-menu-bar-nested-menu-horizontal-offset) );
+	&.ck-dropdown-menu__menu__panel_position_ws,
+	&.ck-dropdown-menu__menu__panel_position_wn {
+		right: calc( 100% - var(--ck-dropdown-menu-nested-menu-horizontal-offset) );
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_ws {
+	&.ck-dropdown-menu__menu__panel_position_ws {
 		top: 0px;
 	}
 
-	&.ck-dropdown-menu-bar__menu__panel_position_wn {
+	&.ck-dropdown-menu__menu__panel_position_wn {
 		bottom: 0px;
 	}
 }

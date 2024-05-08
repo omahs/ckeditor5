@@ -10,7 +10,7 @@
 import type { Locale, ObservableChangeEvent } from '@ckeditor/ckeditor5-utils';
 
 import DropdownMenuListView from './dropdownmenulistview.js';
-import type { DropdownMenuViewComponent, DropdownMenuDefinition } from './typings.js';
+import { isDropdownMenuViewComponent, type DropdownMenuViewComponent, type DropdownMenuDefinition } from './typings.js';
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 import { DropdownMenuView } from './dropdownmenuview.js';
 
@@ -96,9 +96,9 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			for ( const itemDefinition of menuGroupDefinition.items ) {
 				const menuItemView = new DropdownMenuListItemView( locale, parentMenuView );
 
-				if ( 'view' in itemDefinition ) {
+				if ( isDropdownMenuViewComponent( itemDefinition ) ) {
 					const componentView = this._createMenuItemContentFromInstance( {
-						component: itemDefinition.view,
+						component: itemDefinition,
 						parentMenuView
 					} );
 

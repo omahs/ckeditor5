@@ -122,10 +122,9 @@ export class DropdownMenuView extends View implements FocusableView {
 			attributes: {
 				class: [
 					'ck',
-					'ck-dropdown-menu-bar__menu',
+					'ck-dropdown-menu__menu',
 					bind.to( 'class' ),
-					bind.if( 'isEnabled', 'ck-disabled', value => !value ),
-					bind.if( 'parentMenuView', 'ck-dropdown-menu-bar__menu_top-level', value => !value )
+					bind.if( 'isEnabled', 'ck-disabled', value => !value )
 				]
 			},
 
@@ -163,18 +162,10 @@ export class DropdownMenuView extends View implements FocusableView {
 	 * @internal
 	 */
 	public _attachBehaviors(): void {
-		// Top-level menus.
-		if ( !this.parentMenuView ) {
-			this._propagateArrowKeystrokeEvents();
-
-			DropdownMenuBehaviors.openAndFocusPanelOnArrowDownKey( this );
-			DropdownMenuBehaviors.toggleOnButtonClick( this );
-		} else {
-			DropdownMenuBehaviors.openOnButtonClick( this );
-			DropdownMenuBehaviors.openOnArrowRightKey( this );
-			DropdownMenuBehaviors.closeOnArrowLeftKey( this );
-			DropdownMenuBehaviors.closeOnParentClose( this );
-		}
+		DropdownMenuBehaviors.openOnButtonClick( this );
+		DropdownMenuBehaviors.openOnArrowRightKey( this );
+		DropdownMenuBehaviors.closeOnArrowLeftKey( this );
+		DropdownMenuBehaviors.closeOnParentClose( this );
 	}
 
 	/**
@@ -228,23 +219,12 @@ export class DropdownMenuView extends View implements FocusableView {
 	 * the {@link module:ui/menubar/menubarview~MenuBarView menu bar} and the UI language direction.
 	 */
 	public get _panelPositions(): Array<PositioningFunction> {
-		const {
-			southEast, southWest, northEast, northWest,
-			westSouth, eastSouth, westNorth, eastNorth
-		} = DropdownMenuViewPanelPositioningFunctions;
+		const { westSouth, eastSouth, westNorth, eastNorth } = DropdownMenuViewPanelPositioningFunctions;
 
 		if ( this.locale!.uiLanguageDirection === 'ltr' ) {
-			if ( this.parentMenuView ) {
-				return [ eastSouth, eastNorth, westSouth, westNorth ];
-			} else {
-				return [ southEast, southWest, northEast, northWest ];
-			}
+			return [ eastSouth, eastNorth, westSouth, westNorth ];
 		} else {
-			if ( this.parentMenuView ) {
-				return [ westSouth, westNorth, eastSouth, eastNorth ];
-			} else {
-				return [ southWest, southEast, northWest, northEast ];
-			}
+			return [ westSouth, westNorth, eastSouth, eastNorth ];
 		}
 	}
 
