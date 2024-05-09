@@ -12,10 +12,10 @@ import View from '../../view.js';
  * @module ui/dropdown/menu/typings
  */
 
-export type DropdownMenuViewComponent = DropdownMenuView | DropdownMenuListItemButtonView;
+export type DropdownMenuViewItem = DropdownMenuView | DropdownMenuListItemButtonView;
 
 export type DropdownMenuGroupDefinition = {
-	items: Array<DropdownMenuDefinition | DropdownMenuViewComponent>;
+	items: Array<DropdownMenuDefinition | DropdownMenuViewItem>;
 };
 
 export type DropdownMenuDefinition = {
@@ -23,7 +23,7 @@ export type DropdownMenuDefinition = {
 	groups: Array<DropdownMenuGroupDefinition>;
 };
 
-export const isDropdownMenuViewComponent = ( obj: DropdownMenuDefinition | DropdownMenuViewComponent ): obj is DropdownMenuViewComponent =>
+export const isDropdownMenuViewItem = ( obj: DropdownMenuDefinition | DropdownMenuViewItem ): obj is DropdownMenuViewItem =>
 	obj instanceof View;
 
 /**

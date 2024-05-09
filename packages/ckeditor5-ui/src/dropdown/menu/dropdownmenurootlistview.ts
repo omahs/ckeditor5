@@ -8,17 +8,17 @@
  */
 
 import type { Locale, ObservableChangeEvent } from '@ckeditor/ckeditor5-utils';
-
-import { isDropdownMenuViewComponent, type DropdownMenuViewComponent, type DropdownMenuDefinition } from './typings.js';
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
-import { DropdownMenuView } from './dropdownmenuview.js';
+import type { MenuBarMenuChangeIsOpenEvent } from '../../menubar/menubarview.js';
 
+import { isDropdownMenuViewItem, type DropdownMenuViewItem, type DropdownMenuDefinition } from './typings.js';
+import { DropdownMenuView } from './dropdownmenuview.js';
 import { DropdownMenuListItemView } from './dropdownmenulistitemview.js';
+import { DropdownRootMenuBehaviors } from './utils/dropdownmenubehaviors.js';
+
 import ListSeparatorView from '../../list/listseparatorview.js';
 import ListItemView from '../../list/listitemview.js';
-import { DropdownRootMenuBehaviors } from './utils.js';
 import DropdownMenuListView from './dropdownmenulistview.js';
-import type { MenuBarMenuChangeIsOpenEvent } from '../../menubar/menubarview.js';
 
 const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:isOpen' ] as const;
 
@@ -51,8 +51,8 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	 * Closes all menus in the bar.
 	 */
 	public close(): void {
-		for ( const topLevelCategoryMenuView of this.menus ) {
-			topLevelCategoryMenuView.isOpen = false;
+		for ( const menuView of this.menus ) {
+			menuView.isOpen = false;
 		}
 	}
 
@@ -127,7 +127,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			for ( const itemDefinition of menuGroupDefinition.items ) {
 				const menuItemView = new DropdownMenuListItemView( locale, parentMenuView );
 
-				if ( isDropdownMenuViewComponent( itemDefinition ) ) {
+				if ( isDropdownMenuViewItem( itemDefinition ) ) {
 					const componentView = this._createMenuItemContentFromInstance( {
 						component: itemDefinition,
 						parentMenuView
@@ -161,9 +161,9 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	 * TODO
 	 */
 	private _createMenuItemContentFromInstance( { component, parentMenuView }: {
-		component: DropdownMenuViewComponent;
+		component: DropdownMenuViewItem;
 		parentMenuView: DropdownMenuView;
-	} ): DropdownMenuView | DropdownMenuListItemButtonView | null {
+	} ): DropdownMenuViewItem | null {
 		this._registerMenuTree( component, parentMenuView );
 
 		// Close the whole menu bar when a component is executed.
@@ -177,7 +177,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	private _registerMenuTree( componentView: DropdownMenuView | DropdownMenuListItemButtonView, parentMenuView: DropdownMenuView ) {
+	private _registerMenuTree( componentView: DropdownMenuViewItem, parentMenuView: DropdownMenuView ) {
 		if ( !( componentView instanceof DropdownMenuView ) ) {
 			componentView.delegate( 'mouseenter' ).to( parentMenuView );
 

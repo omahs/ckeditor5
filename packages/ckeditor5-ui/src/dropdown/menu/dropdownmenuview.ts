@@ -16,9 +16,12 @@ import {
 	type ObservableChangeEvent
 } from '@ckeditor/ckeditor5-utils';
 
-import { DropdownMenuButtonView } from './dropdownmenubuttonview.js';
-import { DropdownMenuBehaviors, DropdownMenuViewPanelPositioningFunctions } from './utils.js';
 import type { FocusableView } from '../../focuscycler.js';
+
+import { DropdownMenuButtonView } from './dropdownmenubuttonview.js';
+import { DropdownMenuViewPanelPositioningFunctions } from './utils/dropdownmenupositioningfunctions.js';
+import { DropdownMenuBehaviors } from './utils/dropdownmenubehaviors.js';
+
 import View from '../../view.js';
 import {
 	DropdownMenuPanelView,

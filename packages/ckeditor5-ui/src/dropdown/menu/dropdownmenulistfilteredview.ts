@@ -8,11 +8,11 @@
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
+import type FilteredView from '../../search/filteredview.js';
 
 import View from '../../view.js';
-
-import type FilteredView from '../../search/filteredview.js';
 import DropdownMenuRootListView, { type DropdownMenuRootDefinition } from './dropdownmenurootlistview.js';
+import { constructTreeFromFlattenMenuViews } from './utils/dropdownmenulookup.js';
 
 /**
  * TODO
@@ -50,6 +50,10 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
+		const tree = constructTreeFromFlattenMenuViews( this._menuView.menus );
+
+		console.info( tree, regExp );
+
 		return {
 			resultsCount: 5,
 			totalItemsCount: 5

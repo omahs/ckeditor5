@@ -7,9 +7,10 @@
  * @module ui/dropdown/menu/dropdownmenupanelview
  */
 
-import { type Locale } from '@ckeditor/ckeditor5-utils';
+import type { Locale } from '@ckeditor/ckeditor5-utils';
 import type { FocusableView } from '../../focuscycler.js';
 import type ViewCollection from '../../viewcollection.js';
+
 import View from '../../view.js';
 
 import '../../../theme/components/dropdown/menu/dropdownmenupanel.css';
