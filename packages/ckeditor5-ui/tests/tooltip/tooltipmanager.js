@@ -366,6 +366,16 @@ describe( 'TooltipManager', () => {
 		} );
 
 		describe( 'on focus', () => {
+			it( 'should not focus immediately if hovered', () => {
+				sinon.stub( elements.a, 'matches' ).withArgs( ':hover' ).returns( true );
+
+				utils.dispatchFocus( elements.a );
+				sinon.assert.notCalled( pinSpy );
+
+				utils.waitForTheTooltipToShow( clock );
+				sinon.assert.calledOnce( pinSpy );
+			} );
+
 			it( 'should not work for elements that have no descendant with the data-attribute', () => {
 				utils.dispatchFocus( elements.unrelated );
 				utils.waitForTheTooltipToShow( clock );
@@ -1001,6 +1011,14 @@ describe( 'TooltipManager', () => {
 	describe( '#defaultPositions', () => {
 		it( 'should be defined', () => {
 
+		} );
+	} );
+
+	describe( '_updateTooltipPosition()', () => {
+		it( 'should not crash if called when no tooltip is pinned', () => {
+			expect( () => {
+				tooltipManager._updateTooltipPosition();
+			} ).not.to.throw();
 		} );
 	} );
 } );

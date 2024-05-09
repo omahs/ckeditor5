@@ -308,7 +308,7 @@ export default class TooltipManager extends /* #__PURE__ */ DomEmitterMixin() {
 
 		this._unpinTooltip();
 
-		if ( evt.name === 'focus' ) {
+		if ( evt.name === 'focus' && !elementWithTooltipAttribute.matches( ':hover' ) ) {
 			this._pinTooltip( elementWithTooltipAttribute, getTooltipData( elementWithTooltipAttribute ) );
 		} else {
 			this._pinTooltipDebounced( elementWithTooltipAttribute, getTooltipData( elementWithTooltipAttribute ) );
@@ -472,7 +472,11 @@ export default class TooltipManager extends /* #__PURE__ */ DomEmitterMixin() {
 	 * Hides the tooltip when the element is no longer visible in DOM or the tooltip text was removed.
 	 */
 	private _updateTooltipPosition() {
-		const tooltipData = getTooltipData( this._currentElementWithTooltip! );
+		if ( !this._currentElementWithTooltip ) {
+			return;
+		}
+
+		const tooltipData = getTooltipData( this._currentElementWithTooltip );
 
 		// This could happen if the tooltip was attached somewhere in a contextual content toolbar and the toolbar
 		// disappeared (e.g. removed an image), or the tooltip text was removed.
