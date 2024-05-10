@@ -4,7 +4,7 @@
  */
 
 /**
- * @module ui/dropdown/menu/search/tryremovedropdowntreechild
+ * @module ui/dropdown/menu/search/tryremovedropdownmenutreechild
  */
 
 import type { DropdownMenuViewsChildItem, DropdownMenusViewsTreeNode } from './createtreefromflattenmenuviews';
@@ -12,7 +12,7 @@ import type { DropdownMenuViewsChildItem, DropdownMenusViewsTreeNode } from './c
 /**
  * If passed element has `children` property then passed `child` is removed.
  */
-export function tryRemoveDropdownTreeChild(
+export function tryRemoveDropdownMenuTreeChild(
 	parent: DropdownMenusViewsTreeNode,
 	child: DropdownMenuViewsChildItem
 ): DropdownMenusViewsTreeNode {
@@ -22,9 +22,13 @@ export function tryRemoveDropdownTreeChild(
 			break;
 
 		case 'Menu':
-		case 'Root':
-			parent.children.splice( parent.children.indexOf( child ), 1 );
-			break;
+		case 'Root': {
+			const index = parent.children.indexOf( child );
+
+			if ( index !== -1 ) {
+				parent.children.splice( index, 1 );
+			}
+		} break;
 
 		default: {
 			const unknownNode: never = parent;

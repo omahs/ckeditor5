@@ -13,13 +13,15 @@ import type DropdownMenuView from '../dropdownmenuview';
 import type { TreeSearchMetadata } from './dropdownmenutreesearchmetadata';
 
 import { createTreeFromFlattenMenuViews, type DropdownMenusViewsTreeNode } from './createtreefromflattenmenuviews';
-import { tryRemoveDropdownTreeChild } from './tryremovedropdowntreechild';
+import { tryRemoveDropdownMenuTreeChild } from './tryremovedropdownmenutreechild';
+import { getTotalDropdownMenuTreeSearchableItemsCount } from './gettotaldropdownmenutreesearchableitemscount';
 
 export function searchDropdownMenuTree(
 	searchFn: DropdownMenuSearchCallback,
 	menus: Array<DropdownMenuView>
-): DropdownMenusViewsTreeNode {
-	const workingTree = createTreeFromFlattenMenuViews( menus );
+): DropdownMenuSearchResult {
+	const filteredTree = createTreeFromFlattenMenuViews( menus );
+	const totalItemsCount = getTotalDropdownMenuTreeSearchableItemsCount( filteredTree );
 
 	walkOverDropdownMenuViewsTreeItems(
 		{
@@ -34,7 +36,7 @@ export function searchDropdownMenuTree(
 				leave: ( { parent, node } ) => {
 					// If there is no children left erase current menu from parent entry.
 					if ( !node.children.length ) {
-						tryRemoveDropdownTreeChild( parent, node );
+						tryRemoveDropdownMenuTreeChild( parent, node );
 					}
 				}
 			},
@@ -42,24 +44,41 @@ export function searchDropdownMenuTree(
 				enter: ( { parent, node } ) => {
 					// Reject element from tree if not matches.
 					if ( !searchFn( node.search ) ) {
-						tryRemoveDropdownTreeChild( parent, node );
+						tryRemoveDropdownMenuTreeChild( parent, node );
 					}
 				}
 			}
 		},
-		workingTree
+		filteredTree
 	);
 
-	return workingTree;
+	return {
+		resultsCount: getTotalDropdownMenuTreeSearchableItemsCount( filteredTree ),
+		filteredTree,
+		totalItemsCount
+	};
 }
 
 export const searchDropdownMenuTreeByRegExp = (
-	regExp: RegExp,
+	regExp: RegExp | null,
 	menus: Array<DropdownMenuView>
-): DropdownMenusViewsTreeNode =>
+): DropdownMenuSearchResult =>
 	searchDropdownMenuTree(
-		( { text } ) => !!text && regExp.test( text ),
+		( { text } ) => {
+			// If no regExp provided treat every item as matching.
+			if ( !regExp ) {
+				return true;
+			}
+
+			return !!( text || '' ).match( regExp );
+		},
 		menus
 	);
 
 type DropdownMenuSearchCallback = ( search: TreeSearchMetadata ) => boolean;
+
+type DropdownMenuSearchResult = {
+	filteredTree: DropdownMenusViewsTreeNode;
+	resultsCount: number;
+	totalItemsCount: number;
+};

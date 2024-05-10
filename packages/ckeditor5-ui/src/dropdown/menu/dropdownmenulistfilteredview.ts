@@ -51,13 +51,13 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
-		const result = searchDropdownMenuTreeByRegExp( regExp || /translate to hindi/i, this._menuView.menus );
+		const { filteredTree, resultsCount, totalItemsCount } = searchDropdownMenuTreeByRegExp( regExp, this._menuView.menus );
 
-		console.info( regExp, result );
+		console.info( regExp, { filteredTree, resultsCount, totalItemsCount } );
 
 		return {
-			resultsCount: 5,
-			totalItemsCount: 5
+			resultsCount,
+			totalItemsCount
 		};
 	}
 
