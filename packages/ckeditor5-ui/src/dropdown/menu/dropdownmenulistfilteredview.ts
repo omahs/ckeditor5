@@ -8,11 +8,12 @@
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
+import type { DropdownMenuRootFactoryDefinition } from './typings.js';
 import type FilteredView from '../../search/filteredview.js';
 
 import View from '../../view.js';
-import DropdownMenuRootListView, { type DropdownMenuRootDefinition } from './dropdownmenurootlistview.js';
-import { createTreeFromFlattenMenuViews } from './search/createtreefromflattenmenuviews.js';
+import DropdownMenuRootListView from './dropdownmenurootlistview.js';
+import { searchDropdownMenuTreeByRegExp } from './search/searchdropdownmenutree.js';
 
 /**
  * TODO
@@ -28,7 +29,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	 *
 	 * @param locale The localization services instance.
 	 */
-	constructor( locale: Locale, definition: DropdownMenuRootDefinition ) {
+	constructor( locale: Locale, definition: DropdownMenuRootFactoryDefinition ) {
 		super( locale );
 
 		this._menuView = new DropdownMenuRootListView( locale, definition );
@@ -50,9 +51,9 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
-		const tree = createTreeFromFlattenMenuViews( this._menuView.menus );
+		const result = searchDropdownMenuTreeByRegExp( regExp || /translate to hindi/i, this._menuView.menus );
 
-		console.info( tree, regExp );
+		console.info( regExp, result );
 
 		return {
 			resultsCount: 5,

@@ -22,57 +22,75 @@ export function walkOverDropdownMenuViewsTreeItems(
 	tree: DropdownMenusViewsTreeNode
 ): void {
 	const parents: NonEmptyArray<DropdownMenusViewsTreeNode> = [ tree ];
-	const visitor = ( node: DropdownMenusViewsTreeNode ) => {
+	const visitor: DropdownMenuViewsTreeVisitor = node => {
 		const {
 			enter = () => {},
 			leave = () => {}
 		} = ( walkers[ node.kind ] || {} ) as DropdownMenuViewsTreeWalker;
 
 		const walkerMetadata: DropdownMenuViewsTreeWalkerMetadata = {
+			parents: [ ...parents ] as NonEmptyArray<DropdownMenusViewsTreeNode>,
+			parent: parents[ parents.length - 1 ],
 			node,
-			parents
+			visitor
 		};
 
-		enter( walkerMetadata );
 		parents.push( node );
+		const result = enter( walkerMetadata );
 
-		switch ( node.kind ) {
-			case 'Item':
-				/* NOP */
-				break;
+		if ( result !== false ) {
+			switch ( node.kind ) {
+				case 'Item':
+					/* NOP */
+					break;
 
-			case 'Menu':
-			case 'Root':
-				node.children.forEach( visitor );
-				break;
+				case 'Menu':
+				case 'Root':
+					for ( let i = 0; i < node.children.length; ) {
+						const child = node.children[ i ];
 
-			default: {
-				const unknownNode: never = node;
-				console.warn( 'Unknown node kind!', unknownNode );
+						visitor( child );
+
+						// if it was removed - do not increment
+						if ( child === node.children[ i ] ) {
+							++i;
+						}
+					}
+					break;
+
+				default: {
+					const unknownNode: never = node;
+					console.warn( 'Unknown node kind!', unknownNode );
+				}
 			}
 		}
 
-		parents.pop();
 		leave( walkerMetadata );
+		parents.pop();
 	};
 
 	visitor( tree );
 }
 
-type DropdownMenuViewsTreeWalkerMetadata<
+export type DropdownMenuViewsTreeWalkerMetadata<
 	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind
 > = {
+	visitor: DropdownMenuViewsTreeVisitor;
 	node: ExtractDropdownMenuViewTreeNodeByKind<K>;
-	parents: Array<DropdownMenusViewsTreeNode>;
+	parents: NonEmptyArray<DropdownMenusViewsTreeNode>;
+	parent: DropdownMenusViewsTreeNode;
 };
 
-type DropdownMenuViewsTreeWalker<
+export type DropdownMenuViewsTreeWalker<
 	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind
 > = {
-	enter?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K> ) => undefined | false;
+	// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+	enter?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K> ) => void | boolean;
 	leave?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K> ) => void;
 };
 
+type DropdownMenuViewsTreeVisitor = ( node: DropdownMenusViewsTreeNode ) => void;
+
 type DropdownMenuViewsTreeWalkers = {
-	[ K in DropdownMenusViewsTreeNodeKind ]: DropdownMenuViewsTreeWalker<K>;
+	[ K in DropdownMenusViewsTreeNodeKind ]?: DropdownMenuViewsTreeWalker<K>;
 };
