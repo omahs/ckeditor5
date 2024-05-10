@@ -3,6 +3,10 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
+/**
+ * @module ui/dropdown/menu/search/createtreefromflattenmenuviews
+ */
+
 import type { DropdownMenuFlatItem } from '../typings.js';
 import type DropdownMenuView from '../dropdownmenuview.js';
 import type DropdownMenuListView from '../dropdownmenulistview.js';
@@ -10,21 +14,20 @@ import type DropdownMenuListView from '../dropdownmenulistview.js';
 import { DropdownMenuListItemView } from '../dropdownmenulistitemview.js';
 import { isDropdownMenuFlatItemView, isDropdownMenuView } from '../guards.js';
 import { mapFilter } from '@ckeditor/ckeditor5-utils';
+import { createTextSearchMetadata, type WithTreeSearchMetadata } from './dropdownmenutreesearchmetadata.js';
 
 /**
- * @module ui/dropdown/menu/utils/createtreefromflattenmenuviews
+ * Constructs tree based on currently rendered dropdown menu views. It is not based on factory
+ * definition, so constructed tree includes all recent modifications of menus such as addition or removal menu items.
  */
-
-export function createTreeFromFlattenMenuViews( menus: Array<DropdownMenuView> ): DropdownMenusViewsTree {
-	const menusTreeMap = menus.reduce<Map<DropdownMenuView, DropdownMenusViewsTree>>(
+export function createTreeFromFlattenMenuViews( menus: Array<DropdownMenuView> ): DropdownMenuViewsRootTree {
+	const menusTreeMap = menus.reduce<Map<DropdownMenuView, DropdownMenuViewsNestedTree>>(
 		( acc, menu ) => {
 			acc.set( menu, {
 				menu,
+				kind: 'Menu',
 				children: [],
-				root: false,
-				search: {
-					text: menu.buttonView.label!
-				}
+				search: createTextSearchMetadata( menu.buttonView.label )
 			} );
 
 			return acc;
@@ -46,10 +49,9 @@ export function createTreeFromFlattenMenuViews( menus: Array<DropdownMenuView> )
 
 			if ( isDropdownMenuFlatItemView( firstContentChild ) ) {
 				children.push( {
+					kind: 'Item',
 					item: firstContentChild,
-					search: {
-						text: firstContentChild.label!
-					}
+					search: createTextSearchMetadata( firstContentChild.label )
 				} );
 			} else if ( isDropdownMenuView( firstContentChild ) ) {
 				const maybeTreeMenu = menusTreeMap.get( firstContentChild );
@@ -62,39 +64,53 @@ export function createTreeFromFlattenMenuViews( menus: Array<DropdownMenuView> )
 	}
 
 	// Pick only top level menus from map and assign them to root entry.
-	const rootTree: DropdownMenusViewsTree = {
-		root: true,
+	const rootTree: DropdownMenuViewsRootTree = {
+		kind: 'Root',
 		children: []
 	};
 
 	rootTree.children = Array.from(
-		mapFilter( ( _, tree ) => !tree.root && !tree.menu.parentMenuView, menusTreeMap ).values()
+		mapFilter( ( _, tree ) => !tree.menu.parentMenuView, menusTreeMap ).values()
 	);
 
 	return rootTree;
 }
 
-type TreeAutocompleteSearchMetaData = {
-	text: string;
+type WithTreeEntryKind<K extends string> = {
+	kind: K;
 };
 
-type WithTreeSearchMetadata<O> = O & {
-	search: TreeAutocompleteSearchMetaData;
-};
-
-type DropdownMenusViewsTreeFlatItem = WithTreeSearchMetadata<{
-	item: DropdownMenuFlatItem;
-}>;
-
-type DropdownMenuViewsTreeChildren = Array<DropdownMenusViewsTreeFlatItem | DropdownMenusViewsTree>;
-
-type DropdownMenusViewsTree =
-	| WithTreeSearchMetadata<{
-		root: false;
-		menu: DropdownMenuView;
-		children: DropdownMenuViewsTreeChildren;
-	}>
-	| {
-		root: true;
-		children: DropdownMenuViewsTreeChildren;
+type DropdownMenuViewsTreeFlatItem =
+	& WithTreeEntryKind<'Item'>
+	& WithTreeSearchMetadata
+	& {
+		item: DropdownMenuFlatItem;
 	};
+
+type DropdownMenuViewsNestedTree =
+	& WithTreeEntryKind<'Menu'>
+	& WithTreeSearchMetadata
+	& {
+		menu: DropdownMenuView;
+		children: Array<DropdownMenuViewsChildItem>;
+	};
+
+type DropdownMenuViewsRootTree =
+	& WithTreeEntryKind<'Root'>
+	& {
+		children: Array<DropdownMenuViewsChildItem>;
+	};
+
+export type DropdownMenuViewsChildItem =
+	| DropdownMenuViewsTreeFlatItem
+	| DropdownMenuViewsNestedTree;
+
+export type DropdownMenusViewsTreeNode =
+	| DropdownMenuViewsChildItem
+	| DropdownMenuViewsNestedTree
+	| DropdownMenuViewsRootTree;
+
+export type DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNode[ 'kind' ];
+
+export type ExtractDropdownMenuViewTreeNodeByKind<K extends DropdownMenusViewsTreeNodeKind> =
+	Extract<DropdownMenusViewsTreeNode, { kind: K }>;

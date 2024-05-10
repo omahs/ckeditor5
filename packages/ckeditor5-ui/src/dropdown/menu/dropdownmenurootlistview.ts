@@ -10,7 +10,11 @@
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 import type { Locale } from '@ckeditor/ckeditor5-utils';
 import type { MenuBarMenuChangeIsOpenEvent } from '../../menubar/menubarview.js';
-import type { DropdownMenuViewItem, DropdownMenuDefinition } from './typings.js';
+import type {
+	DropdownMenuViewItem,
+	DropdownMenuDefinition,
+	DropdownMenuRootFactoryDefinition
+} from './typings.js';
 
 import DropdownMenuView from './dropdownmenuview.js';
 import { DropdownMenuListItemView } from './dropdownmenulistitemview.js';
@@ -40,7 +44,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	 */
 	declare public isOpen: boolean;
 
-	constructor( locale: Locale, definition: DropdownMenuRootDefinition ) {
+	constructor( locale: Locale, definition: DropdownMenuRootFactoryDefinition ) {
 		super( locale );
 
 		this.set( 'isOpen', false );
@@ -72,7 +76,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	private _createFromDefinition( { items }: DropdownMenuRootDefinition ) {
+	private _createFromDefinition( { items }: DropdownMenuRootFactoryDefinition ) {
 		const topLevelMenuViews = items.map( menuDefinition => {
 			const listItem = new DropdownMenuListItemView( this.locale! );
 
@@ -242,10 +246,3 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		} );
 	}
 }
-
-/**
- * TODO
- */
-export type DropdownMenuRootDefinition = {
-	items: Array<DropdownMenuDefinition>;
-};

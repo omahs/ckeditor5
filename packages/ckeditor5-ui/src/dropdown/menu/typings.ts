@@ -27,6 +27,13 @@ export type DropdownMenuDefinition = {
 /**
  * TODO
  */
+export type DropdownMenuRootFactoryDefinition = {
+	items: Array<DropdownMenuDefinition>;
+};
+
+/**
+ * TODO
+ */
 interface DropdownMenuEvent extends BaseEvent {
 	name: `menu:${ string }` | `menu:change:${ string }`;
 }
