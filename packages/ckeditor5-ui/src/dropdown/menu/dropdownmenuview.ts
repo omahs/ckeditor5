@@ -33,7 +33,7 @@ import '../../../theme/components/dropdown/menu/dropdownmenu.css';
 /**
  * TODO
  */
-export class DropdownMenuView extends View implements FocusableView {
+export default class DropdownMenuView extends View implements FocusableView {
 	/**
 	 * Button of the menu view.
 	 */

@@ -12,7 +12,7 @@ import type FilteredView from '../../search/filteredview.js';
 
 import View from '../../view.js';
 import DropdownMenuRootListView, { type DropdownMenuRootDefinition } from './dropdownmenurootlistview.js';
-import { constructTreeFromFlattenMenuViews } from './utils/dropdownmenulookup.js';
+import { createTreeFromFlattenMenuViews } from './search/createtreefromflattenmenuviews.js';
 
 /**
  * TODO
@@ -50,7 +50,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
-		const tree = constructTreeFromFlattenMenuViews( this._menuView.menus );
+		const tree = createTreeFromFlattenMenuViews( this._menuView.menus );
 
 		console.info( tree, regExp );
 

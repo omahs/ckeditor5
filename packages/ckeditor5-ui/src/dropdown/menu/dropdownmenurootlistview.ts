@@ -7,19 +7,19 @@
  * @module ui/dropdown/menu/dropdownmenurootlistview
  */
 
-import type { Locale, ObservableChangeEvent } from '@ckeditor/ckeditor5-utils';
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
+import type { Locale } from '@ckeditor/ckeditor5-utils';
 import type { MenuBarMenuChangeIsOpenEvent } from '../../menubar/menubarview.js';
 import type { DropdownMenuViewItem, DropdownMenuDefinition } from './typings.js';
 
-import { DropdownMenuView } from './dropdownmenuview.js';
+import DropdownMenuView from './dropdownmenuview.js';
 import { DropdownMenuListItemView } from './dropdownmenulistitemview.js';
 import { DropdownRootMenuBehaviors } from './utils/dropdownmenubehaviors.js';
 
 import ListSeparatorView from '../../list/listseparatorview.js';
 import ListItemView from '../../list/listitemview.js';
 import DropdownMenuListView from './dropdownmenulistview.js';
-import { isDropdownMenuOrButtonLikeItem } from './guards.js';
+import { isDropdownMenuDefinition } from './guards.js';
 
 const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:isOpen' ] as const;
 
@@ -73,7 +73,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	 * TODO
 	 */
 	private _createFromDefinition( { items }: DropdownMenuRootDefinition ) {
-		const topLevelCategoryMenuViews = items.map( menuDefinition => {
+		const topLevelMenuViews = items.map( menuDefinition => {
 			const listItem = new DropdownMenuListItemView( this.locale! );
 
 			listItem.children.add(
@@ -85,7 +85,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			return listItem;
 		} );
 
-		this.items.addMany( topLevelCategoryMenuViews );
+		this.items.addMany( topLevelMenuViews );
 	}
 
 	/**
@@ -124,7 +124,12 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			for ( const itemDefinition of menuGroupDefinition.items ) {
 				const menuItemView = new DropdownMenuListItemView( locale, parentMenuView );
 
-				if ( isDropdownMenuOrButtonLikeItem( itemDefinition ) ) {
+				if ( isDropdownMenuDefinition( itemDefinition ) ) {
+					menuItemView.children.add( this._createMenu( {
+						menuDefinition: itemDefinition,
+						parentMenuView
+					} ) );
+				} else {
 					const componentView = this._createMenuItemContentFromInstance( {
 						component: itemDefinition,
 						parentMenuView
@@ -135,11 +140,6 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 					}
 
 					menuItemView.children.add( componentView );
-				} else {
-					menuItemView.children.add( this._createMenu( {
-						menuDefinition: itemDefinition,
-						parentMenuView
-					} ) );
 				}
 
 				items.push( menuItemView );

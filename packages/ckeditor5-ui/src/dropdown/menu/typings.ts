@@ -4,16 +4,16 @@
  */
 
 import type { BaseEvent } from '@ckeditor/ckeditor5-utils';
-import type { DropdownMenuView } from './dropdownmenuview.js';
+import type DropdownMenuView from './dropdownmenuview.js';
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 
 /**
  * @module ui/dropdown/menu/typings
  */
 
-export type DropdownMenuButtonLikeItem = DropdownMenuListItemButtonView;
+export type DropdownMenuFlatItem = DropdownMenuListItemButtonView;
 
-export type DropdownMenuViewItem = DropdownMenuView | DropdownMenuButtonLikeItem;
+export type DropdownMenuViewItem = DropdownMenuView | DropdownMenuFlatItem;
 
 export type DropdownMenuGroupDefinition = {
 	items: Array<DropdownMenuDefinition | DropdownMenuViewItem>;

@@ -7,8 +7,8 @@
  * @module ui/dropdown/menu/utils/dropdownmenubehaviors
  */
 
+import type DropdownMenuView from '../dropdownmenuview.js';
 import type { ObservableChangeEvent } from '@ckeditor/ckeditor5-utils';
-import type { DropdownMenuView } from '../dropdownmenuview.js';
 import type {
 	DropdownMenuMouseEnterEvent,
 	DropdownMenuChangeIsOpenEvent

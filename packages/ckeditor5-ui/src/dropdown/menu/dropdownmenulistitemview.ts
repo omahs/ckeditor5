@@ -8,7 +8,7 @@
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
-import type { DropdownMenuView } from './dropdownmenuview.js';
+import type DropdownMenuView from './dropdownmenuview.js';
 
 import ListItemView from '../../list/listitemview.js';
 

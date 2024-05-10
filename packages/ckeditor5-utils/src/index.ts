@@ -79,6 +79,7 @@ export {
 	type CollectionChangeEvent,
 	type CollectionRemoveEvent
 } from './collection.js';
+export { default as mapFilter } from './mapfilter.js';
 export { default as first } from './first.js';
 export { default as FocusTracker } from './focustracker.js';
 export { default as KeystrokeHandler } from './keystrokehandler.js';
