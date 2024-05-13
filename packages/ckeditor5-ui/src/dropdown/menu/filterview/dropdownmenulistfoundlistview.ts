@@ -39,7 +39,7 @@ export default class DropdownMenuListFoundListView extends ListView {
 
 	private _createFilteredTreeListBox(
 		highlightRegex: RegExp | null,
-		tree: DropdownMenusViewsFilteredTreeNode,
+		tree: DropdownMenusViewsFilteredTreeNode
 	): Array<ListItemGroupView | ListItemView> {
 		const { locale } = this;
 		const groupedFlatEntries = groupDropdownTreeByFirstFoundParent( tree );
