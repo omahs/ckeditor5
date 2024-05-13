@@ -8,7 +8,7 @@
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
-import type { DropdownMenuRootFactoryDefinition } from '../typings.js';
+import type { DropdownMenuRootFactoryDefinition } from '../factory/definitiontypings.js';
 import type FilteredView from '../../../search/filteredview.js';
 
 import { filterDropdownMenuTreeByRegExp } from '../search/filterdropdownmenutreebyregexp.js';

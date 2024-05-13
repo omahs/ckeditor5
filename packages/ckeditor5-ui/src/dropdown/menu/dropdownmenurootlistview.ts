@@ -11,12 +11,14 @@ import { last } from 'lodash-es';
 
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 import type { Locale } from '@ckeditor/ckeditor5-utils';
+import type { DropdownMenuChangeIsOpenEvent } from './events.js';
+
+import { isDropdownMenuDefinition } from './definition/definitionguards.js';
 import type {
-	DropdownMenuViewItem,
+	DropdownMenuViewItemDefinition,
 	DropdownMenuDefinition,
-	DropdownMenuRootFactoryDefinition,
-	DropdownMenuChangeIsOpenEvent
-} from './typings.js';
+	DropdownMenuRootFactoryDefinition
+} from './definition/definitiontypings.js';
 
 import DropdownMenuView from './dropdownmenuview.js';
 import { DropdownMenuListItemView } from './dropdownmenulistitemview.js';
@@ -25,7 +27,6 @@ import { DropdownRootMenuBehaviors } from './utils/dropdownmenubehaviors.js';
 import ListSeparatorView from '../../list/listseparatorview.js';
 import ListItemView from '../../list/listitemview.js';
 import DropdownMenuListView from './dropdownmenulistview.js';
-import { isDropdownMenuDefinition } from './guards.js';
 
 import { createTreeFromFlattenDropdownMenusList, type DropdownMenuViewsRootTree } from './search/createtreefromflattendropdownmenuslist.js';
 import { walkOverDropdownMenuTreeItems, type DropdownMenuViewsTreeWalkers } from './search/walkoverdropdownmenutreeitems.js';
@@ -104,7 +105,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			const listItem = new DropdownMenuListItemView( this.locale! );
 
 			listItem.children.add(
-				this._createMenu( {
+				this._createMenuFromDefinition( {
 					menuDefinition
 				} )
 			);
@@ -118,7 +119,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	private _createMenu( { menuDefinition, parentMenuView }: {
+	private _createMenuFromDefinition( { menuDefinition, parentMenuView }: {
 		menuDefinition: DropdownMenuDefinition;
 		parentMenuView?: DropdownMenuView;
 	} ) {
@@ -134,13 +135,18 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		const listView = new DropdownMenuListView( locale );
 
 		listView.ariaLabel = menuDefinition.label;
-		listView.items.addMany( this._createMenuItems( { menuDefinition, parentMenuView: menuView } ) );
-		menuView.panelView.children.add( listView );
+		listView.items.addMany(
+			this._createMenuItemsFromDefinition( {
+				menuDefinition,
+				parentMenuView: menuView
+			} )
+		);
 
+		menuView.panelView.children.add( listView );
 		return menuView;
 	}
 
-	private _createMenuItems( { menuDefinition, parentMenuView }: {
+	private _createMenuItemsFromDefinition( { menuDefinition, parentMenuView }: {
 		menuDefinition: DropdownMenuDefinition;
 		parentMenuView: DropdownMenuView;
 	} ): Array<DropdownMenuListItemView | ListSeparatorView> {
@@ -154,13 +160,13 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 
 				if ( isDropdownMenuDefinition( itemDefinition ) ) {
 					menuItemView.children.add(
-						this._createMenu( {
+						this._createMenuFromDefinition( {
 							menuDefinition: itemDefinition,
 							parentMenuView
 						} )
 					);
 				} else {
-					const componentView = this._registerMenuTree( itemDefinition, parentMenuView );
+					const componentView = this._registerMenuTreeFromDefinition( itemDefinition, parentMenuView );
 
 					if ( !componentView ) {
 						continue;
@@ -184,7 +190,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	private _registerMenuTree( componentView: DropdownMenuViewItem, parentMenuView: DropdownMenuView ) {
+	private _registerMenuTreeFromDefinition( componentView: DropdownMenuViewItemDefinition, parentMenuView: DropdownMenuView ) {
 		// Close the whole menu bar when a component is executed.
 		componentView.on( 'execute', () => {
 			this.close();
@@ -210,7 +216,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		const nonSeparatorItems = menuBarItemsList.items.filter( item => item instanceof ListItemView ) as Array<ListItemView>;
 
 		for ( const item of nonSeparatorItems ) {
-			this._registerMenuTree(
+			this._registerMenuTreeFromDefinition(
 				item.children.get( 0 ) as DropdownMenuView | DropdownMenuListItemButtonView,
 				componentView
 			);

@@ -12,7 +12,7 @@ import type { ObservableChangeEvent } from '@ckeditor/ckeditor5-utils';
 import type {
 	DropdownMenuMouseEnterEvent,
 	DropdownMenuChangeIsOpenEvent
-} from '../typings.js';
+} from '../events.js';
 
 import type { ButtonExecuteEvent } from '../../../button/button.js';
 import type DropdownMenuRootListView from '../dropdownmenurootlistview.js';

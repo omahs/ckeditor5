@@ -10,12 +10,13 @@
 import { mapFilter } from '@ckeditor/ckeditor5-utils';
 
 import type { Increment } from '@ckeditor/ckeditor5-core';
-import type { DropdownMenuFlatItem } from '../typings.js';
 import type DropdownMenuView from '../dropdownmenuview.js';
 import type DropdownMenuListView from '../dropdownmenulistview.js';
 
-import { DropdownMenuListItemView } from '../dropdownmenulistitemview.js';
+import type { DropdownMenuFlatItem } from '../definition/definitiontypings.js';
 import { isDropdownMenuFlatItemView, isDropdownMenuView } from '../guards.js';
+
+import { DropdownMenuListItemView } from '../dropdownmenulistitemview.js';
 import { createTextSearchMetadata, type WithTreeSearchMetadata } from './dropdownmenutreesearchmetadata.js';
 
 /**
