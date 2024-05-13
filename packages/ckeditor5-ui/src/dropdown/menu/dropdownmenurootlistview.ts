@@ -7,9 +7,10 @@
  * @module ui/dropdown/menu/dropdownmenurootlistview
  */
 
+import { last } from 'lodash-es';
+
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 import type { Locale } from '@ckeditor/ckeditor5-utils';
-import { walkOverDropdownMenuTreeItems, type DropdownMenuViewsTreeWalkers } from './search/walkoverdropdownmenutreeitems.js';
 import type {
 	DropdownMenuViewItem,
 	DropdownMenuDefinition,
@@ -25,7 +26,9 @@ import ListSeparatorView from '../../list/listseparatorview.js';
 import ListItemView from '../../list/listitemview.js';
 import DropdownMenuListView from './dropdownmenulistview.js';
 import { isDropdownMenuDefinition } from './guards.js';
+
 import { createTreeFromFlattenDropdownMenusList, type DropdownMenuViewsRootTree } from './search/createtreefromflattendropdownmenuslist.js';
+import { walkOverDropdownMenuTreeItems, type DropdownMenuViewsTreeWalkers } from './search/walkoverdropdownmenutreeitems.js';
 
 const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:isOpen' ] as const;
 
@@ -170,7 +173,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			}
 
 			// Separate groups with a separator.
-			if ( menuGroupDefinition !== groups[ groups.length - 1 ] ) {
+			if ( menuGroupDefinition !== last( groups ) ) {
 				items.push( new ListSeparatorView( locale ) );
 			}
 		}

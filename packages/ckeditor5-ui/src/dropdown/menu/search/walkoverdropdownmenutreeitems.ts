@@ -19,9 +19,9 @@ import type {
  */
 export function walkOverDropdownMenuTreeItems<Extend>(
 	walkers: DropdownMenuViewsTreeWalkers<Extend>,
-	tree: DropdownMenusViewsTreeNode<Extend>
+	root: DropdownMenusViewsTreeNode<Extend>
 ): void {
-	const parents: NonEmptyArray<DropdownMenusViewsTreeNode> = [ tree ];
+	const parents: NonEmptyArray<DropdownMenusViewsTreeNode> = [ root ];
 	const visitor: DropdownMenuViewsTreeVisitor = node => {
 		const {
 			enter = () => {},
@@ -35,7 +35,10 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 			visitor
 		};
 
-		parents.push( node );
+		if ( node !== root ) {
+			parents.push( node );
+		}
+
 		const result = enter( walkerMetadata );
 
 		if ( result !== false ) {
@@ -66,10 +69,13 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 		}
 
 		leave( walkerMetadata );
-		parents.pop();
+
+		if ( node !== root ) {
+			parents.pop();
+		}
 	};
 
-	visitor( tree );
+	visitor( root );
 }
 
 export type DropdownMenuViewsTreeWalkerMetadata<

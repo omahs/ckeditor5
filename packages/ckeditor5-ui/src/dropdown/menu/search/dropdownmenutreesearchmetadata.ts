@@ -8,7 +8,8 @@
  */
 
 export type TreeSearchMetadata = {
-	text: string | null;
+	raw: string;
+	text: string;
 };
 
 export type WithTreeSearchMetadata = {
@@ -18,5 +19,6 @@ export type WithTreeSearchMetadata = {
 export const normalizeSearchText = ( text: string ): string => text.trim().toLowerCase();
 
 export const createTextSearchMetadata = ( label: string | undefined ): TreeSearchMetadata => ( {
+	raw: label || '',
 	text: normalizeSearchText( label || '' )
 } );

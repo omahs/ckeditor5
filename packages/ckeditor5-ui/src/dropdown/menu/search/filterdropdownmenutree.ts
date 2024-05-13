@@ -10,6 +10,7 @@
 import type { DeepReadonly } from '@ckeditor/ckeditor5-core';
 import type {
 	DropdownMenuViewsRootTree,
+	DropdownMenuViewsTreeFlatItem,
 	DropdownMenusViewsTreeNode,
 	ExcludeDropdownMenuViewTreeNodeByKind
 } from './createtreefromflattendropdownmenuslist.js';
@@ -67,9 +68,13 @@ export function filterDropdownMenuTree(
 	};
 }
 
-export type DropdownMenusViewsFilteredTreeNode = DropdownMenusViewsTreeNode<{
+type WithFoundAttribute = {
 	found?: boolean;
-}>;
+};
+
+export type DropdownMenusViewsFilteredFlatItem = DropdownMenuViewsTreeFlatItem<WithFoundAttribute>;
+
+export type DropdownMenusViewsFilteredTreeNode = DropdownMenusViewsTreeNode<WithFoundAttribute>;
 
 export type DropdownMenuSearchResult = {
 	filteredTree: DropdownMenusViewsFilteredTreeNode;

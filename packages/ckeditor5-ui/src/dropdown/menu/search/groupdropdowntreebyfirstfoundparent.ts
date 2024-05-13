@@ -7,34 +7,56 @@
  * @module ui/dropdown/menu/search/groupdropdowntreebyfirstfoundparent
  */
 
-import type { DropdownMenusViewsFilteredTreeNode } from './filterdropdownmenutree.js';
 import { flattenDropdownMenuTree } from './flattendropdownmenutree.js';
 
-export function groupDropdownTreeByFirstFoundParent( tree: DropdownMenusViewsFilteredTreeNode ): FoundDropdownTreeParentsItemsMap {
-	const flattenTree = flattenDropdownMenuTree( tree );
+import type { NonEmptyArray } from '@ckeditor/ckeditor5-core';
+import type { DropdownMenusViewsFilteredFlatItem, DropdownMenusViewsFilteredTreeNode } from './filterdropdownmenutree.js';
 
-	return flattenTree.reduce<FoundDropdownTreeParentsItemsMap>(
-		( acc, { parents, node } ) => {
-			const firstFoundParent = parents.find(
-				item => {
-					if ( item.kind === 'Root' ) {
-						return item;
-					}
-
-					return item.found;
+export function groupDropdownTreeByFirstFoundParent( tree: DropdownMenusViewsFilteredTreeNode ): Array<GroupedDropdownTreeFlatEntry> {
+	const findGroupingParent = ( parents: NonEmptyArray<DropdownMenusViewsFilteredTreeNode> ): DropdownMenusViewsFilteredTreeNode => {
+		const maybeFirstFoundParent = [ ...parents ].reverse().find(
+			item => {
+				if ( item.kind === 'Root' ) {
+					return false;
 				}
-			)!;
 
-			if ( !acc.has( firstFoundParent ) ) {
-				acc.set( firstFoundParent, [ node ] );
+				return item.found;
+			}
+		);
+
+		if ( maybeFirstFoundParent ) {
+			return maybeFirstFoundParent;
+		}
+
+		return parents[ parents.length - 1 ];
+	};
+
+	const groupedParents = flattenDropdownMenuTree( tree ).reduce<FoundDropdownTreeParentsItemsMap>(
+		( acc, { parents, node } ) => {
+			const groupingParent = findGroupingParent( parents );
+
+			if ( !acc.has( groupingParent ) ) {
+				acc.set( groupingParent, [ node ] );
 			} else {
-				acc.get( firstFoundParent )!.push( node );
+				acc.get( groupingParent )!.push( node );
 			}
 
 			return acc;
 		},
 		new Map()
 	);
+
+	return Array
+		.from( groupedParents )
+		.map( ( [ parent, children ] ) => ( {
+			parent,
+			children
+		} ) );
 }
 
-type FoundDropdownTreeParentsItemsMap = Map<DropdownMenusViewsFilteredTreeNode, Array<DropdownMenusViewsFilteredTreeNode>>;
+type FoundDropdownTreeParentsItemsMap = Map<DropdownMenusViewsFilteredTreeNode, Array<DropdownMenusViewsFilteredFlatItem>>;
+
+type GroupedDropdownTreeFlatEntry = {
+	parent: DropdownMenusViewsFilteredTreeNode;
+	children: Array<DropdownMenusViewsFilteredFlatItem>;
+};

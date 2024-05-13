@@ -10,12 +10,12 @@
 import type { Locale } from '@ckeditor/ckeditor5-utils';
 import type { DropdownMenuRootFactoryDefinition } from './typings.js';
 import type FilteredView from '../../search/filteredview.js';
-import type { DropdownMenusViewsFilteredTreeNode } from './search/filterdropdownmenutree.js';
+
+import { filterDropdownMenuTreeByRegExp } from './search/filterdropdownmenutreebyregexp.js';
 
 import View from '../../view.js';
+import DropdownMenuListFoundListView from './dropdownmenulistfoundlistview.js';
 import DropdownMenuRootListView from './dropdownmenurootlistview.js';
-import { filterDropdownMenuTreeByRegExp } from './search/filterdropdownmenutreebyregexp.js';
-import { groupDropdownTreeByFirstFoundParent } from './search/groupdropdowntreebyfirstfoundparent.js';
 
 /**
  * TODO
@@ -25,6 +25,11 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	 * TODO
 	 */
 	private _menuView: DropdownMenuRootListView;
+
+	/**
+	 * TODO
+	 */
+	private _foundListView: DropdownMenuListFoundListView | null = null;
 
 	/**
 	 * Creates an instance of the list view.
@@ -44,19 +49,31 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 					'ck-dropdown-menu-filter'
 				],
 				tabindex: -1
-			},
-
-			children: [
-				this._menuView
-			]
+			}
 		} );
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
+		const { element } = this;
 		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this._menuView.tree );
 
+		element!.innerHTML = '';
+
+		if ( this._foundListView ) {
+			this._foundListView.destroy();
+		}
+
 		if ( resultsCount !== totalItemsCount ) {
-			DropdownMenuListFilteredView._createFilteredTreeViews( filteredTree );
+			this._foundListView = new DropdownMenuListFoundListView( this.locale!, regExp, filteredTree );
+			this._foundListView.render();
+
+			element!.appendChild( this._foundListView.element! );
+		} else {
+			if ( !this._menuView.isRendered ) {
+				this._menuView.render();
+			}
+
+			element!.appendChild( this._menuView.element! );
 		}
 
 		return {
@@ -67,11 +84,5 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 
 	public focus(): void {
 		this._menuView.focus();
-	}
-
-	private static _createFilteredTreeViews( tree: DropdownMenusViewsFilteredTreeNode ) {
-		const groupedItems = groupDropdownTreeByFirstFoundParent( tree );
-
-		console.info( groupedItems );
 	}
 }
