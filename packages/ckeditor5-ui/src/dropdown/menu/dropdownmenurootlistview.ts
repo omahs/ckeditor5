@@ -7,29 +7,24 @@
  * @module ui/dropdown/menu/dropdownmenurootlistview
  */
 
-import { last } from 'lodash-es';
-
-import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 import type { Locale } from '@ckeditor/ckeditor5-utils';
 import type { DropdownMenuChangeIsOpenEvent } from './events.js';
+import type { DropdownMenuRootFactoryDefinition } from './definition/dropdownmenudefinitiontypings.js';
+import type DropdownMenuView from './dropdownmenuview.js';
 
-import { isDropdownMenuDefinition } from './definition/definitionguards.js';
-import type {
-	DropdownMenuViewItemDefinition,
-	DropdownMenuDefinition,
-	DropdownMenuRootFactoryDefinition
-} from './definition/definitiontypings.js';
-
-import DropdownMenuView from './dropdownmenuview.js';
-import { DropdownMenuListItemView } from './dropdownmenulistitemview.js';
 import { DropdownRootMenuBehaviors } from './utils/dropdownmenubehaviors.js';
-
-import ListSeparatorView from '../../list/listseparatorview.js';
-import ListItemView from '../../list/listitemview.js';
 import DropdownMenuListView from './dropdownmenulistview.js';
 
-import { createTreeFromFlattenDropdownMenusList, type DropdownMenuViewsRootTree } from './search/createtreefromflattendropdownmenuslist.js';
-import { walkOverDropdownMenuTreeItems, type DropdownMenuViewsTreeWalkers } from './search/walkoverdropdownmenutreeitems.js';
+import {
+	createTreeFromFlattenDropdownMenusList,
+	type DropdownMenuViewsRootTree
+} from './search/createtreefromflattendropdownmenuslist.js';
+
+import { DropdownMenuDefinitionParser } from './definition/dropdownmenudefinitionparser.js';
+import {
+	walkOverDropdownMenuTreeItems,
+	type DropdownMenuViewsTreeWalkers
+} from './search/walkoverdropdownmenutreeitems.js';
 
 const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:isOpen' ] as const;
 
@@ -54,10 +49,21 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		super( locale );
 
 		this.set( 'isOpen', false );
+
 		this._setupIsOpenUpdater();
-		this._createFromDefinition( definition );
+		this.definition.appendMenus( definition );
 	}
 
+	/**
+	 * TODO
+	 */
+	public get definition(): DropdownMenuDefinitionParser {
+		return new DropdownMenuDefinitionParser( this );
+	}
+
+	/**
+	 * TODO
+	 */
 	public get menus(): Readonly<Array<DropdownMenuView>> {
 		return [ ...this._menus ];
 	}
@@ -100,134 +106,6 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	private _createFromDefinition( { items }: DropdownMenuRootFactoryDefinition ) {
-		const topLevelMenuViews = items.map( menuDefinition => {
-			const listItem = new DropdownMenuListItemView( this.locale! );
-
-			listItem.children.add(
-				this._createMenuFromDefinition( {
-					menuDefinition
-				} )
-			);
-
-			return listItem;
-		} );
-
-		this.items.addMany( topLevelMenuViews );
-	}
-
-	/**
-	 * TODO
-	 */
-	private _createMenuFromDefinition( { menuDefinition, parentMenuView }: {
-		menuDefinition: DropdownMenuDefinition;
-		parentMenuView?: DropdownMenuView;
-	} ) {
-		const locale = this.locale!;
-		const menuView = new DropdownMenuView( locale );
-
-		this.registerMenu( menuView, parentMenuView );
-
-		menuView.buttonView.set( {
-			label: menuDefinition.label
-		} );
-
-		const listView = new DropdownMenuListView( locale );
-
-		listView.ariaLabel = menuDefinition.label;
-		listView.items.addMany(
-			this._createMenuItemsFromDefinition( {
-				menuDefinition,
-				parentMenuView: menuView
-			} )
-		);
-
-		menuView.panelView.children.add( listView );
-		return menuView;
-	}
-
-	private _createMenuItemsFromDefinition( { menuDefinition, parentMenuView }: {
-		menuDefinition: DropdownMenuDefinition;
-		parentMenuView: DropdownMenuView;
-	} ): Array<DropdownMenuListItemView | ListSeparatorView> {
-		const { groups } = menuDefinition;
-		const locale = this.locale!;
-		const items = [];
-
-		for ( const menuGroupDefinition of groups ) {
-			for ( const itemDefinition of menuGroupDefinition.items ) {
-				const menuItemView = new DropdownMenuListItemView( locale, parentMenuView );
-
-				if ( isDropdownMenuDefinition( itemDefinition ) ) {
-					menuItemView.children.add(
-						this._createMenuFromDefinition( {
-							menuDefinition: itemDefinition,
-							parentMenuView
-						} )
-					);
-				} else {
-					const componentView = this._registerMenuTreeFromDefinition( itemDefinition, parentMenuView );
-
-					if ( !componentView ) {
-						continue;
-					}
-
-					menuItemView.children.add( componentView );
-				}
-
-				items.push( menuItemView );
-			}
-
-			// Separate groups with a separator.
-			if ( menuGroupDefinition !== last( groups ) ) {
-				items.push( new ListSeparatorView( locale ) );
-			}
-		}
-
-		return items;
-	}
-
-	/**
-	 * TODO
-	 */
-	private _registerMenuTreeFromDefinition( componentView: DropdownMenuViewItemDefinition, parentMenuView: DropdownMenuView ) {
-		// Close the whole menu bar when a component is executed.
-		componentView.on( 'execute', () => {
-			this.close();
-		} );
-
-		if ( !( componentView instanceof DropdownMenuView ) ) {
-			componentView.delegate( 'mouseenter' ).to( parentMenuView );
-
-			return componentView;
-		}
-
-		this.registerMenu( componentView, parentMenuView );
-
-		const menuBarItemsList = componentView.panelView.children
-			.filter( child => child instanceof DropdownMenuListView )[ 0 ] as DropdownMenuListView | undefined;
-
-		if ( !menuBarItemsList ) {
-			componentView.delegate( 'mouseenter' ).to( parentMenuView );
-
-			return componentView;
-		}
-
-		const nonSeparatorItems = menuBarItemsList.items.filter( item => item instanceof ListItemView ) as Array<ListItemView>;
-
-		for ( const item of nonSeparatorItems ) {
-			this._registerMenuTreeFromDefinition(
-				item.children.get( 0 ) as DropdownMenuView | DropdownMenuListItemButtonView,
-				componentView
-			);
-		}
-
-		return componentView;
-	}
-
-	/**
-	 * TODO
-	 */
 	public registerMenu( menuView: DropdownMenuView, parentMenuView: DropdownMenuView | null = null ): void {
 		if ( parentMenuView ) {
 			menuView.delegate( ...EVENT_NAME_DELEGATES ).to( parentMenuView );
@@ -237,6 +115,11 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		}
 
 		menuView._attachBehaviors();
+		menuView.on( 'execute', () => {
+			// Close the whole menu bar when a component is executed.
+			this.close();
+		} );
+
 		this._menus.push( menuView );
 	}
 

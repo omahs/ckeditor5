@@ -49,16 +49,7 @@ export const DropdownRootMenuBehaviors = {
 				const isListItemContainingMenu = pathLeaf instanceof DropdownMenuListItemView && pathLeaf.children.first === menuView;
 
 				menuView.isOpen = ( evt.path.includes( menuView ) || isListItemContainingMenu ) && menuView.isEnabled;
-
-				// @if CK_DEBUG_MENU_BAR // if ( wasOpen !== menuView.isOpen ) {
-				// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] toggleMenusAndFocusItemsOnHover(): Toggle',
-				// @if CK_DEBUG_MENU_BAR // 	logMenu( menuView ), 'isOpen', menuView.isOpen
-				// @if CK_DEBUG_MENU_BAR // );
-				// @if CK_DEBUG_MENU_BAR // }
 			}
-
-			// TODO: Should we focus on hover? Counterintuitive when used with search phrase input.
-			// ( evt.source as FocusableView ).focus();
 		} );
 	},
 
@@ -83,8 +74,6 @@ export const DropdownRootMenuBehaviors = {
 				} )
 				.forEach( ( menuView: any ) => {
 					menuView.isOpen = false;
-
-					// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] closeMenuWhenAnotherOpens(): Closing', logMenu( menuView ) );
 				} );
 		} );
 	},
@@ -119,8 +108,6 @@ export const DropdownMenuBehaviors = {
 			if ( menuView.focusTracker.focusedElement !== menuView.buttonView.element || !menuView.isEnabled ) {
 				return;
 			}
-
-			// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] openOnArrowRightKey(): Opening', logMenu( menuView ) );
 
 			if ( !menuView.isOpen ) {
 				menuView.isOpen = true;
@@ -190,8 +177,6 @@ export const DropdownMenuBehaviors = {
 		if ( menuView.parentMenuView ) {
 			menuView.parentMenuView!.on<ObservableChangeEvent<boolean>>( 'change:isOpen', ( evt, name, isOpen ) => {
 				if ( !isOpen && evt.source === menuView.parentMenuView ) {
-					// @if CK_DEBUG_MENU_BAR // console.log( '[BEHAVIOR] closeOnParentClose(): Closing', logMenu( menuView ) );
-
 					menuView.isOpen = false;
 				}
 			} );

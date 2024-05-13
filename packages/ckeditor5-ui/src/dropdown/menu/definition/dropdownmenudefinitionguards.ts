@@ -4,10 +4,10 @@
  */
 
 /**
- * @module ui/dropdown/menu/definition/definitionguards
+ * @module ui/dropdown/menu/definition/dropdownmenudefinitionguards
  */
 
-import type { DropdownMenuDefinition } from './definitiontypings.js';
+import type { DropdownMenuDefinition } from './dropdownmenudefinitiontypings.js';
 
 export const isDropdownMenuDefinition = ( obj: any ): obj is DropdownMenuDefinition =>
 	obj && 'label' in obj && 'groups' in obj;

@@ -4,13 +4,13 @@
  */
 
 /**
- * @module ui/dropdown/menu/definition/definitiontypings
+ * @module ui/dropdown/menu/definition/dropdownmenudefinitiontypings
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
 import type { NonEmptyArray } from '@ckeditor/ckeditor5-core';
-import type DropdownMenuView from '../dropdownmenuview.js';
 import type { DropdownMenuFlatItemView } from '../typings.js';
+import type DropdownMenuView from '../dropdownmenuview.js';
 
 export type DropdownMenuViewItemDefinition = DropdownMenuView | DropdownMenuFlatItemView;
 

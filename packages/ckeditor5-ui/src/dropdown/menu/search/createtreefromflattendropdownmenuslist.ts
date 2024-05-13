@@ -13,7 +13,7 @@ import type { Increment } from '@ckeditor/ckeditor5-core';
 import type DropdownMenuView from '../dropdownmenuview.js';
 import type DropdownMenuListView from '../dropdownmenulistview.js';
 
-import type { DropdownMenuFlatItem } from '../definition/definitiontypings.js';
+import type { DropdownMenuFlatItemView } from '../typings.js';
 import { isDropdownMenuFlatItemView, isDropdownMenuView } from '../guards.js';
 
 import { DropdownMenuListItemView } from '../dropdownmenulistitemview.js';
@@ -93,7 +93,7 @@ export type DropdownMenuViewsTreeFlatItem<Extend = unknown> =
 	& WithTreeEntryKind<'Item'>
 	& WithTreeSearchMetadata
 	& {
-		item: DropdownMenuFlatItem;
+		item: DropdownMenuFlatItemView;
 	};
 
 /**
