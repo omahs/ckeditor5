@@ -4,7 +4,7 @@
  */
 
 /**
- * @module ui/dropdown/menu/search/walkoverdropdownmenuviewstreeitems
+ * @module ui/dropdown/menu/search/walkoverdropdownmenutreeitems
  */
 
 import type { NonEmptyArray } from '@ckeditor/ckeditor5-core';
@@ -12,14 +12,14 @@ import type {
 	DropdownMenusViewsTreeNode,
 	DropdownMenusViewsTreeNodeKind,
 	ExtractDropdownMenuViewTreeNodeByKind
-} from './createtreefromflattenmenuviews';
+} from './createtreefromflattendropdownmenuslist.js';
 
 /**
  * Recursive tree menu visitor.
  */
-export function walkOverDropdownMenuViewsTreeItems(
-	walkers: DropdownMenuViewsTreeWalkers,
-	tree: DropdownMenusViewsTreeNode
+export function walkOverDropdownMenuTreeItems<Extend>(
+	walkers: DropdownMenuViewsTreeWalkers<Extend>,
+	tree: DropdownMenusViewsTreeNode<Extend>
 ): void {
 	const parents: NonEmptyArray<DropdownMenusViewsTreeNode> = [ tree ];
 	const visitor: DropdownMenuViewsTreeVisitor = node => {
@@ -73,24 +73,26 @@ export function walkOverDropdownMenuViewsTreeItems(
 }
 
 export type DropdownMenuViewsTreeWalkerMetadata<
-	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind
+	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind,
+	Extend = unknown
 > = {
 	visitor: DropdownMenuViewsTreeVisitor;
-	node: ExtractDropdownMenuViewTreeNodeByKind<K>;
-	parents: NonEmptyArray<DropdownMenusViewsTreeNode>;
-	parent: DropdownMenusViewsTreeNode;
+	node: ExtractDropdownMenuViewTreeNodeByKind<K, Extend>;
+	parents: NonEmptyArray<DropdownMenusViewsTreeNode<Extend>>;
+	parent: DropdownMenusViewsTreeNode<Extend>;
 };
 
 export type DropdownMenuViewsTreeWalker<
-	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind
+	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind,
+	Extend = unknown
 > = {
 	// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-	enter?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K> ) => void | boolean;
-	leave?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K> ) => void;
+	enter?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K, Extend> ) => void | boolean;
+	leave?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K, Extend> ) => void;
 };
 
 type DropdownMenuViewsTreeVisitor = ( node: DropdownMenusViewsTreeNode ) => void;
 
-type DropdownMenuViewsTreeWalkers = {
-	[ K in DropdownMenusViewsTreeNodeKind ]?: DropdownMenuViewsTreeWalker<K>;
+export type DropdownMenuViewsTreeWalkers<Extend> = {
+	[ K in DropdownMenusViewsTreeNodeKind ]?: DropdownMenuViewsTreeWalker<K, Extend>;
 };

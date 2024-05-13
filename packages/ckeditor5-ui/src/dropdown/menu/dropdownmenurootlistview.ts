@@ -9,11 +9,12 @@
 
 import type DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 import type { Locale } from '@ckeditor/ckeditor5-utils';
-import type { MenuBarMenuChangeIsOpenEvent } from '../../menubar/menubarview.js';
+import { walkOverDropdownMenuTreeItems, type DropdownMenuViewsTreeWalkers } from './search/walkoverdropdownmenutreeitems.js';
 import type {
 	DropdownMenuViewItem,
 	DropdownMenuDefinition,
-	DropdownMenuRootFactoryDefinition
+	DropdownMenuRootFactoryDefinition,
+	DropdownMenuChangeIsOpenEvent
 } from './typings.js';
 
 import DropdownMenuView from './dropdownmenuview.js';
@@ -24,6 +25,7 @@ import ListSeparatorView from '../../list/listseparatorview.js';
 import ListItemView from '../../list/listitemview.js';
 import DropdownMenuListView from './dropdownmenulistview.js';
 import { isDropdownMenuDefinition } from './guards.js';
+import { createTreeFromFlattenDropdownMenusList, type DropdownMenuViewsRootTree } from './search/createtreefromflattendropdownmenuslist.js';
 
 const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:isOpen' ] as const;
 
@@ -34,7 +36,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	public menus: Array<DropdownMenuView> = [];
+	private _menus: Array<DropdownMenuView> = [];
 
 	/**
 	 * Indicates whether any of top-level menus are open in the menu bar. To close
@@ -52,11 +54,29 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		this._createFromDefinition( definition );
 	}
 
+	public get menus(): Readonly<Array<DropdownMenuView>> {
+		return [ ...this._menus ];
+	}
+
+	/**
+	 * TODO
+	 */
+	public get tree(): Readonly<DropdownMenuViewsRootTree> {
+		return createTreeFromFlattenDropdownMenusList( this._menus );
+	}
+
+	/**
+	 * TODO
+	 */
+	public walk( walkers: DropdownMenuViewsTreeWalkers ): void {
+		walkOverDropdownMenuTreeItems( walkers, this.tree );
+	}
+
 	/**
 	 * Closes all menus in the bar.
 	 */
 	public close(): void {
-		for ( const menuView of this.menus ) {
+		for ( const menuView of this._menus ) {
 			menuView.isOpen = false;
 		}
 	}
@@ -121,23 +141,23 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		menuDefinition: DropdownMenuDefinition;
 		parentMenuView: DropdownMenuView;
 	} ): Array<DropdownMenuListItemView | ListSeparatorView> {
+		const { groups } = menuDefinition;
 		const locale = this.locale!;
 		const items = [];
 
-		for ( const menuGroupDefinition of menuDefinition.groups ) {
+		for ( const menuGroupDefinition of groups ) {
 			for ( const itemDefinition of menuGroupDefinition.items ) {
 				const menuItemView = new DropdownMenuListItemView( locale, parentMenuView );
 
 				if ( isDropdownMenuDefinition( itemDefinition ) ) {
-					menuItemView.children.add( this._createMenu( {
-						menuDefinition: itemDefinition,
-						parentMenuView
-					} ) );
+					menuItemView.children.add(
+						this._createMenu( {
+							menuDefinition: itemDefinition,
+							parentMenuView
+						} )
+					);
 				} else {
-					const componentView = this._createMenuItemContentFromInstance( {
-						component: itemDefinition,
-						parentMenuView
-					} );
+					const componentView = this._registerMenuTree( itemDefinition, parentMenuView );
 
 					if ( !componentView ) {
 						continue;
@@ -150,7 +170,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 			}
 
 			// Separate groups with a separator.
-			if ( menuGroupDefinition !== menuDefinition.groups[ menuDefinition.groups.length - 1 ] ) {
+			if ( menuGroupDefinition !== groups[ groups.length - 1 ] ) {
 				items.push( new ListSeparatorView( locale ) );
 			}
 		}
@@ -161,28 +181,16 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
 	 * TODO
 	 */
-	private _createMenuItemContentFromInstance( { component, parentMenuView }: {
-		component: DropdownMenuViewItem;
-		parentMenuView: DropdownMenuView;
-	} ): DropdownMenuViewItem | null {
-		this._registerMenuTree( component, parentMenuView );
-
+	private _registerMenuTree( componentView: DropdownMenuViewItem, parentMenuView: DropdownMenuView ) {
 		// Close the whole menu bar when a component is executed.
-		component.on( 'execute', () => {
+		componentView.on( 'execute', () => {
 			this.close();
 		} );
 
-		return component;
-	}
-
-	/**
-	 * TODO
-	 */
-	private _registerMenuTree( componentView: DropdownMenuViewItem, parentMenuView: DropdownMenuView ) {
 		if ( !( componentView instanceof DropdownMenuView ) ) {
 			componentView.delegate( 'mouseenter' ).to( parentMenuView );
 
-			return;
+			return componentView;
 		}
 
 		this.registerMenu( componentView, parentMenuView );
@@ -193,7 +201,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		if ( !menuBarItemsList ) {
 			componentView.delegate( 'mouseenter' ).to( parentMenuView );
 
-			return;
+			return componentView;
 		}
 
 		const nonSeparatorItems = menuBarItemsList.items.filter( item => item instanceof ListItemView ) as Array<ListItemView>;
@@ -204,6 +212,8 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 				componentView
 			);
 		}
+
+		return componentView;
 	}
 
 	/**
@@ -218,8 +228,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		}
 
 		menuView._attachBehaviors();
-
-		this.menus.push( menuView );
+		this._menus.push( menuView );
 	}
 
 	/**
@@ -233,14 +242,14 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 		let closeTimeout: ReturnType<typeof setTimeout>;
 
 		// TODO: This is not the prettiest approach but at least it's simple.
-		this.on<MenuBarMenuChangeIsOpenEvent>( 'menu:change:isOpen', ( evt, name, isOpen ) => {
+		this.on<DropdownMenuChangeIsOpenEvent>( 'menu:change:isOpen', ( evt, name, isOpen ) => {
 			clearTimeout( closeTimeout );
 
 			if ( isOpen ) {
 				this.isOpen = true;
 			} else {
 				closeTimeout = setTimeout( () => {
-					this.isOpen = Array.from( this.menus ).some( menuView => menuView.isOpen );
+					this.isOpen = this._menus.some( menuView => menuView.isOpen );
 				}, 0 );
 			}
 		} );

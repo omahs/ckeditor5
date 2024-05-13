@@ -7,14 +7,13 @@
  * @module ui/dropdown/menu/search/gettotaldropdownmenutreesearchableitemscount
  */
 
-import { walkOverDropdownMenuViewsTreeItems } from './walkoverdropdownmenuviewstreeitems';
+import type { DropdownMenusViewsTreeNode } from './createtreefromflattendropdownmenuslist.js';
+import { walkOverDropdownMenuTreeItems } from './walkoverdropdownmenutreeitems.js';
 
-import type { DropdownMenusViewsTreeNode } from './createtreefromflattenmenuviews';
-
-export function getTotalDropdownMenuTreeSearchableItemsCount( tree: DropdownMenusViewsTreeNode ): number {
+export function getTotalDropdownMenuTreeSearchableItemsCount<Extend>( tree: DropdownMenusViewsTreeNode<Extend> ): number {
 	let totalItemsCount = 0;
 
-	walkOverDropdownMenuViewsTreeItems(
+	walkOverDropdownMenuTreeItems<Extend>(
 		{
 			Item: {
 				enter: () => {

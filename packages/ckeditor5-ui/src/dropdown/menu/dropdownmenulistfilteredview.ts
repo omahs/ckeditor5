@@ -13,7 +13,7 @@ import type FilteredView from '../../search/filteredview.js';
 
 import View from '../../view.js';
 import DropdownMenuRootListView from './dropdownmenurootlistview.js';
-import { searchDropdownMenuTreeByRegExp } from './search/searchdropdownmenutree.js';
+import { filterDropdownMenuTreeByRegExp } from './search/filterdropdownmenutreebyregexp.js';
 
 /**
  * TODO
@@ -51,7 +51,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
-		const { filteredTree, resultsCount, totalItemsCount } = searchDropdownMenuTreeByRegExp( regExp, this._menuView.menus );
+		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this._menuView.tree );
 
 		console.info( regExp, { filteredTree, resultsCount, totalItemsCount } );
 

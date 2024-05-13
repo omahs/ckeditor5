@@ -4,23 +4,25 @@
  */
 
 /**
- * @module ui/dropdown/menu/search/createtreefromflattenmenuviews
+ * @module ui/dropdown/menu/search/createtreefromflattendropdownmenuslist
  */
 
+import { mapFilter } from '@ckeditor/ckeditor5-utils';
+
+import type { Increment } from '@ckeditor/ckeditor5-core/src/typings.js';
 import type { DropdownMenuFlatItem } from '../typings.js';
 import type DropdownMenuView from '../dropdownmenuview.js';
 import type DropdownMenuListView from '../dropdownmenulistview.js';
 
 import { DropdownMenuListItemView } from '../dropdownmenulistitemview.js';
 import { isDropdownMenuFlatItemView, isDropdownMenuView } from '../guards.js';
-import { mapFilter } from '@ckeditor/ckeditor5-utils';
 import { createTextSearchMetadata, type WithTreeSearchMetadata } from './dropdownmenutreesearchmetadata.js';
 
 /**
  * Constructs tree based on currently rendered dropdown menu views. It is not based on factory
  * definition, so constructed tree includes all recent modifications of menus such as addition or removal menu items.
  */
-export function createTreeFromFlattenMenuViews( menus: Array<DropdownMenuView> ): DropdownMenuViewsRootTree {
+export function createTreeFromFlattenDropdownMenusList( menus: Array<DropdownMenuView> ): DropdownMenuViewsRootTree {
 	const menusTreeMap = menus.reduce<Map<DropdownMenuView, DropdownMenuViewsNestedTree>>(
 		( acc, menu ) => {
 			acc.set( menu, {
@@ -80,37 +82,55 @@ type WithTreeEntryKind<K extends string> = {
 	kind: K;
 };
 
-type DropdownMenuViewsTreeFlatItem =
+type MaxDropdownTreeMenuDepth = 6;
+
+/**
+ * Non-menu entry of menu such like Button or Checkbox.
+ */
+export type DropdownMenuViewsTreeFlatItem<Extend = unknown> =
+	& Extend
 	& WithTreeEntryKind<'Item'>
 	& WithTreeSearchMetadata
 	& {
 		item: DropdownMenuFlatItem;
 	};
 
-type DropdownMenuViewsNestedTree =
+/**
+ * Menu entry of menu that holds flat items.
+ */
+type DropdownMenuViewsNestedTree<Extend = unknown, Level extends number = 0> =
+	& Extend
 	& WithTreeEntryKind<'Menu'>
 	& WithTreeSearchMetadata
 	& {
 		menu: DropdownMenuView;
-		children: Array<DropdownMenuViewsChildItem>;
+		children: MaxDropdownTreeMenuDepth extends Level ? never : Array<DropdownMenuViewsChildItem<Extend, Increment<Level>>>;
 	};
 
-type DropdownMenuViewsRootTree =
+export type DropdownMenuViewsChildItem<Extend = unknown, Level extends number = 0> =
+	| DropdownMenuViewsTreeFlatItem<Extend>
+	| DropdownMenuViewsNestedTree<Extend, Level>;
+
+/**
+ * Root menu entry that holds flat items or menu items.
+ */
+export type DropdownMenuViewsRootTree<Extend = unknown> =
 	& WithTreeEntryKind<'Root'>
 	& {
-		children: Array<DropdownMenuViewsChildItem>;
+		children: Array<DropdownMenuViewsChildItem<Extend>>;
 	};
 
-export type DropdownMenuViewsChildItem =
-	| DropdownMenuViewsTreeFlatItem
-	| DropdownMenuViewsNestedTree;
-
-export type DropdownMenusViewsTreeNode =
-	| DropdownMenuViewsChildItem
-	| DropdownMenuViewsNestedTree
-	| DropdownMenuViewsRootTree;
+/**
+ * All possible tree node types.
+ */
+export type DropdownMenusViewsTreeNode<Extend = unknown, Level extends number = 0> =
+	| DropdownMenuViewsChildItem<Extend, Level>
+	| DropdownMenuViewsRootTree<Extend>;
 
 export type DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNode[ 'kind' ];
 
-export type ExtractDropdownMenuViewTreeNodeByKind<K extends DropdownMenusViewsTreeNodeKind> =
-	Extract<DropdownMenusViewsTreeNode, { kind: K }>;
+export type ExtractDropdownMenuViewTreeNodeByKind<K extends DropdownMenusViewsTreeNodeKind, Extend = unknown> =
+	Extract<DropdownMenusViewsTreeNode<Extend>, { kind: K }>;
+
+export type ExcludeDropdownMenuViewTreeNodeByKind<K extends DropdownMenusViewsTreeNodeKind, Extend = unknown> =
+	Exclude<DropdownMenusViewsTreeNode<Extend>, { kind: K }>;
