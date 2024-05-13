@@ -49,7 +49,11 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 					'ck-dropdown-menu-filter'
 				],
 				tabindex: -1
-			}
+			},
+
+			children: [
+				this._menuView
+			]
 		} );
 	}
 
@@ -61,6 +65,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 
 		if ( this._foundListView ) {
 			this._foundListView.destroy();
+			this._foundListView = null;
 		}
 
 		if ( resultsCount !== totalItemsCount ) {
@@ -69,10 +74,6 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 
 			element!.appendChild( this._foundListView.element! );
 		} else {
-			if ( !this._menuView.isRendered ) {
-				this._menuView.render();
-			}
-
 			element!.appendChild( this._menuView.element! );
 		}
 
@@ -83,6 +84,12 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	public focus(): void {
-		this._menuView.focus();
+		const { _menuView, _foundListView } = this;
+
+		if ( _foundListView ) {
+			_foundListView.focus();
+		} else {
+			_menuView.focus();
+		}
 	}
 }
