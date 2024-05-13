@@ -14,7 +14,7 @@ import { walkOverDropdownMenuTreeItems } from './walkoverdropdownmenutreeitems.j
 export function flattenDropdownMenuTree<Extend>(
 	tree: DropdownMenusViewsTreeNode<Extend>
 ): Array<DropdownMenusViewsTreeFlattenNode<Extend>> {
-	const flattenNodes: Array<DropdownMenusViewsTreeFlattenNode> = [];
+	const flattenNodes: Array<DropdownMenusViewsTreeFlattenNode<Extend>> = [];
 
 	walkOverDropdownMenuTreeItems(
 		{
