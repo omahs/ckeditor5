@@ -55,7 +55,7 @@ export { default as DropdownButtonView } from './dropdown/button/dropdownbuttonv
 export { default as SplitButtonView } from './dropdown/button/splitbuttonview.js';
 export * from './dropdown/utils.js';
 
-export { default as DropdownMenuListFilteredView } from './dropdown/menu/dropdownmenulistfilteredview.js';
+export { default as DropdownMenuListFilteredView } from './dropdown/menu/filterview/dropdownmenulistfilteredview.js';
 export { default as DropdownMenuListItemButtonView } from './dropdown/menu/dropdownmenulistitembuttonview.js';
 export type {
 	DropdownMenuGroupDefinition,

@@ -4,18 +4,18 @@
  */
 
 /**
- * @module ui/dropdown/menu/dropdownmenulistfilteredview
+ * @module ui/dropdown/menu/filterview/dropdownmenulistfilteredview
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
-import type { DropdownMenuRootFactoryDefinition } from './typings.js';
-import type FilteredView from '../../search/filteredview.js';
+import type { DropdownMenuRootFactoryDefinition } from '../typings.js';
+import type FilteredView from '../../../search/filteredview.js';
 
-import { filterDropdownMenuTreeByRegExp } from './search/filterdropdownmenutreebyregexp.js';
+import { filterDropdownMenuTreeByRegExp } from '../search/filterdropdownmenutreebyregexp.js';
 
-import View from '../../view.js';
+import View from '../../../view.js';
 import DropdownMenuListFoundListView from './dropdownmenulistfoundlistview.js';
-import DropdownMenuRootListView from './dropdownmenurootlistview.js';
+import DropdownMenuRootListView from '../dropdownmenurootlistview.js';
 
 /**
  * TODO

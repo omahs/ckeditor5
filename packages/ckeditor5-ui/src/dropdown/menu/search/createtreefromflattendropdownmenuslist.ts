@@ -96,18 +96,24 @@ export type DropdownMenuViewsTreeFlatItem<Extend = unknown> =
 	};
 
 /**
- * Menu entry of menu that holds flat items.
+ * Nested menu entry.
  */
-type DropdownMenuViewsNestedTree<Extend = unknown, Level extends number = 0> =
+type DropdownMenuViewsNestedTree<
+	Extend = unknown,
+	Level extends number = 0
+> =
 	& Extend
 	& WithTreeEntryKind<'Menu'>
 	& WithTreeSearchMetadata
 	& {
 		menu: DropdownMenuView;
-		children: MaxDropdownTreeMenuDepth extends Level ? never : Array<DropdownMenuViewsChildItem<Extend, Increment<Level>>>;
+		children: MaxDropdownTreeMenuDepth extends Level ? never : Array<DropdownMenuViewsTreeChildItem<Extend, Increment<Level>>>;
 	};
 
-export type DropdownMenuViewsChildItem<Extend = unknown, Level extends number = 0> =
+export type DropdownMenuViewsTreeChildItem<
+	Extend = unknown,
+	Level extends number = 0
+> =
 	| DropdownMenuViewsTreeFlatItem<Extend>
 	| DropdownMenuViewsNestedTree<Extend, Level>;
 
@@ -117,20 +123,29 @@ export type DropdownMenuViewsChildItem<Extend = unknown, Level extends number = 
 export type DropdownMenuViewsRootTree<Extend = unknown> =
 	& WithTreeEntryKind<'Root'>
 	& {
-		children: Array<DropdownMenuViewsChildItem<Extend>>;
+		children: Array<DropdownMenuViewsTreeChildItem<Extend>>;
 	};
 
 /**
  * All possible tree node types.
  */
-export type DropdownMenusViewsTreeNode<Extend = unknown, Level extends number = 0> =
-	| DropdownMenuViewsChildItem<Extend, Level>
+export type DropdownMenusViewsTreeNode<
+	Extend = unknown,
+	Level extends number = 0
+> =
+	| DropdownMenuViewsTreeChildItem<Extend, Level>
 	| DropdownMenuViewsRootTree<Extend>;
 
 export type DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNode[ 'kind' ];
 
-export type ExtractDropdownMenuViewTreeNodeByKind<K extends DropdownMenusViewsTreeNodeKind, Extend = unknown> =
+export type ExtractDropdownMenuViewTreeNodeByKind<
+	K extends DropdownMenusViewsTreeNodeKind,
+	Extend = unknown
+> =
 	Extract<DropdownMenusViewsTreeNode<Extend>, { kind: K }>;
 
-export type ExcludeDropdownMenuViewTreeNodeByKind<K extends DropdownMenusViewsTreeNodeKind, Extend = unknown> =
+export type ExcludeDropdownMenuViewTreeNodeByKind<
+	K extends DropdownMenusViewsTreeNodeKind,
+	Extend = unknown
+> =
 	Exclude<DropdownMenusViewsTreeNode<Extend>, { kind: K }>;

@@ -7,14 +7,14 @@
  * @module ui/dropdown/menu/search/tryremovedropdownmenutreechild
  */
 
-import type { DropdownMenuViewsChildItem, DropdownMenusViewsTreeNode } from './createtreefromflattendropdownmenuslist.js';
+import type { DropdownMenuViewsTreeChildItem, DropdownMenusViewsTreeNode } from './createtreefromflattendropdownmenuslist.js';
 
 /**
  * If passed element has `children` property then passed `child` is removed.
  */
 export function tryRemoveDropdownMenuTreeChild<P extends DropdownMenusViewsTreeNode>(
 	parent: P,
-	child: DropdownMenuViewsChildItem
+	child: DropdownMenuViewsTreeChildItem
 ): P {
 	switch ( parent.kind ) {
 		case 'Item':
