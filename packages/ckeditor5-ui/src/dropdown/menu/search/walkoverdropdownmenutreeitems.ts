@@ -26,7 +26,17 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 		const {
 			enter = () => {},
 			leave = () => {}
-		} = ( walkers[ node.kind ] || {} ) as DropdownMenuViewsTreeWalker;
+		} = ( () => {
+			const walkerOrCallback = walkers[ node.kind ];
+
+			if ( typeof walkerOrCallback === 'function' ) {
+				return {
+					enter: walkerOrCallback
+				};
+			}
+
+			return ( walkers[ node.kind ] || {} );
+		} )() as DropdownMenuViewsTreeWalker;
 
 		const walkerMetadata: DropdownMenuViewsTreeWalkerMetadata = {
 			parents: [ ...parents ] as NonEmptyArray<DropdownMenusViewsTreeNode>,
@@ -100,5 +110,5 @@ export type DropdownMenuViewsTreeWalker<
 type DropdownMenuViewsTreeVisitor = ( node: DropdownMenusViewsTreeNode ) => void;
 
 export type DropdownMenuViewsTreeWalkers<Extend = unknown> = {
-	[ K in DropdownMenusViewsTreeNodeKind ]?: DropdownMenuViewsTreeWalker<K, Extend>;
+	[ K in DropdownMenusViewsTreeNodeKind ]?: DropdownMenuViewsTreeWalker<K, Extend> | DropdownMenuViewsTreeWalker<K, Extend>[ 'enter' ];
 };

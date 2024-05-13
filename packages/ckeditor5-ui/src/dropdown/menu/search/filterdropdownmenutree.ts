@@ -47,14 +47,12 @@ export function filterDropdownMenuTree(
 					}
 				}
 			},
-			Item: {
-				enter: ( { parent, node } ) => {
-					// Reject element from tree if not matches.
-					if ( !filterFn( node ) ) {
-						tryRemoveDropdownMenuTreeChild( parent, node );
-					} else {
-						node.found = true;
-					}
+			Item: ( { parent, node } ) => {
+				// Reject element from tree if not matches.
+				if ( !filterFn( node ) ) {
+					tryRemoveDropdownMenuTreeChild( parent, node );
+				} else {
+					node.found = true;
 				}
 			}
 		},

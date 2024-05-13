@@ -59,6 +59,7 @@ export default class DropdownMenuListFoundListView extends ListView {
 			labelView.highlightText( highlightRegex );
 
 			button.delegate( 'execute' ).to( entry.item );
+			button.bind( 'isEnabled' ).to( entry.item, 'isEnabled' );
 
 			return listItemView;
 		};

@@ -15,10 +15,8 @@ export function getTotalDropdownMenuTreeSearchableItemsCount<Extend>( tree: Drop
 
 	walkOverDropdownMenuTreeItems<Extend>(
 		{
-			Item: {
-				enter: () => {
-					totalItemsCount++;
-				}
+			Item: () => {
+				totalItemsCount++;
 			}
 		},
 		tree

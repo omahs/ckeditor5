@@ -18,15 +18,13 @@ export function flattenDropdownMenuTree<Extend>(
 
 	walkOverDropdownMenuTreeItems(
 		{
-			Item: {
-				enter: ( { node, parents } ) => {
-					flattenNodes.push(
-						{
-							parents,
-							node
-						}
-					);
-				}
+			Item: ( { node, parents } ) => {
+				flattenNodes.push(
+					{
+						parents,
+						node
+					}
+				);
 			}
 		},
 		tree

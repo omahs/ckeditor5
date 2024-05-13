@@ -24,12 +24,12 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	/**
 	 * TODO
 	 */
-	public menuView: DropdownMenuRootListView;
+	protected _menuView: DropdownMenuRootListView;
 
 	/**
 	 * TODO
 	 */
-	public foundListView: DropdownMenuListFoundListView | null = null;
+	protected _foundListView: DropdownMenuListFoundListView | null = null;
 
 	/**
 	 * Creates an instance of the list view.
@@ -39,7 +39,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	constructor( locale: Locale, definition: DropdownMenuRootFactoryDefinition ) {
 		super( locale );
 
-		this.menuView = new DropdownMenuRootListView( locale, definition );
+		this._menuView = new DropdownMenuRootListView( locale, definition );
 		this.setTemplate( {
 			tag: 'div',
 
@@ -52,29 +52,29 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 			},
 
 			children: [
-				this.menuView
+				this._menuView
 			]
 		} );
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
 		const { element } = this;
-		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this.menuView.tree );
+		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this._menuView.tree );
 
 		element!.innerHTML = '';
 
-		if ( this.foundListView ) {
-			this.foundListView.destroy();
-			this.foundListView = null;
+		if ( this._foundListView ) {
+			this._foundListView.destroy();
+			this._foundListView = null;
 		}
 
 		if ( resultsCount !== totalItemsCount ) {
-			this.foundListView = new DropdownMenuListFoundListView( this.locale!, regExp, filteredTree );
-			this.foundListView.render();
+			this._foundListView = new DropdownMenuListFoundListView( this.locale!, regExp, filteredTree );
+			this._foundListView.render();
 
-			element!.appendChild( this.foundListView.element! );
+			element!.appendChild( this._foundListView.element! );
 		} else {
-			element!.appendChild( this.menuView.element! );
+			element!.appendChild( this._menuView.element! );
 		}
 
 		return {
@@ -84,12 +84,12 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	public focus(): void {
-		const { menuView, foundListView } = this;
+		const { _menuView, _foundListView } = this;
 
-		if ( foundListView ) {
-			foundListView.focus();
+		if ( _foundListView ) {
+			_foundListView.focus();
 		} else {
-			menuView.focus();
+			_menuView.focus();
 		}
 	}
 }
