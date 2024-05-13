@@ -93,6 +93,6 @@ export type DropdownMenuViewsTreeWalker<
 
 type DropdownMenuViewsTreeVisitor = ( node: DropdownMenusViewsTreeNode ) => void;
 
-export type DropdownMenuViewsTreeWalkers<Extend> = {
+export type DropdownMenuViewsTreeWalkers<Extend = unknown> = {
 	[ K in DropdownMenusViewsTreeNodeKind ]?: DropdownMenuViewsTreeWalker<K, Extend>;
 };

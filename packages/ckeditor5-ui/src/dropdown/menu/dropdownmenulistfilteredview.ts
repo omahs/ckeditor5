@@ -15,7 +15,7 @@ import type { DropdownMenusViewsFilteredTreeNode } from './search/filterdropdown
 import View from '../../view.js';
 import DropdownMenuRootListView from './dropdownmenurootlistview.js';
 import { filterDropdownMenuTreeByRegExp } from './search/filterdropdownmenutreebyregexp.js';
-import { flattenDropdownMenuTree } from './search/flattendropdownmenutree.js';
+import { groupDropdownTreeByFirstFoundParent } from './search/groupdropdowntreebyfirstfoundparent.js';
 
 /**
  * TODO
@@ -55,7 +55,9 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
 		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this._menuView.tree );
 
-		DropdownMenuListFilteredView._createFilteredTreeViews( filteredTree );
+		if ( resultsCount !== totalItemsCount ) {
+			DropdownMenuListFilteredView._createFilteredTreeViews( filteredTree );
+		}
 
 		return {
 			resultsCount,
@@ -68,8 +70,8 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	private static _createFilteredTreeViews( tree: DropdownMenusViewsFilteredTreeNode ) {
-		const flattenTree = flattenDropdownMenuTree( tree );
+		const groupedItems = groupDropdownTreeByFirstFoundParent( tree );
 
-		console.info( flattenTree );
+		console.info( groupedItems );
 	}
 }
