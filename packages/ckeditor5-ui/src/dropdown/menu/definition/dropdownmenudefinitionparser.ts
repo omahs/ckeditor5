@@ -42,9 +42,7 @@ export class DropdownMenuDefinitionParser {
 			const listItem = new DropdownMenuListItemView( this._view.locale! );
 
 			listItem.children.add(
-				this._createMenuFromDefinition( {
-					menuDefinition
-				} )
+				this._createMenuFromDefinition( menuDefinition )
 			);
 
 			return listItem;
@@ -56,10 +54,10 @@ export class DropdownMenuDefinitionParser {
 	/**
 	 * TODO
 	 */
-	private _createMenuFromDefinition( { menuDefinition, parentMenuView }: {
-		menuDefinition: DropdownMenuDefinition;
-		parentMenuView?: DropdownMenuView;
-	} ) {
+	private _createMenuFromDefinition(
+		menuDefinition: DropdownMenuDefinition,
+		parentMenuView?: DropdownMenuView
+	) {
 		const { _view } = this;
 
 		const locale = _view.locale!;
@@ -75,10 +73,7 @@ export class DropdownMenuDefinitionParser {
 
 		listView.ariaLabel = menuDefinition.label;
 		listView.items.addMany(
-			this._createMenuItemsFromDefinition( {
-				menuDefinition,
-				parentMenuView: menuView
-			} )
+			this._createMenuItemsFromDefinition( menuDefinition, menuView )
 		);
 
 		menuView.panelView.children.add( listView );
@@ -88,10 +83,10 @@ export class DropdownMenuDefinitionParser {
 	/**
 	 * TODO
 	 */
-	private _createMenuItemsFromDefinition( { menuDefinition, parentMenuView }: {
-		menuDefinition: DropdownMenuDefinition;
-		parentMenuView: DropdownMenuView;
-	} ): Array<DropdownMenuListItemView | ListSeparatorView> {
+	private _createMenuItemsFromDefinition(
+		menuDefinition: DropdownMenuDefinition,
+		parentMenuView: DropdownMenuView
+	): Array<DropdownMenuListItemView | ListSeparatorView> {
 		const { _view } = this;
 		const { groups } = menuDefinition;
 
@@ -104,10 +99,7 @@ export class DropdownMenuDefinitionParser {
 
 				if ( isDropdownMenuDefinition( itemDefinition ) ) {
 					menuItemView.children.add(
-						this._createMenuFromDefinition( {
-							menuDefinition: itemDefinition,
-							parentMenuView
-						} )
+						this._createMenuFromDefinition( itemDefinition, parentMenuView )
 					);
 				} else {
 					const componentView = this._registerMenuTreeFromDefinition( itemDefinition, parentMenuView );
@@ -134,7 +126,10 @@ export class DropdownMenuDefinitionParser {
 	/**
 	 * TODO
 	 */
-	private _registerMenuTreeFromDefinition( componentView: DropdownMenuViewItemDefinition, parentMenuView: DropdownMenuView ) {
+	private _registerMenuTreeFromDefinition(
+		componentView: DropdownMenuViewItemDefinition,
+		parentMenuView: DropdownMenuView
+	) {
 		const { _view } = this;
 
 		if ( !( componentView instanceof DropdownMenuView ) ) {

@@ -61,7 +61,7 @@ export type {
 	DropdownMenuGroupDefinition,
 	DropdownMenuDefinition,
 	DropdownMenuRootFactoryDefinition
-} from './dropdown/menu/factory/definitiontypings.js';
+} from './dropdown/menu/definition/dropdownmenudefinitiontypings.js';
 
 export { default as EditorUI, type EditorUIReadyEvent, type EditorUIUpdateEvent } from './editorui/editorui.js';
 export { default as EditorUIView } from './editorui/editoruiview.js';

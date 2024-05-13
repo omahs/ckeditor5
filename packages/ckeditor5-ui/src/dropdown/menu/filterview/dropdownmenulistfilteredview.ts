@@ -8,7 +8,7 @@
  */
 
 import type { Locale } from '@ckeditor/ckeditor5-utils';
-import type { DropdownMenuRootFactoryDefinition } from '../factory/definitiontypings.js';
+import type { DropdownMenuRootFactoryDefinition } from '../definition/dropdownmenudefinitiontypings.js';
 import type FilteredView from '../../../search/filteredview.js';
 
 import { filterDropdownMenuTreeByRegExp } from '../search/filterdropdownmenutreebyregexp.js';
@@ -24,12 +24,12 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	/**
 	 * TODO
 	 */
-	private _menuView: DropdownMenuRootListView;
+	public menuView: DropdownMenuRootListView;
 
 	/**
 	 * TODO
 	 */
-	private _foundListView: DropdownMenuListFoundListView | null = null;
+	public foundListView: DropdownMenuListFoundListView | null = null;
 
 	/**
 	 * Creates an instance of the list view.
@@ -39,7 +39,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	constructor( locale: Locale, definition: DropdownMenuRootFactoryDefinition ) {
 		super( locale );
 
-		this._menuView = new DropdownMenuRootListView( locale, definition );
+		this.menuView = new DropdownMenuRootListView( locale, definition );
 		this.setTemplate( {
 			tag: 'div',
 
@@ -52,29 +52,29 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 			},
 
 			children: [
-				this._menuView
+				this.menuView
 			]
 		} );
 	}
 
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
 		const { element } = this;
-		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this._menuView.tree );
+		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this.menuView.tree );
 
 		element!.innerHTML = '';
 
-		if ( this._foundListView ) {
-			this._foundListView.destroy();
-			this._foundListView = null;
+		if ( this.foundListView ) {
+			this.foundListView.destroy();
+			this.foundListView = null;
 		}
 
 		if ( resultsCount !== totalItemsCount ) {
-			this._foundListView = new DropdownMenuListFoundListView( this.locale!, regExp, filteredTree );
-			this._foundListView.render();
+			this.foundListView = new DropdownMenuListFoundListView( this.locale!, regExp, filteredTree );
+			this.foundListView.render();
 
-			element!.appendChild( this._foundListView.element! );
+			element!.appendChild( this.foundListView.element! );
 		} else {
-			element!.appendChild( this._menuView.element! );
+			element!.appendChild( this.menuView.element! );
 		}
 
 		return {
@@ -84,12 +84,12 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	}
 
 	public focus(): void {
-		const { _menuView, _foundListView } = this;
+		const { menuView, foundListView } = this;
 
-		if ( _foundListView ) {
-			_foundListView.focus();
+		if ( foundListView ) {
+			foundListView.focus();
 		} else {
-			_menuView.focus();
+			menuView.focus();
 		}
 	}
 }

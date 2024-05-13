@@ -7,7 +7,6 @@
  * @module ui/dropdown/menu/definition/dropdownmenudefinitiontypings
  */
 
-import type { Locale } from '@ckeditor/ckeditor5-utils';
 import type { NonEmptyArray } from '@ckeditor/ckeditor5-core';
 import type { DropdownMenuFlatItemView } from '../typings.js';
 import type DropdownMenuView from '../dropdownmenuview.js';
@@ -27,6 +26,5 @@ export type DropdownMenuDefinition = {
  * TODO
  */
 export type DropdownMenuRootFactoryDefinition = {
-	locale: Locale;
 	items: NonEmptyArray<DropdownMenuDefinition>;
 };
