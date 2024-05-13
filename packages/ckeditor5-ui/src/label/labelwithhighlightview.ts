@@ -7,10 +7,10 @@
  * @module ui/label/labelwithhighlightview
  */
 
-import type LabelView from './labelview';
+import type LabelView from './labelview.js';
 
 import { uid } from '@ckeditor/ckeditor5-utils';
-import HighlightedTextView from '../highlightedtext/highlightedtextview';
+import HighlightedTextView from '../highlightedtext/highlightedtextview.js';
 
 /**
  * A label view that can highlight a text fragment.

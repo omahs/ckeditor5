@@ -10,10 +10,12 @@
 import type { Locale } from '@ckeditor/ckeditor5-utils';
 import type { DropdownMenuRootFactoryDefinition } from './typings.js';
 import type FilteredView from '../../search/filteredview.js';
+import type { DropdownMenusViewsFilteredTreeNode } from './search/filterdropdownmenutree.js';
 
 import View from '../../view.js';
 import DropdownMenuRootListView from './dropdownmenurootlistview.js';
 import { filterDropdownMenuTreeByRegExp } from './search/filterdropdownmenutreebyregexp.js';
+import { flattenDropdownMenuTree } from './search/flattendropdownmenutree.js';
 
 /**
  * TODO
@@ -53,7 +55,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
 		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this._menuView.tree );
 
-		console.info( regExp, { filteredTree, resultsCount, totalItemsCount } );
+		DropdownMenuListFilteredView._createFilteredTreeViews( filteredTree );
 
 		return {
 			resultsCount,
@@ -63,5 +65,11 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 
 	public focus(): void {
 		this._menuView.focus();
+	}
+
+	private static _createFilteredTreeViews( tree: DropdownMenusViewsFilteredTreeNode ) {
+		const flattenTree = flattenDropdownMenuTree( tree );
+
+		console.info( flattenTree );
 	}
 }

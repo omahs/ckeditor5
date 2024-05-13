@@ -7,11 +7,11 @@
  * @module ui/dropdown/menu/search/shallowclonedropdownmenutree
  */
 
+import type { DeepReadonly } from '@ckeditor/ckeditor5-core';
+import type { DropdownMenusViewsTreeNode } from './createtreefromflattendropdownmenuslist.js';
+
 import { cloneDeepWith } from 'lodash-es';
 import View from '../../../view.js';
-
-import type { DropdownMenusViewsTreeNode } from './createtreefromflattendropdownmenuslist.js';
-import type { DeepReadonly } from '@ckeditor/ckeditor5-core/src/typings.js';
 
 export function shallowCloneDropdownMenuTree( tree: DeepReadonly<DropdownMenusViewsTreeNode> ): DropdownMenusViewsTreeNode {
 	return cloneDeepWith( tree, ( element ): any => {

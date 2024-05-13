@@ -7,7 +7,7 @@
  * @module ui/dropdown/menu/search/searchdropdownmenuslist
  */
 
-import type { DeepReadonly } from '@ckeditor/ckeditor5-core/src/typings.js';
+import type { DeepReadonly } from '@ckeditor/ckeditor5-core';
 import type {
 	DropdownMenuViewsRootTree,
 	DropdownMenusViewsTreeNode,

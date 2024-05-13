@@ -7,7 +7,7 @@
  * @module ui/dropdown/menu/search/filterdropdownmenutreebyregexp
  */
 
-import type { DeepReadonly } from '@ckeditor/ckeditor5-core/src/typings.js';
+import type { DeepReadonly } from '@ckeditor/ckeditor5-core';
 import type { DropdownMenuViewsRootTree } from './createtreefromflattendropdownmenuslist.js';
 
 import { filterDropdownMenuTree, type DropdownMenuSearchResult } from './filterdropdownmenutree.js';

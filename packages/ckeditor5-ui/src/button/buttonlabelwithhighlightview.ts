@@ -7,8 +7,8 @@
  * @module ui/button/buttonlabelwithhighlightview
  */
 
-import type ButtonLabel from './buttonlabel';
-import HighlightedTextView from '../highlightedtext/highlightedtextview';
+import type ButtonLabel from './buttonlabel.js';
+import HighlightedTextView from '../highlightedtext/highlightedtextview.js';
 
 /**
  * A button label view that can highlight a text fragment.
