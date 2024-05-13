@@ -3,17 +3,6 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-.ck.ck-dropdown-menu {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-start;
-	background: var(--ck-color-base-background);
-	padding: var(--ck-spacing-small);
-	gap: var(--ck-spacing-small);
-	border: 1px solid var(--ck-color-toolbar-border);
-	width: 100%;
-}
-
 .ck.ck-dropdown-menu__menu {
 	/* Enable font size inheritance, which allows fluid UI scaling. */
 	font-size: inherit;
