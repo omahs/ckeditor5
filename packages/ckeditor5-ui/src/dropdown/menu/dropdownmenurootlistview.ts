@@ -29,22 +29,28 @@ import {
 const EVENT_NAME_DELEGATES = [ 'mouseenter', 'arrowleft', 'arrowright', 'change:isOpen' ] as const;
 
 /**
- * TODO
+ * Represents the root list view of a dropdown menu.
  */
 export default class DropdownMenuRootListView extends DropdownMenuListView {
 	/**
-	 * TODO
+	 * Array of top-level menus in the dropdown menu.
 	 */
 	private _menus: Array<DropdownMenuView> = [];
 
 	/**
-	 * Indicates whether any of top-level menus are open in the menu bar. To close
-	 * the menu bar use the {@link #close} method.
+	 * Indicates whether any of the top-level menus are open in the menu bar. To close
+	 * the menu bar, use the `close` method.
 	 *
 	 * @observable
 	 */
 	declare public isOpen: boolean;
 
+	/**
+	 * Creates a new instance of DropdownMenuRootListView.
+	 *
+	 * @param locale - The locale of the dropdown menu.
+	 * @param definition - The definition of the dropdown menu.
+	 */
 	constructor( locale: Locale, definition: DropdownMenuRootFactoryDefinition ) {
 		super( locale );
 
@@ -55,35 +61,43 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	}
 
 	/**
-	 * TODO
+	 * Gets the definition parser for the dropdown menu.
+	 *
+	 * @returns The definition parser.
 	 */
 	public get definition(): DropdownMenuDefinitionParser {
 		return new DropdownMenuDefinitionParser( this );
 	}
 
 	/**
-	 * TODO
+	 * Gets the array of top-level menus in the dropdown menu.
+	 *
+	 * @returns The array of top-level menus.
 	 */
 	public get menus(): Readonly<Array<DropdownMenuView>> {
 		return [ ...this._menus ];
 	}
 
 	/**
-	 * TODO
+	 * Gets the tree representation of the dropdown menu views.
+	 *
+	 * @returns The tree representation of the dropdown menu views.
 	 */
 	public get tree(): Readonly<DropdownMenuViewsRootTree> {
 		return createTreeFromFlattenDropdownMenusList( this._menus );
 	}
 
 	/**
-	 * TODO
+	 * Walks over the dropdown menu views using the specified walkers.
+	 *
+	 * @param walkers - The walkers to use.
 	 */
 	public walk( walkers: DropdownMenuViewsTreeWalkers ): void {
 		walkOverDropdownMenuTreeItems( walkers, this.tree );
 	}
 
 	/**
-	 * Closes all menus in the bar.
+	 * Closes all menus in the dropdown menu bar.
 	 */
 	public close(): void {
 		for ( const menuView of this._menus ) {
@@ -92,6 +106,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	}
 
 	/**
+	 * Renders the dropdown menu.
 	 * @inheritDoc
 	 */
 	public override render(): void {
@@ -104,14 +119,17 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	}
 
 	/**
-	 * TODO
+	 * Registers a menu in the dropdown menu.
+	 *
+	 * @param menuView - The menu view to register.
+	 * @param parentMenuView - The parent menu view, if any.
 	 */
 	public registerMenu( menuView: DropdownMenuView, parentMenuView: DropdownMenuView | null = null ): void {
 		if ( parentMenuView ) {
 			menuView.delegate( ...EVENT_NAME_DELEGATES ).to( parentMenuView );
 			menuView.parentMenuView = parentMenuView;
 		} else {
-			menuView.delegate( ...EVENT_NAME_DELEGATES ).to( this, name => 'menu:' + name );
+			menuView.delegate( ...EVENT_NAME_DELEGATES ).to( this, name => `menu:${ name }` );
 		}
 
 		menuView._attachBehaviors();
@@ -124,16 +142,15 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	}
 
 	/**
-	 * Manages the state of the {@link #isOpen} property of the menu bar. Because the state is a sum of individual
+	 * Manages the state of the `isOpen` property of the dropdown menu bar. Because the state is a sum of individual
 	 * top-level menus' states, it's necessary to listen to their changes and update the state accordingly.
 	 *
-	 * Additionally, it prevents from unnecessary changes of `isOpen` when one top-level menu opens and another closes
-	 * (regardless of in which order), maintaining a stable `isOpen === true` in that situation.
+	 * Additionally, it prevents unnecessary changes of `isOpen` when one top-level menu opens and another closes
+	 * (regardless of the order), maintaining a stable `isOpen === true` in that situation.
 	 */
 	private _setupIsOpenUpdater() {
 		let closeTimeout: ReturnType<typeof setTimeout>;
 
-		// TODO: This is not the prettiest approach but at least it's simple.
 		this.on<DropdownMenuChangeIsOpenEvent>( 'menu:change:isOpen', ( evt, name, isOpen ) => {
 			clearTimeout( closeTimeout );
 
@@ -141,7 +158,7 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 				this.isOpen = true;
 			} else {
 				closeTimeout = setTimeout( () => {
-					this.isOpen = this._menus.some( menuView => menuView.isOpen );
+					this.isOpen = this._menus.some( ( { isOpen } ) => isOpen );
 				}, 0 );
 			}
 		} );

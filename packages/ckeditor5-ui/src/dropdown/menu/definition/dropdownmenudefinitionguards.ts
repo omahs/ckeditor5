@@ -9,5 +9,11 @@
 
 import type { DropdownMenuDefinition } from './dropdownmenudefinitiontypings.js';
 
+/**
+ * Checks if the given object is a valid DropdownMenuDefinition.
+ *
+ * @param obj The object to be checked.
+ * @returns A boolean indicating whether the object is a valid DropdownMenuDefinition.
+ */
 export const isDropdownMenuDefinition = ( obj: any ): obj is DropdownMenuDefinition =>
 	obj && 'label' in obj && 'groups' in obj;

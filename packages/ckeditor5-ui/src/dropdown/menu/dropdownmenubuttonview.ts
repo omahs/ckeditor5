@@ -16,7 +16,7 @@ import dropdownArrowIcon from '../../../theme/icons/dropdown-arrow.svg';
 import '../../../theme/components/dropdown/menu/dropdownmenubutton.css';
 
 /**
- * TODO
+ * Represents a view for a dropdown menu button.
  */
 export class DropdownMenuButtonView extends ButtonView {
 	/**
@@ -25,7 +25,7 @@ export class DropdownMenuButtonView extends ButtonView {
 	public readonly arrowView: IconView;
 
 	/**
-	 * Creates an instance of the menu bar button view.
+	 * Creates an instance of the dropdown menu button view.
 	 *
 	 * @param locale The localization services instance.
 	 */
@@ -66,7 +66,9 @@ export class DropdownMenuButtonView extends ButtonView {
 	}
 
 	/**
-	 * Creates the {@link #arrowView} instance.
+	 * Creates the arrow view instance.
+	 *
+	 * @private
 	 */
 	private _createArrowView() {
 		const arrowView = new IconView();

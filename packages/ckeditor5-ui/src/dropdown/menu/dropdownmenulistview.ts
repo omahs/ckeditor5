@@ -12,16 +12,16 @@ import type { Locale } from '@ckeditor/ckeditor5-utils';
 import ListView from '../../list/listview.js';
 
 /**
- * TODO
+ * Represents a dropdown menu list view.
  */
 export default class DropdownMenuListView extends ListView {
 	/**
-	 * TODO
+	 * Represents whether the dropdown menu list view is visible or not.
 	 */
 	declare public isVisible: boolean;
 
 	/**
-	 * Creates an instance of the list view.
+	 * Creates an instance of the dropdown menu list view.
 	 *
 	 * @param locale The localization services instance.
 	 */

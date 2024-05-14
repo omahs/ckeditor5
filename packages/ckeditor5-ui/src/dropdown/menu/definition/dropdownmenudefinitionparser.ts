@@ -6,6 +6,7 @@
 /**
  * @module ui/dropdown/menu/definition/dropdownmenudefinitionparser
  */
+
 import { last } from 'lodash-es';
 
 import type DropdownMenuListItemButtonView from '../dropdownmenulistitembuttonview.js';
@@ -25,17 +26,24 @@ import ListSeparatorView from '../../../list/listseparatorview.js';
 import ListItemView from '../../../list/listitemview.js';
 
 /**
- * TODO
+ * Parser for dropdown menu definitions.
  */
 export class DropdownMenuDefinitionParser {
 	private readonly _view: DropdownMenuRootListView;
 
+	/**
+	 * Creates an instance of DropdownMenuDefinitionParser.
+	 *
+	 * @param view The root list view of the dropdown menu.
+	 */
 	constructor( view: DropdownMenuRootListView ) {
 		this._view = view;
 	}
 
 	/**
-	 * TODO
+	 * Appends menus to the dropdown menu root view based on the provided definition.
+	 *
+	 * @param definition The dropdown menu factory definition.
 	 */
 	public appendMenus( { items }: DropdownMenuRootFactoryDefinition ): void {
 		const topLevelMenuViews = items.map( menuDefinition => {
@@ -52,7 +60,11 @@ export class DropdownMenuDefinitionParser {
 	}
 
 	/**
-	 * TODO
+	 * Creates a menu view from the given menu definition.
+	 *
+	 * @param menuDefinition The dropdown menu definition.
+	 * @param parentMenuView The parent menu view, if any.
+	 * @returns The created menu view.
 	 */
 	private _createMenuFromDefinition(
 		menuDefinition: DropdownMenuDefinition,
@@ -81,7 +93,11 @@ export class DropdownMenuDefinitionParser {
 	}
 
 	/**
-	 * TODO
+	 * Creates menu item views from the given menu definition.
+	 *
+	 * @param menuDefinition The dropdown menu definition.
+	 * @param parentMenuView The parent menu view.
+	 * @returns An array of created menu item views.
 	 */
 	private _createMenuItemsFromDefinition(
 		menuDefinition: DropdownMenuDefinition,
@@ -124,7 +140,11 @@ export class DropdownMenuDefinitionParser {
 	}
 
 	/**
-	 * TODO
+	 * Registers a menu tree from the given component view definition.
+	 *
+	 * @param componentView The component view definition.
+	 * @param parentMenuView The parent menu view.
+	 * @returns The registered component view.
 	 */
 	private _registerMenuTreeFromDefinition(
 		componentView: DropdownMenuViewItemDefinition,

@@ -3,17 +3,17 @@
  * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
-import type { PositioningFunction } from '@ckeditor/ckeditor5-utils';
-
 /**
  * @module ui/dropdown/menu/utils/dropdownmenupositioningfunctions
  */
 
+import type { PositioningFunction } from '@ckeditor/ckeditor5-utils';
+
 const NESTED_PANEL_HORIZONTAL_OFFSET = 5;
 
 /**
- * Contains every positioning function used by {@link module:ui/menubar/DropdownMenuview~DropdownMenuView} that decides where the
- * {@link module:ui/menubar/DropdownMenuview~DropdownMenuView#panelView} should be placed.
+ * Contains every positioning function used by {@link module:ui/dropdown/menu/DropdownMenuview~DropdownMenuView} that decides where the
+ * {@link module:ui/dropdown/menu/DropdownMenuview~DropdownMenuView#panelView} should be placed.
  *
  * Top-level menu positioning functions:
  *

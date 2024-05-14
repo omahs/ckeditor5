@@ -12,8 +12,18 @@ import { flattenDropdownMenuTree } from './flattendropdownmenutree.js';
 import type { NonEmptyArray } from '@ckeditor/ckeditor5-core';
 import type { DropdownMenusViewsFilteredFlatItem, DropdownMenusViewsFilteredTreeNode } from './filterdropdownmenutree.js';
 
+/**
+ * Groups the found items and returns them as a flat list.
+ * If the parent name matches the search phrase, it groups the items under that parent.
+ * Otherwise, it takes the first parent from the edge.
+ *
+ * @param tree - The filtered tree of dropdown menu items.
+ * @returns An array of grouped dropdown tree entries.
+ */
 export function groupDropdownTreeByFirstFoundParent( tree: DropdownMenusViewsFilteredTreeNode ): Array<GroupedDropdownTreeFlatEntry> {
+	// Find the grouping parent based on the search results
 	const findGroupingParent = ( parents: NonEmptyArray<DropdownMenusViewsFilteredTreeNode> ): DropdownMenusViewsFilteredTreeNode => {
+		// Reverse the parents array and find the first parent that is marked as found
 		const maybeFirstFoundParent = [ ...parents ].reverse().find(
 			item => {
 				if ( item.kind === 'Root' ) {
@@ -24,13 +34,16 @@ export function groupDropdownTreeByFirstFoundParent( tree: DropdownMenusViewsFil
 			}
 		);
 
+		// If a parent is found, return it
 		if ( maybeFirstFoundParent ) {
 			return maybeFirstFoundParent;
 		}
 
+		// If no parent is found, return the last parent from the edge
 		return parents[ parents.length - 1 ];
 	};
 
+	// Group the parents and their children based on the grouping parent
 	const groupedParents = flattenDropdownMenuTree( tree ).reduce<FoundDropdownTreeParentsItemsMap>(
 		( acc, { parents, node } ) => {
 			const groupingParent = findGroupingParent( parents );
@@ -46,6 +59,7 @@ export function groupDropdownTreeByFirstFoundParent( tree: DropdownMenusViewsFil
 		new Map()
 	);
 
+	// Convert the grouped parents and children into an array of GroupedDropdownTreeFlatEntry objects
 	return Array
 		.from( groupedParents )
 		.map( ( [ parent, children ] ) => ( {
@@ -54,8 +68,15 @@ export function groupDropdownTreeByFirstFoundParent( tree: DropdownMenusViewsFil
 		} ) );
 }
 
+/**
+ * Represents a map that stores the found dropdown tree parents and their corresponding items.
+ */
 type FoundDropdownTreeParentsItemsMap = Map<DropdownMenusViewsFilteredTreeNode, Array<DropdownMenusViewsFilteredFlatItem>>;
 
+/**
+ * Represents an entry in the grouped dropdown tree.
+ * It consists of a parent node and an array of its children.
+ */
 type GroupedDropdownTreeFlatEntry = {
 	parent: DropdownMenusViewsFilteredTreeNode;
 	children: Array<DropdownMenusViewsFilteredFlatItem>;

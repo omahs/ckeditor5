@@ -16,7 +16,8 @@ import View from '../../view.js';
 import '../../../theme/components/dropdown/menu/dropdownmenupanel.css';
 
 /**
- * TODO
+ * Represents the view for the dropdown menu panel.
+ * This class extends the `View` class and implements the `FocusableView` interface.
  */
 export class DropdownMenuPanelView extends View implements FocusableView {
 	/**
@@ -89,6 +90,8 @@ export class DropdownMenuPanelView extends View implements FocusableView {
 
 	/**
 	 * Focuses the first child of the panel (default) or the last one if the `direction` is `-1`.
+	 *
+	 * @param direction The direction to focus. Default is `1`.
 	 */
 	public focus( direction: -1 | 1 = 1 ): void {
 		if ( this.children.length ) {
@@ -102,7 +105,7 @@ export class DropdownMenuPanelView extends View implements FocusableView {
 }
 
 /**
- * The names of the positions of the {@link module:ui/menubar/DropdownMenupanelview~DropdownMenuPanelView}.
+ * The names of the positions of the {@link module:ui/dropdown/menu/dropdownmenupanelview~DropdownMenuPanelView}.
  *
  * They are reflected as CSS class suffixes on the panel view element.
  */

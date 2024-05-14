@@ -10,7 +10,11 @@
 import type { DropdownMenuViewsTreeChildItem, DropdownMenusViewsTreeNode } from './createtreefromflattendropdownmenuslist.js';
 
 /**
- * If passed element has `children` property then passed `child` is removed.
+ * Tries to remove a child from a dropdown menu tree node.
+ *
+ * @param parent The parent node. This argument will be modified.
+ * @param child The child node to be removed.
+ * @returns The updated parent node.
  */
 export function tryRemoveDropdownMenuTreeChild<P extends DropdownMenusViewsTreeNode>(
 	parent: P,

@@ -20,12 +20,9 @@ import type DropdownMenuRootListView from '../dropdownmenurootlistview.js';
 import { DropdownMenuListItemView } from '../dropdownmenulistitemview.js';
 import clickOutsideHandler from '../../../bindings/clickoutsidehandler.js';
 
-/**
- * TODO
- */
 export const DropdownRootMenuBehaviors = {
 	/**
-	 * TODO
+	 * Closes the menu when an element outside the menu is focused.
 	 */
 	closeWhenOutsideElementFocused( menuBarView: DropdownMenuRootListView ): void {
 		menuBarView.listenTo( document, 'focus', () => {
@@ -94,9 +91,6 @@ export const DropdownRootMenuBehaviors = {
 	}
 };
 
-/**
- * Behaviors of the {@link module:ui/menubar/DropdownMenuview~DropdownMenuView} component.
- */
 export const DropdownMenuBehaviors = {
 	/**
 	 * Open the menu on the right arrow key press. This allows for navigating to sub-menus using the keyboard.

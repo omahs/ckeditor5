@@ -18,23 +18,25 @@ import DropdownMenuListFoundListView from './dropdownmenulistfoundlistview.js';
 import DropdownMenuRootListView from '../dropdownmenurootlistview.js';
 
 /**
- * TODO
+ * Represents a filtered view for a dropdown menu list.
+ * This class extends the `View` class and implements the `FilteredView` interface.
  */
 export default class DropdownMenuListFilteredView extends View implements FilteredView {
 	/**
-	 * TODO
+	 * The root list view of the dropdown menu.
 	 */
 	protected _menuView: DropdownMenuRootListView;
 
 	/**
-	 * TODO
+	 * The found list view of the dropdown menu.
 	 */
 	protected _foundListView: DropdownMenuListFoundListView | null = null;
 
 	/**
-	 * Creates an instance of the list view.
+	 * Creates an instance of the `DropdownMenuListFilteredView` class.
 	 *
 	 * @param locale The localization services instance.
+	 * @param definition The definition of the dropdown menu root factory.
 	 */
 	constructor( locale: Locale, definition: DropdownMenuRootFactoryDefinition ) {
 		super( locale );
@@ -57,6 +59,12 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 		} );
 	}
 
+	/**
+	 * Filters the dropdown menu list based on the provided regular expression.
+	 *
+	 * @param regExp The regular expression to filter the list.
+	 * @returns An object containing the number of filtered results and the total number of items in the list.
+	 */
 	public filter( regExp: RegExp | null ): { resultsCount: number; totalItemsCount: number } {
 		const { element } = this;
 		const { filteredTree, resultsCount, totalItemsCount } = filterDropdownMenuTreeByRegExp( regExp, this._menuView.tree );
@@ -69,7 +77,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 		}
 
 		if ( resultsCount !== totalItemsCount ) {
-			this._foundListView = new DropdownMenuListFoundListView( this.locale!, regExp, filteredTree );
+			this._foundListView = new DropdownMenuListFoundListView(this.locale!, regExp, filteredTree);
 			this._foundListView.render();
 
 			element!.appendChild( this._foundListView.element! );
@@ -83,6 +91,9 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 		};
 	}
 
+	/**
+	 * Sets the focus on the dropdown menu list.
+	 */
 	public focus(): void {
 		const { _menuView, _foundListView } = this;
 

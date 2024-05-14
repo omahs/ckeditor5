@@ -12,6 +12,13 @@ import type { DropdownMenuViewsRootTree } from './createtreefromflattendropdownm
 
 import { filterDropdownMenuTree, type DropdownMenuSearchResult } from './filterdropdownmenutree.js';
 
+/**
+ * Filters a dropdown menu tree by a regular expression.
+ *
+ * @param regExp - The regular expression used for filtering. If null, returns the tree with all items.
+ * @param tree - The dropdown menu tree to filter.
+ * @returns The filtered dropdown menu tree.
+ */
 export const filterDropdownMenuTreeByRegExp = (
 	regExp: RegExp | null,
 	tree: DeepReadonly<DropdownMenuViewsRootTree>

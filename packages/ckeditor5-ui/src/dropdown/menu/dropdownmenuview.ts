@@ -31,7 +31,8 @@ import {
 import '../../../theme/components/dropdown/menu/dropdownmenu.css';
 
 /**
- * TODO
+ * Represents a dropdown menu view.
+ * This class extends the `View` class and implements the `FocusableView` interface.
  */
 export default class DropdownMenuView extends View implements FocusableView {
 	/**
@@ -89,7 +90,7 @@ export default class DropdownMenuView extends View implements FocusableView {
 	/**
 	 * The parent menu view of the menu. It is `null` for top-level menus.
 	 *
-	 * See {@link module:ui/menubar/menubarview~MenuBarView#registerMenu}.
+	 * See {@link module:ui/dropdown/menu/dropdownmenurootlistview~DropdownMenuRootListView#registerMenu}.
 	 */
 	declare public parentMenuView: DropdownMenuView | null;
 
@@ -155,10 +156,6 @@ export default class DropdownMenuView extends View implements FocusableView {
 		this._repositionPanelOnOpen();
 	}
 
-	// For now, this method cannot be called in the render process because the `parentMenuView` may be assigned
-	// after the rendering process.
-	//
-	// TODO: We should reconsider the way we handle this logic.
 	/**
 	 * Attach all keyboard behaviors for the menu bar view.
 	 *
@@ -203,7 +200,11 @@ export default class DropdownMenuView extends View implements FocusableView {
 	}
 
 	/**
-	 * TODO
+	 * An array of positioning functions used to determine the position of the dropdown menu panel.
+	 * The order of the functions in the array determines the priority of the positions to be tried.
+	 * The first function that returns a valid position will be used.
+	 *
+	 * @returns {Array<PositioningFunction>} An array of positioning functions.
 	 */
 	public get _panelPositions(): Array<PositioningFunction> {
 		const { westSouth, eastSouth, westNorth, eastNorth } = DropdownMenuViewPanelPositioningFunctions;

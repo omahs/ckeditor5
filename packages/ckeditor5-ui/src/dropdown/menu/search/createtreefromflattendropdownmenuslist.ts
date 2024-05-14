@@ -20,12 +20,16 @@ import { DropdownMenuListItemView } from '../dropdownmenulistitemview.js';
 import { createTextSearchMetadata, type WithTreeSearchMetadata } from './dropdownmenutreesearchmetadata.js';
 
 /**
- * Constructs tree based on currently rendered dropdown menu views. It is not based on factory
- * definition, so constructed tree includes all recent modifications of menus such as addition or removal menu items.
+ * Creates a tree structure from a flattened list of dropdown menus.
+ *
+ * @param menus The array of dropdown menus.
+ * @returns The root tree of dropdown menu views.
  */
 export function createTreeFromFlattenDropdownMenusList( menus: Array<DropdownMenuView> ): DropdownMenuViewsRootTree {
+	// Create a map to store the tree structure of each dropdown menu.
 	const menusTreeMap = menus.reduce<Map<DropdownMenuView, DropdownMenuViewsNestedTree>>(
 		( acc, menu ) => {
+			// Create a nested tree object for each menu and add it to the map.
 			acc.set( menu, {
 				menu,
 				kind: 'Menu',
@@ -38,7 +42,7 @@ export function createTreeFromFlattenDropdownMenusList( menus: Array<DropdownMen
 		new Map()
 	);
 
-	// Let's fill whole menu tree map with children entries.
+	// Fill the menu tree map with children entries.
 	for ( const menu of menus ) {
 		const { children } = menusTreeMap.get( menu )!;
 		const menuPanelView = menu.panelView.children!.first as DropdownMenuListView;
@@ -51,12 +55,14 @@ export function createTreeFromFlattenDropdownMenusList( menus: Array<DropdownMen
 			const firstContentChild = item.children.first;
 
 			if ( isDropdownMenuFlatItemView( firstContentChild ) ) {
+				// If the item is a flat item, add it to the children array.
 				children.push( {
 					kind: 'Item',
 					item: firstContentChild,
 					search: createTextSearchMetadata( firstContentChild.label )
 				} );
 			} else if ( isDropdownMenuView( firstContentChild ) ) {
+				// If the item is a nested menu, find its corresponding tree menu from the map and add it to the children array.
 				const maybeTreeMenu = menusTreeMap.get( firstContentChild );
 
 				if ( maybeTreeMenu ) {
@@ -66,7 +72,7 @@ export function createTreeFromFlattenDropdownMenusList( menus: Array<DropdownMen
 		}
 	}
 
-	// Pick only top level menus from map and assign them to root entry.
+	// Pick only top level menus from the map and assign them to the root entry.
 	const rootTree: DropdownMenuViewsRootTree = {
 		kind: 'Root',
 		children: []
@@ -79,14 +85,20 @@ export function createTreeFromFlattenDropdownMenusList( menus: Array<DropdownMen
 	return rootTree;
 }
 
+/**
+ * Represents a tree entry with a specific kind.
+ */
 type WithTreeEntryKind<K extends string> = {
 	kind: K;
 };
 
+/**
+ * The maximum depth of a dropdown menu tree.
+ */
 type MaxDropdownTreeMenuDepth = 6;
 
 /**
- * Non-menu entry of menu such like Button or Checkbox.
+ * Represents a flat item in a dropdown menu tree.
  */
 export type DropdownMenuViewsTreeFlatItem<Extend = unknown> =
 	& Extend
@@ -97,7 +109,7 @@ export type DropdownMenuViewsTreeFlatItem<Extend = unknown> =
 	};
 
 /**
- * Nested menu entry.
+ * Represents a nested menu entry in a dropdown menu tree.
  */
 type DropdownMenuViewsNestedTree<
 	Extend = unknown,
@@ -111,6 +123,9 @@ type DropdownMenuViewsNestedTree<
 		children: MaxDropdownTreeMenuDepth extends Level ? never : Array<DropdownMenuViewsTreeChildItem<Extend, Increment<Level>>>;
 	};
 
+/**
+ * Represents a child item in a dropdown menu tree.
+ */
 export type DropdownMenuViewsTreeChildItem<
 	Extend = unknown,
 	Level extends number = 0
@@ -119,7 +134,7 @@ export type DropdownMenuViewsTreeChildItem<
 	| DropdownMenuViewsNestedTree<Extend, Level>;
 
 /**
- * Root menu entry that holds flat items or menu items.
+ * Represents the root entry of a dropdown menu tree.
  */
 export type DropdownMenuViewsRootTree<Extend = unknown> =
 	& WithTreeEntryKind<'Root'>
@@ -128,7 +143,7 @@ export type DropdownMenuViewsRootTree<Extend = unknown> =
 	};
 
 /**
- * All possible tree node types.
+ * Represents all possible types of nodes in a dropdown menu tree.
  */
 export type DropdownMenusViewsTreeNode<
 	Extend = unknown,
@@ -137,14 +152,23 @@ export type DropdownMenusViewsTreeNode<
 	| DropdownMenuViewsTreeChildItem<Extend, Level>
 	| DropdownMenuViewsRootTree<Extend>;
 
-export type DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNode[ 'kind' ];
+/**
+ * Represents the kind of a dropdown menu tree node.
+ */
+export type DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNode['kind'];
 
+/**
+ * Extracts a specific type of dropdown menu tree node by its kind.
+ */
 export type ExtractDropdownMenuViewTreeNodeByKind<
 	K extends DropdownMenusViewsTreeNodeKind,
 	Extend = unknown
 > =
 	Extract<DropdownMenusViewsTreeNode<Extend>, { kind: K }>;
 
+/**
+ * Excludes a specific type of dropdown menu tree node by its kind.
+ */
 export type ExcludeDropdownMenuViewTreeNodeByKind<
 	K extends DropdownMenusViewsTreeNodeKind,
 	Extend = unknown

@@ -4,7 +4,7 @@
  */
 
 /**
- * @module ui/dropdown/menu/definition/definitionguards
+ * @module ui/dropdown/menu/guards
  */
 
 import type { DropdownMenuFlatItemView } from './typings.js';
@@ -12,8 +12,20 @@ import type { DropdownMenuFlatItemView } from './typings.js';
 import DropdownMenuListItemButtonView from './dropdownmenulistitembuttonview.js';
 import DropdownMenuView from './dropdownmenuview.js';
 
+/**
+ * Checks if the given object is an instance of DropdownMenuView.
+ *
+ * @param obj The object to check.
+ * @returns A boolean indicating whether the object is an instance of DropdownMenuView.
+ */
 export const isDropdownMenuView = ( obj: any ): obj is DropdownMenuView =>
 	obj instanceof DropdownMenuView;
 
+/**
+ * Checks if the given object is an instance of `DropdownMenuFlatItemView`.
+ *
+ * @param obj The object to check.
+ * @returns A boolean indicating whether the object is an instance of `DropdownMenuFlatItemView`.
+ */
 export const isDropdownMenuFlatItemView = ( obj: any ): obj is DropdownMenuFlatItemView =>
 	obj instanceof DropdownMenuListItemButtonView;

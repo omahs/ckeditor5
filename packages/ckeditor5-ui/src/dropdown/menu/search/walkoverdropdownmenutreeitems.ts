@@ -15,14 +15,22 @@ import type {
 } from './createtreefromflattendropdownmenuslist.js';
 
 /**
- * Recursive tree menu visitor.
+ * Walks over the tree of dropdown menu items and invokes the provided walkers for each node.
+ *
+ * @template Extend The type of additional data that can be passed to the walkers.
+ * @param walkers The walkers to be invoked for each node.
+ * @param root The root node of the dropdown menu tree.
  */
 export function walkOverDropdownMenuTreeItems<Extend>(
 	walkers: DropdownMenuViewsTreeWalkers<Extend>,
 	root: DropdownMenusViewsTreeNode<Extend>
 ): void {
-	const parents: NonEmptyArray<DropdownMenusViewsTreeNode> = [ root ];
+	// Initialize an array to keep track of parent nodes
+	const parents: NonEmptyArray<DropdownMenusViewsTreeNode> = [root];
+
+	// Define a visitor function that will be called for each node
 	const visitor: DropdownMenuViewsTreeVisitor = node => {
+		// Get the walker functions for the current node kind
 		const {
 			enter = () => {},
 			leave = () => {}
@@ -35,9 +43,10 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 				};
 			}
 
-			return ( walkers[ node.kind ] || {} );
+			return walkers[ node.kind ] || {};
 		} )() as DropdownMenuViewsTreeWalker;
 
+		// Create metadata object for the current node
 		const walkerMetadata: DropdownMenuViewsTreeWalkerMetadata = {
 			parents: [ ...parents ] as NonEmptyArray<DropdownMenusViewsTreeNode>,
 			parent: parents[ parents.length - 1 ],
@@ -45,12 +54,15 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 			visitor
 		};
 
+		// Add the current node to the parents array if it's not the root node
 		if ( node !== root ) {
 			parents.push( node );
 		}
 
+		// Call the enter function for the current node
 		const result = enter( walkerMetadata );
 
+		// Process the children of the current node based on its kind
 		if ( result !== false ) {
 			switch ( node.kind ) {
 				case 'Item':
@@ -62,9 +74,10 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 					for ( let i = 0; i < node.children.length; ) {
 						const child = node.children[ i ];
 
+						// Call the visitor function for each child node
 						visitor( child );
 
-						// if it was removed - do not increment
+						// If the child node was not removed, increment the index
 						if ( child === node.children[ i ] ) {
 							++i;
 						}
@@ -78,16 +91,25 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 			}
 		}
 
+		// Call the leave function for the current node
 		leave( walkerMetadata );
 
+		// Remove the current node from the parents array if it's not the root node
 		if ( node !== root ) {
 			parents.pop();
 		}
 	};
 
+	// Start the traversal by calling the visitor function for the root node
 	visitor( root );
 }
 
+/**
+ * Metadata object for the walker function.
+ *
+ * @template K The type of dropdown menu node kind.
+ * @template Extend The type of additional data that can be passed to the walkers.
+ */
 export type DropdownMenuViewsTreeWalkerMetadata<
 	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind,
 	Extend = unknown
@@ -98,17 +120,48 @@ export type DropdownMenuViewsTreeWalkerMetadata<
 	parent: DropdownMenusViewsTreeNode<Extend>;
 };
 
+/**
+ * Walker function for the dropdown menu tree.
+ *
+ * @template K The type of dropdown menu node kind.
+ * @template Extend The type of additional data that can be passed to the walkers.
+ */
 export type DropdownMenuViewsTreeWalker<
 	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind,
 	Extend = unknown
 > = {
+
+	/**
+	 * Function called when entering a node.
+	 *
+	 * @param entry The metadata object for the current node.
+	 * @returns Returns void, boolean, or false to stop traversing the children of the current node.
+	 */
 	// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-	enter?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K, Extend> ) => void | boolean;
+	enter?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K, Extend> ) => void | boolean | false;
+
+	/**
+	 * Function called when leaving a node.
+	 *
+	 * @param entry The metadata object for the current node.
+	 */
 	leave?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K, Extend> ) => void;
 };
 
+/**
+ * Visitor function for the dropdown menu tree.
+ *
+ * @param node The current dropdown menu node.
+ */
 type DropdownMenuViewsTreeVisitor = ( node: DropdownMenusViewsTreeNode ) => void;
 
+/**
+ * Object containing all the walkers for different dropdown menu node kinds.
+ *
+ * @template Extend The type of additional data that can be passed to the walkers.
+ */
 export type DropdownMenuViewsTreeWalkers<Extend = unknown> = {
-	[ K in DropdownMenusViewsTreeNodeKind ]?: DropdownMenuViewsTreeWalker<K, Extend> | DropdownMenuViewsTreeWalker<K, Extend>[ 'enter' ];
+	[K in DropdownMenusViewsTreeNodeKind]?:
+		DropdownMenuViewsTreeWalker<K, Extend> |
+		DropdownMenuViewsTreeWalker<K, Extend>['enter'];
 };

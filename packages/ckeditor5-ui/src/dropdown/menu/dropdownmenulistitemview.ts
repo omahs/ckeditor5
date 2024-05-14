@@ -15,13 +15,14 @@ import ListItemView from '../../list/listitemview.js';
 import '../../../theme/components/dropdown/menu/dropdownmenulistitem.css';
 
 /**
- * TODO
+ * Represents a view for a single item in a dropdown menu list.
  */
 export class DropdownMenuListItemView extends ListItemView {
 	/**
 	 * Creates an instance of the list item view.
 	 *
 	 * @param locale The localization services instance.
+	 * @param parentMenuView The parent dropdown menu view.
 	 */
 	constructor( locale: Locale, parentMenuView?: DropdownMenuView ) {
 		super( locale );

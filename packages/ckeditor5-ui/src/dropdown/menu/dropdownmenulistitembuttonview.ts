@@ -14,11 +14,11 @@ import ButtonView from '../../button/buttonview.js';
 import '../../../theme/components/dropdown/menu/dropdownmenulistitembutton.css';
 
 /**
- * TODO
+ * Represents a view for a button in a dropdown menu list item.
  */
 export default class DropdownMenuListItemButtonView extends ButtonView {
 	/**
-	 * TODO
+	 * Determines whether space should be allocated for an icon if it is missing.
 	 */
 	declare public allocateSpaceForIconIfMissing: boolean;
 

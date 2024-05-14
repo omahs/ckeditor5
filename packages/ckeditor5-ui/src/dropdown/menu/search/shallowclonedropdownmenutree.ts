@@ -13,6 +13,12 @@ import type { DropdownMenusViewsTreeNode } from './createtreefromflattendropdown
 import { cloneDeepWith } from 'lodash-es';
 import View from '../../../view.js';
 
+/**
+ * Creates a shallow clone of the dropdown menu tree, excluding instances of the View class.
+ *
+ * @param tree The dropdown menu tree to clone.
+ * @returns The shallow clone of the dropdown menu tree.
+ */
 export function shallowCloneDropdownMenuTree( tree: DeepReadonly<DropdownMenusViewsTreeNode> ): DropdownMenusViewsTreeNode {
 	return cloneDeepWith( tree, ( element ): any => {
 		if ( typeof element === 'object' && element instanceof View ) {

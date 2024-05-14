@@ -22,9 +22,15 @@ import ListView from '../../../list/listview.js';
 import { groupDropdownTreeByFirstFoundParent } from '../search/groupdropdowntreebyfirstfoundparent.js';
 
 /**
- * TODO
+ * Represents a view for the found list in the dropdown menu list.
  */
 export default class DropdownMenuListFoundListView extends ListView {
+	/**
+	 * Creates a new instance of the DropdownMenuListFoundListView class.
+	 * @param locale The locale object.
+	 * @param highlightRegex The regular expression used for highlighting.
+	 * @param tree The filtered tree node.
+	 */
 	constructor( locale: Locale, highlightRegex: RegExp | null, tree: DropdownMenusViewsFilteredTreeNode ) {
 		super( locale );
 
@@ -37,6 +43,13 @@ export default class DropdownMenuListFoundListView extends ListView {
 		}
 	}
 
+	/**
+	 * Creates a filtered tree list box based on the provided highlight regex and tree data.
+	 *
+	 * @param highlightRegex The regular expression used for highlighting the filtered items.
+	 * @param tree The tree data used to create the filtered tree list box.
+	 * @returns An array of ListItemGroupView or ListItemView objects representing the filtered tree list box.
+	 */
 	private _createFilteredTreeListBox(
 		highlightRegex: RegExp | null,
 		tree: DropdownMenusViewsFilteredTreeNode
@@ -44,6 +57,7 @@ export default class DropdownMenuListFoundListView extends ListView {
 		const { locale } = this;
 		const groupedFlatEntries = groupDropdownTreeByFirstFoundParent( tree );
 
+		// Map each flat child node to a ListItemView
 		const mapFlatChildNodeToView = ( entry: DropdownMenusViewsFilteredFlatItem ): ListItemView => {
 			const listItemView = new ListItemView( locale );
 			const labelView = new ButtonLabelWithHighlightView();
@@ -64,6 +78,7 @@ export default class DropdownMenuListFoundListView extends ListView {
 			return listItemView;
 		};
 
+		// Create the filtered tree list box
 		return groupedFlatEntries.flatMap<ListItemGroupView | ListItemView>( ( { parent, children } ) => {
 			const listItems = children.map( mapFlatChildNodeToView );
 

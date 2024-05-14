@@ -21,7 +21,12 @@ import { getTotalDropdownMenuTreeSearchableItemsCount } from './gettotaldropdown
 import { shallowCloneDropdownMenuTree } from './shallowclonedropdownmenutree.js';
 
 /**
- * Performs filtering on passed tree.
+ * Filters the dropdown menu tree based on the provided filter function.
+ * Returns a copy of the filtered tree and does not modify the original tree.
+ *
+ * @param filterFn The filter function to apply to each node in the tree.
+ * @param tree The dropdown menu tree to filter.
+ * @returns The filtered tree and the total number of searchable items in the tree.
  */
 export function filterDropdownMenuTree(
 	filterFn: ( node: ExcludeDropdownMenuViewTreeNodeByKind<'Root'> ) => boolean,
@@ -66,16 +71,41 @@ export function filterDropdownMenuTree(
 	};
 }
 
+/**
+ * Represents a type used to mark which tree items have been found.
+ */
 type WithFoundAttribute = {
 	found?: boolean;
 };
 
+/**
+ * Represents a filtered flat item in the dropdown menu views.
+ * It is a type that extends `DropdownMenuViewsTreeFlatItem` and adds the `WithFoundAttribute` attribute.
+ */
 export type DropdownMenusViewsFilteredFlatItem = DropdownMenuViewsTreeFlatItem<WithFoundAttribute>;
 
+/**
+ * Represents a filtered tree node in a dropdown menu view.
+ */
 export type DropdownMenusViewsFilteredTreeNode = DropdownMenusViewsTreeNode<WithFoundAttribute>;
 
+/**
+ * Represents the result of a dropdown menu search.
+ */
 export type DropdownMenuSearchResult = {
+
+	/**
+	 * The filtered tree containing the search results.
+	 */
 	filteredTree: DropdownMenusViewsFilteredTreeNode;
+
+	/**
+	 * The number of search results.
+	 */
 	resultsCount: number;
+
+	/**
+	 * The total number of items in the dropdown menu.
+	 */
 	totalItemsCount: number;
 };
