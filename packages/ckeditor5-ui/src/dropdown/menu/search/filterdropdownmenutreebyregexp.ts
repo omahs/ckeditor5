@@ -30,7 +30,7 @@ export const filterDropdownMenuTreeByRegExp = (
 				return true;
 			}
 
-			return !!( search.text || '' ).match( regExp );
+			return !!search.text.match( regExp );
 		},
 		tree
 	);

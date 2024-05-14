@@ -67,3 +67,10 @@ export function findAllMenusTreeNodesByLabel( label, tree ) {
 
 	return foundMenus;
 }
+
+export function markAsFound( item ) {
+	return {
+		...item,
+		found: true
+	};
+}

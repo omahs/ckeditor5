@@ -4,7 +4,7 @@
  */
 
 import { createTreeFromFlattenDropdownMenusList } from '../../../../src/dropdown/menu/search/createtreefromflattendropdownmenuslist.js';
-import { filterDropdownMenuTree } from '../../../../src/dropdown/menu/search/filterdropdownmenutree.js';
+import { filterDropdownMenuTreeByRegExp } from '../../../../src/dropdown/menu/search/filterdropdownmenutreebyregexp.js';
 import {
 	getTotalDropdownMenuTreeSearchableItemsCount
 } from '../../../../src/dropdown/menu/search/gettotaldropdownmenutreesearchableitemscount.js';
@@ -17,9 +17,9 @@ import {
 	markAsFound
 } from '../_utils/dropdowntreeutils.js';
 
-describe( 'filterDropdownMenuTree', () => {
+describe( 'filterDropdownMenuTreeByRegExp', () => {
 	it( 'should return 0 found items on empty tree', () => {
-		const result = filterDropdownMenuTree( () => true, createRootTree() );
+		const result = filterDropdownMenuTreeByRegExp( /[.*]/g, createRootTree() );
 
 		expect( result ).to.deep.equal( {
 			resultsCount: 0,
@@ -32,8 +32,8 @@ describe( 'filterDropdownMenuTree', () => {
 		const { menuRootList, menusDefinitions } = createMockDropdownMenuDefinition();
 
 		const tree = createTreeFromFlattenDropdownMenusList( menuRootList.menus );
-		const { resultsCount, filteredTree, totalItemsCount } = filterDropdownMenuTree(
-			node => node.search.raw === 'Menu 1',
+		const { resultsCount, filteredTree, totalItemsCount } = filterDropdownMenuTreeByRegExp(
+			/Menu 1/ig,
 			tree
 		);
 
@@ -48,7 +48,39 @@ describe( 'filterDropdownMenuTree', () => {
 						[
 							...menusDefinitions[ 0 ].groups[ 0 ].items,
 							...menusDefinitions[ 0 ].groups[ 1 ].items
-						].map( mapButtonViewToMenuItem )
+						]
+							.map( mapButtonViewToMenuItem )
+					)
+				)
+			] )
+		);
+	} );
+
+	it( 'should return all child items if regexp is null', () => {
+		const { menuRootList, menusDefinitions } = createMockDropdownMenuDefinition();
+
+		const tree = createTreeFromFlattenDropdownMenusList( menuRootList.menus );
+		const { resultsCount, filteredTree, totalItemsCount } = filterDropdownMenuTreeByRegExp( null, tree );
+
+		expect( resultsCount ).to.be.equal( 5 );
+		expect( totalItemsCount ).to.be.equal( 5 );
+		expect( filteredTree ).to.deep.equal(
+			createRootTree( [
+				markAsFound(
+					mapMenuViewToMenuItemByLabel(
+						'Menu 1', tree,
+						[
+							...menusDefinitions[ 0 ].groups[ 0 ].items,
+							...menusDefinitions[ 0 ].groups[ 1 ].items
+						]
+							.map( mapButtonViewToMenuItem )
+					)
+				),
+
+				markAsFound(
+					mapMenuViewToMenuItemByLabel(
+						'Menu 2', tree,
+						menusDefinitions[ 1 ].groups[ 0 ].items.map( mapButtonViewToMenuItem )
 					)
 				)
 			] )
@@ -59,8 +91,8 @@ describe( 'filterDropdownMenuTree', () => {
 		const { menuRootList, menusDefinitions } = createMockDropdownMenuDefinition();
 
 		const tree = createTreeFromFlattenDropdownMenusList( menuRootList.menus );
-		const { resultsCount, filteredTree, totalItemsCount } = filterDropdownMenuTree(
-			node => node.search.raw === 'Foo',
+		const { resultsCount, filteredTree, totalItemsCount } = filterDropdownMenuTreeByRegExp(
+			/Foo/ig,
 			tree
 		);
 
@@ -83,8 +115,8 @@ describe( 'filterDropdownMenuTree', () => {
 		const { menuRootList } = createMockDropdownMenuDefinition();
 
 		const tree = Object.freeze( createTreeFromFlattenDropdownMenusList( menuRootList.menus ) );
-		const { filteredTree } = filterDropdownMenuTree(
-			node => node.search.raw === 'Foo',
+		const { filteredTree } = filterDropdownMenuTreeByRegExp(
+			/Foo/gi,
 			tree
 		);
 
