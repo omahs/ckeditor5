@@ -77,7 +77,7 @@ export default class DropdownMenuListFilteredView extends View implements Filter
 		}
 
 		if ( resultsCount !== totalItemsCount ) {
-			this._foundListView = new DropdownMenuListFoundListView(this.locale!, regExp, filteredTree);
+			this._foundListView = new DropdownMenuListFoundListView( this.locale!, regExp, filteredTree );
 			this._foundListView.render();
 
 			element!.appendChild( this._foundListView.element! );

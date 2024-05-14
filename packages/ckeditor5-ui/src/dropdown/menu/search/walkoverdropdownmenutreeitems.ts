@@ -26,7 +26,7 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 	root: DropdownMenusViewsTreeNode<Extend>
 ): void {
 	// Initialize an array to keep track of parent nodes
-	const parents: NonEmptyArray<DropdownMenusViewsTreeNode> = [root];
+	const parents: NonEmptyArray<DropdownMenusViewsTreeNode<Extend>> = [ root ];
 
 	// Define a visitor function that will be called for each node
 	const visitor: DropdownMenuViewsTreeVisitor = node => {
@@ -86,7 +86,7 @@ export function walkOverDropdownMenuTreeItems<Extend>(
 
 				default: {
 					const unknownNode: never = node;
-					console.warn( 'Unknown node kind!', unknownNode );
+					throw new Error( `Unknown node kind: ${ unknownNode }` );
 				}
 			}
 		}
@@ -121,10 +121,10 @@ export type DropdownMenuViewsTreeWalkerMetadata<
 };
 
 /**
- * Walker function for the dropdown menu tree.
+ * Represents a tree walker for navigating through the views of a dropdown menu.
  *
- * @template K The type of dropdown menu node kind.
- * @template Extend The type of additional data that can be passed to the walkers.
+ * @template K The type of dropdown menu views tree node kind.
+ * @template Extend Additional data type for extending the tree walker.
  */
 export type DropdownMenuViewsTreeWalker<
 	K extends DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNodeKind,
@@ -134,16 +134,17 @@ export type DropdownMenuViewsTreeWalker<
 	/**
 	 * Function called when entering a node.
 	 *
-	 * @param entry The metadata object for the current node.
-	 * @returns Returns void, boolean, or false to stop traversing the children of the current node.
+	 * @param entry - The metadata object for the current node.
+	 * @returns A boolean value indicating whether to continue traversing the tree.
+	 *          Returning `true` will continue to the next node, while returning `false` will stop the traversal.
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-	enter?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K, Extend> ) => void | boolean | false;
+	enter?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K, Extend> ) => boolean | void;
 
 	/**
 	 * Function called when leaving a node.
 	 *
-	 * @param entry The metadata object for the current node.
+	 * @param entry - The metadata object for the current node.
 	 */
 	leave?: ( entry: DropdownMenuViewsTreeWalkerMetadata<K, Extend> ) => void;
 };

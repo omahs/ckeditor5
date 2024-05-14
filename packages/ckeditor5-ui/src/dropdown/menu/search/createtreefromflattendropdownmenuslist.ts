@@ -86,7 +86,7 @@ export function createTreeFromFlattenDropdownMenusList( menus: Array<DropdownMen
 }
 
 /**
- * Represents a tree entry with a specific kind.
+ * Represents a tree entry with a specific kind in a dropdown menu tree.
  */
 type WithTreeEntryKind<K extends string> = {
 	kind: K;
@@ -158,7 +158,7 @@ export type DropdownMenusViewsTreeNode<
 export type DropdownMenusViewsTreeNodeKind = DropdownMenusViewsTreeNode['kind'];
 
 /**
- * Extracts a specific type of dropdown menu tree node by its kind.
+ * Extracts a specific type of dropdown menu tree node by its kind from the dropdown menu tree.
  */
 export type ExtractDropdownMenuViewTreeNodeByKind<
 	K extends DropdownMenusViewsTreeNodeKind,
