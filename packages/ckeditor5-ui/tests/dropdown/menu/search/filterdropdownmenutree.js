@@ -1,0 +1,99 @@
+/**
+ * @license Copyright (c) 2003-2024, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
+ */
+
+import { createTreeFromFlattenDropdownMenusList } from '../../../../src/dropdown/menu/search/createtreefromflattendropdownmenuslist.js';
+import { filterDropdownMenuTree } from '../../../../src/dropdown/menu/search/filterdropdownmenutree.js';
+import {
+	getTotalDropdownMenuTreeSearchableItemsCount
+} from '../../../../src/dropdown/menu/search/gettotaldropdownmenutreesearchableitemscount.js';
+
+import { createMockDropdownMenuDefinition } from '../_utils/dropdowntreemock.js';
+import {
+	createRootTree,
+	mapButtonViewToMenuItem,
+	mapMenuViewToMenuItemByLabel
+} from '../_utils/dropdowntreeutils.js';
+
+describe( 'filterDropdownMenuTree', () => {
+	it( 'should return 0 found items on empty tree', () => {
+		const result = filterDropdownMenuTree( () => true, createRootTree() );
+
+		expect( result ).to.deep.equal( {
+			resultsCount: 0,
+			totalItemsCount: 0,
+			filteredTree: createRootTree()
+		} );
+	} );
+
+	it( 'should return all menu children if menu label matches', () => {
+		const { menuRootList, menusDefinitions } = createMockDropdownMenuDefinition();
+
+		const tree = createTreeFromFlattenDropdownMenusList( menuRootList.menus );
+		const { resultsCount, filteredTree, totalItemsCount } = filterDropdownMenuTree(
+			node => node.search.raw === 'Menu 1',
+			tree
+		);
+
+		expect( resultsCount ).to.be.equal( 3 );
+		expect( totalItemsCount ).to.be.equal( 5 );
+		expect( filteredTree ).to.deep.equal(
+			createRootTree( [
+				{
+					found: true,
+					...mapMenuViewToMenuItemByLabel(
+						'Menu 1',
+						tree,
+						[
+							...menusDefinitions[ 0 ].groups[ 0 ].items,
+							...menusDefinitions[ 0 ].groups[ 1 ].items
+						].map( mapButtonViewToMenuItem )
+					)
+				}
+			] )
+		);
+	} );
+
+	it( 'should return child if label matches', () => {
+		const { menuRootList, menusDefinitions } = createMockDropdownMenuDefinition();
+
+		const tree = createTreeFromFlattenDropdownMenusList( menuRootList.menus );
+		const { resultsCount, filteredTree, totalItemsCount } = filterDropdownMenuTree(
+			node => node.search.raw === 'Foo',
+			tree
+		);
+
+		expect( resultsCount ).to.be.equal( 1 );
+		expect( totalItemsCount ).to.be.equal( 5 );
+		expect( filteredTree ).to.deep.equal(
+			createRootTree( [
+				mapMenuViewToMenuItemByLabel(
+					'Menu 1',
+					tree,
+					[
+						{
+							...mapButtonViewToMenuItem( menusDefinitions[ 0 ].groups[ 0 ].items[ 0 ] ),
+							found: true
+						}
+					]
+				)
+			] )
+		);
+	} );
+
+	it( 'should not modify passed tree object', () => {
+		const { menuRootList } = createMockDropdownMenuDefinition();
+
+		const tree = Object.freeze( createTreeFromFlattenDropdownMenusList( menuRootList.menus ) );
+		const { filteredTree } = filterDropdownMenuTree(
+			node => node.search.raw === 'Foo',
+			tree
+		);
+
+		expect( filteredTree ).not.to.be.equal( tree );
+		expect( getTotalDropdownMenuTreeSearchableItemsCount( filteredTree ) ).not.to.be.equal(
+			getTotalDropdownMenuTreeSearchableItemsCount( tree )
+		);
+	} );
+} );
