@@ -48,19 +48,26 @@ export function mapButtonViewToMenuItem( button ) {
 }
 
 export function findMenuTreeViewItemByLabel( label, tree ) {
-	return findAllMenusTreeNodesByLabel( label, tree )[ 0 ].menu;
+	return findMenuTreeNodeByLabel( label, tree ).menu;
+}
+
+export function findMenuTreeNodeByLabel( label, tree ) {
+	return findAllMenusTreeNodesByLabel( label, tree )[ 0 ];
 }
 
 export function findAllMenusTreeNodesByLabel( label, tree ) {
 	const foundMenus = [];
 
+	const lookup = ( { node } ) => {
+		if ( node.search.raw === label ) {
+			foundMenus.push( node );
+		}
+	};
+
 	walkOverDropdownMenuTreeItems(
 		{
-			Menu: ( { node } ) => {
-				if ( node.search.raw === label ) {
-					foundMenus.push( node );
-				}
-			}
+			Item: lookup,
+			Menu: lookup
 		},
 		tree
 	);
