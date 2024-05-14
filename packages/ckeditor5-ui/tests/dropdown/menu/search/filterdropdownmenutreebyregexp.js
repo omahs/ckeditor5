@@ -6,8 +6,8 @@
 import { createTreeFromFlattenDropdownMenusList } from '../../../../src/dropdown/menu/search/createtreefromflattendropdownmenuslist.js';
 import { filterDropdownMenuTreeByRegExp } from '../../../../src/dropdown/menu/search/filterdropdownmenutreebyregexp.js';
 import {
-	getTotalDropdownMenuTreeSearchableItemsCount
-} from '../../../../src/dropdown/menu/search/gettotaldropdownmenutreesearchableitemscount.js';
+	getTotalDropdownMenuTreeFlatItemsCount
+} from '../../../../src/dropdown/menu/search/gettotaldropdownmenutreeflatitemscount.js';
 
 import { createMockDropdownMenuDefinition } from '../_utils/dropdowntreemock.js';
 import {
@@ -121,8 +121,8 @@ describe( 'filterDropdownMenuTreeByRegExp', () => {
 		);
 
 		expect( filteredTree ).not.to.be.equal( tree );
-		expect( getTotalDropdownMenuTreeSearchableItemsCount( filteredTree ) ).not.to.be.equal(
-			getTotalDropdownMenuTreeSearchableItemsCount( tree )
+		expect( getTotalDropdownMenuTreeFlatItemsCount( filteredTree ) ).not.to.be.equal(
+			getTotalDropdownMenuTreeFlatItemsCount( tree )
 		);
 	} );
 } );

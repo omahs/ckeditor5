@@ -17,7 +17,7 @@ import type {
 
 import { walkOverDropdownMenuTreeItems } from './walkoverdropdownmenutreeitems.js';
 import { tryRemoveDropdownMenuTreeChild } from './tryremovedropdownmenutreechild.js';
-import { getTotalDropdownMenuTreeSearchableItemsCount } from './gettotaldropdownmenutreesearchableitemscount.js';
+import { getTotalDropdownMenuTreeFlatItemsCount } from './gettotaldropdownmenutreeflatitemscount.js';
 import { shallowCloneDropdownMenuTree } from './shallowclonedropdownmenutree.js';
 
 /**
@@ -33,7 +33,7 @@ export function filterDropdownMenuTree(
 	tree: DeepReadonly<DropdownMenuViewsRootTree>
 ): DropdownMenuSearchResult {
 	const clonedTree: DropdownMenusViewsFilteredTreeNode = shallowCloneDropdownMenuTree( tree );
-	const totalItemsCount = getTotalDropdownMenuTreeSearchableItemsCount( clonedTree );
+	const totalItemsCount = getTotalDropdownMenuTreeFlatItemsCount( clonedTree );
 
 	walkOverDropdownMenuTreeItems(
 		{
@@ -65,7 +65,7 @@ export function filterDropdownMenuTree(
 	);
 
 	return {
-		resultsCount: getTotalDropdownMenuTreeSearchableItemsCount( clonedTree ),
+		resultsCount: getTotalDropdownMenuTreeFlatItemsCount( clonedTree ),
 		filteredTree: clonedTree,
 		totalItemsCount
 	};

@@ -4,20 +4,20 @@
  */
 
 /**
- * @module ui/dropdown/menu/search/gettotaldropdownmenutreesearchableitemscount
+ * @module ui/dropdown/menu/search/gettotaldropdownmenutreeflatitemscount
  */
 
 import type { DropdownMenusViewsTreeNode } from './createtreefromflattendropdownmenuslist.js';
 import { walkOverDropdownMenuTreeItems } from './walkoverdropdownmenutreeitems.js';
 
 /**
- * Calculates the total number of searchable items in a dropdown menu tree.
+ * Calculates the total number of searchable button like items in a dropdown menu tree.
  *
  * @template Extend The type of data associated with each tree node.
  * @param tree The root node of the dropdown menu tree.
  * @returns The total number of searchable items in the tree.
  */
-export function getTotalDropdownMenuTreeSearchableItemsCount<Extend>( tree: DropdownMenusViewsTreeNode<Extend> ): number {
+export function getTotalDropdownMenuTreeFlatItemsCount<Extend>( tree: DropdownMenusViewsTreeNode<Extend> ): number {
 	let totalItemsCount = 0;
 
 	walkOverDropdownMenuTreeItems<Extend>(
