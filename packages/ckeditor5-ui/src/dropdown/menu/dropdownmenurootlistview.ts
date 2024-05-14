@@ -46,18 +46,21 @@ export default class DropdownMenuRootListView extends DropdownMenuListView {
 	declare public isOpen: boolean;
 
 	/**
-	 * Creates a new instance of DropdownMenuRootListView.
+	 * Creates an instance of the DropdownMenuRootListView class.
 	 *
-	 * @param locale - The locale of the dropdown menu.
-	 * @param definition - The definition of the dropdown menu.
+	 * @param locale - The locale object.
+	 * @param definition The definition object for the dropdown menu root factory.
 	 */
-	constructor( locale: Locale, definition: DropdownMenuRootFactoryDefinition ) {
+	constructor( locale: Locale, definition?: DropdownMenuRootFactoryDefinition ) {
 		super( locale );
 
 		this.set( 'isOpen', false );
 
 		this._setupIsOpenUpdater();
-		this.definition.appendMenus( definition );
+
+		if ( definition ) {
+			this.definition.appendMenus( definition );
+		}
 	}
 
 	/**

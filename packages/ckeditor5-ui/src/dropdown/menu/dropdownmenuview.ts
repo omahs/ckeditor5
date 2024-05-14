@@ -23,6 +23,8 @@ import { DropdownMenuViewPanelPositioningFunctions } from './utils/dropdownmenup
 import { DropdownMenuBehaviors } from './utils/dropdownmenubehaviors.js';
 
 import View from '../../view.js';
+
+import DropdownMenuListView from './dropdownmenulistview.js';
 import {
 	DropdownMenuPanelView,
 	type DropdownMenuPanelPosition
@@ -44,6 +46,11 @@ export default class DropdownMenuView extends View implements FocusableView {
 	 * Panel of the menu. It hosts children of the menu.
 	 */
 	public readonly panelView: DropdownMenuPanelView;
+
+	/**
+	 * List of nested menu entries.
+	 */
+	public readonly listView: DropdownMenuListView;
 
 	/**
 	 * Tracks information about the DOM focus in the menu.
@@ -98,8 +105,9 @@ export default class DropdownMenuView extends View implements FocusableView {
 	 * Creates an instance of the menu view.
 	 *
 	 * @param locale The localization services instance.
+	 * @param label Label of button
 	 */
-	constructor( locale: Locale ) {
+	constructor( locale: Locale, label?: string ) {
 		super( locale );
 
 		const bind = this.bindTemplate;
@@ -108,8 +116,15 @@ export default class DropdownMenuView extends View implements FocusableView {
 		this.buttonView.delegate( 'mouseenter' ).to( this );
 		this.buttonView.bind( 'isOn', 'isEnabled' ).to( this, 'isOpen', 'isEnabled' );
 
+		if ( label ) {
+			this.buttonView.label = label;
+		}
+
 		this.panelView = new DropdownMenuPanelView( locale );
 		this.panelView.bind( 'isVisible' ).to( this, 'isOpen' );
+
+		this.listView = new DropdownMenuListView( locale );
+		this.listView.bind( 'ariaLabel' ).to( this.buttonView, 'label' );
 
 		this.keystrokes = new KeystrokeHandler();
 		this.focusTracker = new FocusTracker();
@@ -119,6 +134,8 @@ export default class DropdownMenuView extends View implements FocusableView {
 		this.set( 'panelPosition', 'w' );
 		this.set( 'class', undefined );
 		this.set( 'parentMenuView', null );
+
+		this.panelView.children.add( this.listView );
 
 		this.setTemplate( {
 			tag: 'div',

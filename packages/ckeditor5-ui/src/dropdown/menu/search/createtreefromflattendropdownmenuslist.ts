@@ -11,7 +11,6 @@ import { mapFilter } from '@ckeditor/ckeditor5-utils';
 
 import type { Increment } from '@ckeditor/ckeditor5-core';
 import type DropdownMenuView from '../dropdownmenuview.js';
-import type DropdownMenuListView from '../dropdownmenulistview.js';
 
 import type { DropdownMenuFlatItemView } from '../typings.js';
 import { isDropdownMenuFlatItemView, isDropdownMenuView } from '../guards.js';
@@ -45,9 +44,9 @@ export function createTreeFromFlattenDropdownMenusList( menus: Array<DropdownMen
 	// Fill the menu tree map with children entries.
 	for ( const menu of menus ) {
 		const { children } = menusTreeMap.get( menu )!;
-		const menuPanelView = menu.panelView.children!.first as DropdownMenuListView;
+		const { listView } = menu;
 
-		for ( const item of menuPanelView.items ) {
+		for ( const item of listView.items ) {
 			if ( !( item instanceof DropdownMenuListItemView ) ) {
 				continue;
 			}

@@ -13,6 +13,7 @@ import type DropdownMenuListItemButtonView from '../dropdownmenulistitembuttonvi
 import type DropdownMenuRootListView from '../dropdownmenurootlistview.js';
 import type {
 	DropdownMenuDefinition,
+	DropdownMenuGroupDefinition,
 	DropdownMenuRootFactoryDefinition,
 	DropdownMenuViewItemDefinition
 } from './dropdownmenudefinitiontypings.js';
@@ -29,6 +30,9 @@ import ListItemView from '../../../list/listitemview.js';
  * Parser for dropdown menu definitions.
  */
 export class DropdownMenuDefinitionParser {
+	/**
+	 * The root list view of the dropdown menu.
+	 */
 	private readonly _view: DropdownMenuRootListView;
 
 	/**
@@ -50,7 +54,7 @@ export class DropdownMenuDefinitionParser {
 			const listItem = new DropdownMenuListItemView( this._view.locale! );
 
 			listItem.children.add(
-				this._createMenuFromDefinition( menuDefinition )
+				this._registerMenuFromDefinition( menuDefinition )
 			);
 
 			return listItem;
@@ -60,65 +64,30 @@ export class DropdownMenuDefinitionParser {
 	}
 
 	/**
-	 * Creates a menu view from the given menu definition.
+	 * Appends menu items to the target parent menu view.
 	 *
-	 * @param menuDefinition The dropdown menu definition.
-	 * @param parentMenuView The parent menu view, if any.
-	 * @returns The created menu view.
+	 * @param groups An array of dropdown menu group definitions.
+	 * @param targetParentMenuView The target parent menu view to append the menu items to.
 	 */
-	private _createMenuFromDefinition(
-		menuDefinition: DropdownMenuDefinition,
-		parentMenuView?: DropdownMenuView
-	) {
+	public appendMenuItems(
+		groups: Array<DropdownMenuGroupDefinition>,
+		targetParentMenuView: DropdownMenuView
+	): void {
 		const { _view } = this;
-
-		const locale = _view.locale!;
-		const menuView = new DropdownMenuView( locale );
-
-		_view.registerMenu( menuView, parentMenuView );
-
-		menuView.buttonView.set( {
-			label: menuDefinition.label
-		} );
-
-		const listView = new DropdownMenuListView( locale );
-
-		listView.ariaLabel = menuDefinition.label;
-		listView.items.addMany(
-			this._createMenuItemsFromDefinition( menuDefinition, menuView )
-		);
-
-		menuView.panelView.children.add( listView );
-		return menuView;
-	}
-
-	/**
-	 * Creates menu item views from the given menu definition.
-	 *
-	 * @param menuDefinition The dropdown menu definition.
-	 * @param parentMenuView The parent menu view.
-	 * @returns An array of created menu item views.
-	 */
-	private _createMenuItemsFromDefinition(
-		menuDefinition: DropdownMenuDefinition,
-		parentMenuView: DropdownMenuView
-	): Array<DropdownMenuListItemView | ListSeparatorView> {
-		const { _view } = this;
-		const { groups } = menuDefinition;
 
 		const locale = _view.locale!;
 		const items = [];
 
 		for ( const menuGroupDefinition of groups ) {
 			for ( const itemDefinition of menuGroupDefinition.items ) {
-				const menuItemView = new DropdownMenuListItemView( locale, parentMenuView );
+				const menuItemView = new DropdownMenuListItemView( locale, targetParentMenuView );
 
 				if ( isDropdownMenuDefinition( itemDefinition ) ) {
 					menuItemView.children.add(
-						this._createMenuFromDefinition( itemDefinition, parentMenuView )
+						this._registerMenuFromDefinition( itemDefinition, targetParentMenuView )
 					);
 				} else {
-					const componentView = this._registerMenuTreeFromDefinition( itemDefinition, parentMenuView );
+					const componentView = this._registerMenuTreeFromDefinition( itemDefinition, targetParentMenuView );
 
 					if ( !componentView ) {
 						continue;
@@ -136,7 +105,31 @@ export class DropdownMenuDefinitionParser {
 			}
 		}
 
-		return items;
+		if ( items.length ) {
+			targetParentMenuView.listView.items.addMany( items );
+		}
+	}
+
+	/**
+	 * Creates a menu view from the given menu definition.
+	 *
+	 * @param menuDefinition The dropdown menu definition.
+	 * @param parentMenuView The parent menu view, if any.
+	 * @returns The created menu view.
+	 */
+	private _registerMenuFromDefinition(
+		menuDefinition: DropdownMenuDefinition,
+		parentMenuView?: DropdownMenuView
+	) {
+		const { _view } = this;
+		const locale = _view.locale!;
+
+		const menuView = new DropdownMenuView( locale, menuDefinition.label );
+
+		this.appendMenuItems( menuDefinition.groups, menuView );
+		_view.registerMenu( menuView, parentMenuView );
+
+		return menuView;
 	}
 
 	/**
